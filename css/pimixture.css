@@ -1,0 +1,45 @@
+#input {
+    float: left;
+    margin: 0px 0px 0px 15px;
+    max-width: 480px;
+}
+.well {
+    margin: 0px;
+}
+.well ~ .well {
+    margin-top: 20px;
+}
+#input fieldset ~ fieldset:not(.show) {
+   display: none;
+}
+#input label {
+    display: inline-block;
+    vertical-align: middle;
+    width: 140px;
+}
+#input label ~ * {
+    display: inline-block;
+    vertical-align: middle;
+    width: 255px;
+}
+#input input {
+    display: inline-block;
+}
+#output:not(.show) {
+    display:none;
+}
+#output {
+    overflow: auto;
+}
+#output h4 {
+    margin: 0px;
+}
+.nav {
+    margin: 0px 15px;
+}
+.tab-content {
+    border: solid #ddd;
+    border-radius: 0px 0px 4px 4px;
+    border-width: 0px 1px 1px 1px;
+    margin: 0px 15px;
+}
