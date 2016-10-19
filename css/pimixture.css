@@ -41,14 +41,20 @@
 .nav {
     margin: 0px 15px;
 }
+.nav li a {
+    color: #666;
+}
 .tab-content {
     border: solid #ddd;
     border-radius: 0px 0px 4px 4px;
     border-width: 0px 1px 1px 1px;
     margin: 0px 15px;
 }
-#tab-tables > div > div {
+#output .panel-group {
     padding: 15px;
+}
+#output .panel-heading {
+    cursor: pointer;
 }
 table {
     width: 100%;

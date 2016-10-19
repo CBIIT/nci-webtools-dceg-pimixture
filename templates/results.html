@@ -5,26 +5,34 @@
 </ul>
 <div class="tab-content">
     <div id="tab-tables" class="tab-pane active">
-<% _.each(tables,function(table,key,list) { %>
-        <div>
-            <h4><%=key%></h4>
-            <div>
-                <table>
+        <div class="panel-group">
+<% var panelCount = 0;
+   _.each(tables,function(table,key,list) {
+       panelCount++; %>
+            <div class="panel panel-default">
+                <div class="panel-heading" data-toggle="collapse" data-target="#collapse<%=panelCount%>">
+                    <h4 class="panel-title"><%=key%></h4>
+                </div>
+                <div id="collapse<%=panelCount%>" class="panel-collapse collapse<%=(panelCount==1?" in":"")%>">
+                    <div class="panel-body">
+                        <table>
 <%     _.each(table,function(row,index,list) { %>
-                    <tr>
+                            <tr>
 <%         _.each(row,function(element,index2,list) {
                if (element instanceof Object) { %>
-                    <t<%=(index==0?"h":"d")%> colspan="<%=element.span%>"><%=element.label%></t<%=(index==0?"h":"d")%>>
+                                <t<%=(index==0?"h":"d")%> colspan="<%=element.span%>"><%=element.label%></t<%=(index==0?"h":"d")%>>
 <%             } else { %>
-                    <%=(index==0?"<th>":"<td>")%><%=element%><%=(index==0?"</th>":"</td>")%>
+                                <%=(index==0?"<th>":"<td>")%><%=element%><%=(index==0?"</th>":"</td>")%>
 <%             } %>
 <%         }); %>
-                    </tr>
+                            </tr>
 <%     }); %>
-                </table>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
 <% }); %>
+        </div>
     </div>
     <div id="tab-hazard" class="tab-pane">
         <img src="<%=hazardimg%>"/>
