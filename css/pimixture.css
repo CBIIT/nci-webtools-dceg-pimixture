@@ -25,6 +25,10 @@
 #input input {
     display: inline-block;
 }
+#input fieldset:last-child {
+    margin-top: 20px;
+    text-align: center;
+}
 #output:not(.show) {
     display:none;
 }
@@ -42,4 +46,16 @@
     border-radius: 0px 0px 4px 4px;
     border-width: 0px 1px 1px 1px;
     margin: 0px 15px;
+}
+#tab-tables > div > div {
+    padding: 15px;
+}
+table {
+    width: 100%;
+}
+table th,
+table td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 2px;
 }

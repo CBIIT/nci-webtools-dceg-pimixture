@@ -6,40 +6,110 @@ var appMixture = {
 appMixture.FormView = Backbone.View.extend({
     el: '#input',
     initialize: function() {
+        var $that = this;
         this.model.on({
             'change:csvFile': this.updateOptions,
             'change:design': this.showNext,
-            'change:model': this.showNext
+            'change:model': this.showNext,
+            'change:outcomeC': this.showNext,
+            'change:outcomeL': this.showNext,
+            'change:outcomeR': this.showNext,
+            'change:covariates': this.showNext,
+            'change:what': this.showNext,
+            'change:email': this.showNext
         }, this);
         this.$el.find('[name="covariates"]').selectize({
             plugins: ['remove_button'],
             sortField: 'order'
         });
+        this.groupIndex = {};
+        var lastGroup = null;
+        this.$el.find('fieldset').each(function (index,e) {
+            var group = {
+                    'head': e,
+                    'subs': []
+                },
+                skipNext = false,
+                subs = group.subs;
+            if (lastGroup !== null) {
+                lastGroup.next = group;
+            }
+            $(e).find('select,input').each(function(index2,e2) {
+                var lastIndex = subs.length;
+                if (skipNext) {
+                    skipNext = false;
+                    return;
+                }
+                if (e2.selectize) {
+                    skipNext = true;
+                    subs.push({
+                        'element': e2,
+                        'name': e2.name,
+                        'type': 'selectize'
+                    });
+                } else if (e2.tagName == 'SELECT') {
+                    subs.push({
+                        'element': e2,
+                        'name': e2.name,
+                        'type': 'select'
+                    });
+                } else {
+                    subs.push({
+                        'element': e2,
+                        'name': e2.name,
+                        'type': e2.type
+                    });
+                }
+                subs[lastIndex].empty = $that.model.defaults[subs[lastIndex].name];
+                $that.groupIndex[e2.name] = group;
+            });
+            lastGroup = group;
+        });
     },
     events: {
         'change input[type="file"]': 'uploadFile',
+        'change input.selectized': 'updateModel',
+        'keyup input[type="text"]': 'updateModel',
         'change select': 'updateModel'
     },
     showNext: function() {
-        var $that = this;
-        var changedAttributes = Object.keys(this.model.changedAttributes());
-        if (changedAttributes.length == 1) {
-            var name = '[name="'+changedAttributes[0]+'"]';
-            var field = this.$el.find(name).closest('fieldset');
-            if ((this.model.get(changedAttributes[0])||"") === "") {
-                var fieldsets = field.nextAll('fieldset').removeClass('show');
-                fieldsets.find('select').prop('selectedIndex',0).each(function(index,e) {
-                    $that.model.set(e.name,"",{'silent':true});
-                });
-                fieldsets.find('[name="covariates"]')[0].selectize.clear();
-            } else {
-                field.next('fieldset').addClass('show');
+        var $that = this,
+            attrs = this.model.changedAttributes();
+        for (var key in attrs) {
+            var group = $that.groupIndex[key],
+                show = true;
+            if (group.next) {
+                for (var index in group.subs) {
+                    var sub = group.subs[index];
+                    if ($that.model.get(sub.name) === sub.empty) show = false;
+                }
+                $(group.next.head).toggleClass('show',show);
+                if (!show) {
+                    group = group.next;
+                    for (var index in group.subs) {
+                        var sub = group.subs[index];
+                        switch (sub.type) {
+                            case 'selectize':
+                                sub.element.selectize.clear();
+                                break;
+                            case 'select':
+                                $(sub.element).prop('selectedIndex',0);
+                                $that.model.set(sub.name,sub.empty);
+                                break;
+                            case 'button':
+                                break;
+                            default:
+                                $(sub.element).val(sub.empty);
+                                $that.model.set(sub.name,sub.empty);
+                                break;
+                        }
+                    }
+                }
             }
-        } else {
-            this.$el.find('fieldset:not(:first-child)').removeClass('show');
         }
     },
     uploadFile: function(e) {
+        e.preventDefault();
         var $that = this;
         if (window.FileReader) {                 
             var file = e.target.files[0];
@@ -60,10 +130,10 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     updateModel: function(e) {
+        e.preventDefault();
         var e = $(e.target),
             name = e.prop('name'),
             val = e.val();
-        console.log(name);
         this.model.set(name,val);
     },
     updateOptions: function() {
@@ -73,7 +143,7 @@ appMixture.FormView = Backbone.View.extend({
             covariates = $('[name="covariates"]')[0].selectize;
         if (options === null) return;
         for (var index = 0; index < options.length; index++) {
-            optionsList += "<option>"+options[index]+"</option>";
+            optionsList += "<option value=\""+options[index].value+"\">"+options[index].text+"</option>";
         }
         this.$el.find('[name="outcomeC"]').html(optionsList);
         this.$el.find('[name="outcomeL"]').html(optionsList);
@@ -83,9 +153,55 @@ appMixture.FormView = Backbone.View.extend({
     }
 });
 
+appMixture.ResultsView = Backbone.View.extend({
+    el: '#output',
+    initialize: function() {
+        var $that = this;
+        this.model.on({
+            'change': this.render
+        }, this);
+        $.get('templates/results.html').done(function(response) {
+            $that.template = _.template(response);
+        });
+    },
+    render: function() {
+        this.$el.addClass('show');
+        this.$el.html(this.template(this.model.attributes));
+    }
+});
+
+appMixture.BaseView = Backbone.View.extend({
+    el: 'body',
+    events: {
+        'click #run': 'onSubmit'
+    },
+    onSubmit: function(e) {
+        e.preventDefault();
+        var $that = this,
+            params = JSON.stringify(this.model.get('form').attributes);
+        this.model.get('results').fetch({
+            type: "POST",
+            data: params,
+            dataType: "json"
+        });
+    }
+});
+
 $(function () {
         appMixture.models.form = new appMixture.FormModel();
+        appMixture.models.results = new appMixture.ResultsModel();
+        appMixture.models.base = new appMixture.BaseModel({
+            'form': appMixture.models.form,
+            'results': appMixture.models.results
+        });
+
+        appMixture.views.base = new appMixture.BaseView({
+            model: appMixture.models.base
+        });
         appMixture.views.form = new appMixture.FormView({
             model: appMixture.models.form
+        });
+        appMixture.views.results = new appMixture.ResultsView({
+            model: appMixture.models.results
         });
 });

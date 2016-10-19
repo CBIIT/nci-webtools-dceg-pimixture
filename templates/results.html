@@ -1,0 +1,35 @@
+<ul class="nav nav-tabs responsive">
+    <li class="active"><a href="#tab-tables" data-toggle="tab">Tables</a></li>
+    <li><a href="#tab-hazard" data-toggle="tab">Cumulative Hazard</a></li>
+    <li><a href="#tab-risk" data-toggle="tab">Cumulative Risk</a></li>
+</ul>
+<div class="tab-content">
+    <div id="tab-tables" class="tab-pane active">
+<% _.each(tables,function(table,key,list) { %>
+        <div>
+            <h4><%=key%></h4>
+            <div>
+                <table>
+<%     _.each(table,function(row,index,list) { %>
+                    <tr>
+<%         _.each(row,function(element,index2,list) {
+               if (element instanceof Object) { %>
+                    <t<%=(index==0?"h":"d")%> colspan="<%=element.span%>"><%=element.label%></t<%=(index==0?"h":"d")%>>
+<%             } else { %>
+                    <%=(index==0?"<th>":"<td>")%><%=element%><%=(index==0?"</th>":"</td>")%>
+<%             } %>
+<%         }); %>
+                    </tr>
+<%     }); %>
+                </table>
+            </div>
+        </div>
+<% }); %>
+    </div>
+    <div id="tab-hazard" class="tab-pane">
+        <img src="<%=hazardimg%>"/>
+    </div>
+    <div id="tab-risk" class="tab-pane">
+        <img src="<%=riskimg%>"/>
+    </div>
+</div>
