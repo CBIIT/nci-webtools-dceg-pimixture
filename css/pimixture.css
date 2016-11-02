@@ -71,8 +71,15 @@ table td {
     border-collapse: collapse;
     padding: 2px;
 }
+th.borderless,
+td.borderless {
+    border: 0px;
+}
 .footer {
     clear: both;
+}
+#dataGroups {
+    width: 100%;
 }
 @media (max-width: 960px) {
     #input {

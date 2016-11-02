@@ -70,7 +70,50 @@ appMixture.FormView = Backbone.View.extend({
         'change input[type="file"]': 'uploadFile',
         'change input.selectized': 'updateModel',
         'keyup input[type="text"]': 'updateModel',
-        'change select': 'updateModel'
+        'change select': 'updateModel',
+        'click #dataGroups': 'openDataGroups'
+    },
+    openDataGroups: function(e) {
+        e.preventDefault();
+        new appMixture.DataGroupsView({
+            model: this.model
+        });
+    },
+    updateModel: function(e) {
+        e.preventDefault();
+        var e = $(e.target),
+            name = e.prop('name'),
+            val = e.val();
+        if (val === "null") val = null;
+        if (!Number.isNaN(parseInt(val))) val = parseInt(val);
+        this.model.set(name,val);
+    },
+    uploadFile: function(e) {
+        e.preventDefault();
+        var $that = this;
+        if (window.FileReader) {                 
+            var file = e.target.files[0];
+            var reader = new window.FileReader();
+            reader.onload = function (event) {
+                var contents = event.target.result.replace('\r','').split('\n'),
+                    headers = contents.shift().split(','),
+                    file = [];
+                contents = contents.map(function(e) {
+                    var cols = e.split(','),
+                        obj = {};
+                    for (var index in cols) {
+                        obj[headers[index]] = cols[index];
+                    }
+                    return obj;
+                });
+                $that.model.set('csvFile', contents);
+            };
+            if (file) {
+                reader.readAsText(file);
+            } else {
+                $that.model.set('csvFile', null);
+            }
+        }
     },
     showNext: function() {
         var $that = this,
@@ -108,40 +151,13 @@ appMixture.FormView = Backbone.View.extend({
             }
         }
     },
-    uploadFile: function(e) {
-        e.preventDefault();
-        var $that = this;
-        if (window.FileReader) {                 
-            var file = e.target.files[0];
-            var reader = new window.FileReader();
-            reader.onload = function (event) {
-                //var contents = event.target.result;
-                var contents = ["show","me","this"];
-                contents = contents.map(function(e) {
-                    return {'text':e,'value':e};
-                });
-                $that.model.set('csvFile', contents);
-            };
-            if (file) {
-                reader.readAsText(file);
-            } else {
-                $that.model.set('csvFile', null);
-            }
-        }
-    },
-    updateModel: function(e) {
-        e.preventDefault();
-        var e = $(e.target),
-            name = e.prop('name'),
-            val = e.val();
-        this.model.set(name,val);
-    },
     updateOptions: function() {
         this.showNext.apply(this);
-        var options = this.model.get('csvFile'),
+        var contents = this.model.get('csvFile'),
             optionsList = "<option value=\"\">----Select Outcome----</option>",
             covariates = $('[name="covariates"]')[0].selectize;
         if (options === null) return;
+        var options = Object.keys(contents[0]).map(function(e) { return {'text':e,'value':e.replace(/"/g,'\\"')}; });
         for (var index = 0; index < options.length; index++) {
             optionsList += "<option value=\""+options[index].value+"\">"+options[index].text+"</option>";
         }
@@ -150,6 +166,51 @@ appMixture.FormView = Backbone.View.extend({
         this.$el.find('[name="outcomeR"]').html(optionsList);
         covariates.clearOptions();
         covariates.addOption(options);
+    }
+});
+
+appMixture.DataGroupsView = Backbone.View.extend({
+    initialize: function() {
+        var headers = this.model.get('covariates');
+        this.render();
+    },
+    events: {
+        'hidden.bs.modal': 'remove',
+        'keyup input[type="text"]': 'updateModel'
+    },
+    updateModel: function(e) {
+        if (e.keyCode == 13) {
+            this.createList.call(this,e);
+        } else {
+            appComets.events.updateModel.call(this,e);
+        }
+    },
+    render: function() {
+        this.$modal = BootstrapDialog.show({
+            'message': $("<table><thead></thead><tbody></tbody><tfoot></tfoot></table>"),
+            'title': "Enter Data Groups"
+        });
+        this.setElement(this.$modal.getModal());
+        var covariates = this.model.get('covariates').replace(/\\"/g,'"').split(','),
+            asdf = this.model.get('asdf'),
+            thead = "<tr>",
+            tbody = "",
+            tfoot = "<tr>";
+        for (var index in covariates) {
+            thead += "<th>"+covariates[index]+"</th>";
+            tfoot += "<td><input type=\"text\" placeholder=\""+covariates[index].replace(/"/g,'&quot;')+"\"/></td>";
+        }
+        for (var index in asdf) {
+            tbody += "<tr>";
+            for (var index2 in covariates) {
+                tbody += "<td>"+asdf[index][index2]+"</td>"
+            }
+            tbody += "<td class=\"borderless\"><button>X</button></td></tr>";
+        }
+        thead += "<th class=\"borderless\"></th></tr>";
+        tfoot += "<td class=\"borderless\">><button>Add</button></td></tr>";
+        this.$el.find('thead').append(thead);
+        this.$el.find('tfoot').append(tfoot);
     }
 });
 
