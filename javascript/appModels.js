@@ -14,7 +14,8 @@ appMixture.FormModel = Backbone.Model.extend({
         'outcomeL': "",
         'outcomeR': "",
         'covariates': "",
-        'what': "",
+        'groupTrigger': "",
+        'groupValue': [],
         'email': ""
     }
 });

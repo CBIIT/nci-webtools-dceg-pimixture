@@ -1,4 +1,14 @@
 var appMixture = {
+    events: {
+        updateModel: function (e) {
+            var e = $(e.target);
+            if (e.attr('type') == 'checkbox') {
+                this.model.set(e.attr('name') || e.attr('id'), e.prop('checked'));
+            } else {
+                this.model.set(e.attr('name') || e.attr('id'), !e.hasClass('selectized') ? e.val() : e.val().length > 0 ? e.val().split(',') : []);
+            }
+        }
+    },
     models: {},
     views: {}
 };
@@ -15,7 +25,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeL': this.showNext,
             'change:outcomeR': this.showNext,
             'change:covariates': this.showNext,
-            'change:what': this.showNext,
+            'change:groupTrigger': this.resetGroup,
             'change:email': this.showNext
         }, this);
         this.$el.find('[name="covariates"]').selectize({
@@ -115,13 +125,17 @@ appMixture.FormView = Backbone.View.extend({
             }
         }
     },
+    resetGroup: function() {
+        this.model.set('groupValue',[]);
+        this.showNext.apply(this);
+    },
     showNext: function() {
         var $that = this,
             attrs = this.model.changedAttributes();
         for (var key in attrs) {
             var group = $that.groupIndex[key],
                 show = true;
-            if (group.next) {
+            if (group && group.next) {
                 for (var index in group.subs) {
                     var sub = group.subs[index];
                     if ($that.model.get(sub.name) === sub.empty) show = false;
@@ -157,7 +171,7 @@ appMixture.FormView = Backbone.View.extend({
             optionsList = "<option value=\"\">----Select Outcome----</option>",
             covariates = $('[name="covariates"]')[0].selectize;
         if (options === null) return;
-        var options = Object.keys(contents[0]).map(function(e) { return {'text':e,'value':e.replace(/"/g,'\\"')}; });
+        var options = Object.keys(contents[0]).map(function(e) { return {'text':e,'value':e.replace(/"/g,'&quot;')}; });
         for (var index = 0; index < options.length; index++) {
             optionsList += "<option value=\""+options[index].value+"\">"+options[index].text+"</option>";
         }
@@ -172,45 +186,86 @@ appMixture.FormView = Backbone.View.extend({
 appMixture.DataGroupsView = Backbone.View.extend({
     initialize: function() {
         var headers = this.model.get('covariates');
+        this.model.on({
+            'change:groupValue': this.renderTable
+        }, this)
         this.render();
     },
     events: {
         'hidden.bs.modal': 'remove',
-        'keyup input[type="text"]': 'updateModel'
+        'keyup input[type="text"]': 'updateModel',
+        'click .remove': 'removeEntry',
+        'click .add': 'addEntry'
+    },
+    addEntry: function(e) {
+        var target = $(e.target),
+            inputs = target.parent().parent().find('input'),
+            covariates = this.model.get('covariates').split(','),
+            groupValue = this.model.get('groupValue');
+        var obj = {};
+        for (var index in covariates) {
+            var input = inputs.eq(index);
+            obj[covariates[index]] = input.val();
+            input.val('');
+        }
+        groupValue.push(obj);
+        this.model.trigger('change:groupValue',this.model);
+        this.model.set({
+            'groupTrigger': 'something'
+        });
+    },
+    removeEntry: function(e) {
+        var index = $(e.target).prop('name'),
+            groupValue = this.model.get('groupValue');
+        groupValue.splice(index,1);
+        this.model.trigger('change:groupValue',this.model);
+        if (groupValue.length < 1) {
+            this.model.set({
+                'groupTrigger': ''
+            });
+        }
     },
     updateModel: function(e) {
         if (e.keyCode == 13) {
             this.createList.call(this,e);
         } else {
-            appComets.events.updateModel.call(this,e);
+            appMixture.events.updateModel.call(this,e);
         }
     },
     render: function() {
+        var covariates = this.model.get('covariates').split(',');
         this.$modal = BootstrapDialog.show({
             'message': $("<table><thead></thead><tbody></tbody><tfoot></tfoot></table>"),
             'title': "Enter Data Groups"
         });
         this.setElement(this.$modal.getModal());
-        var covariates = this.model.get('covariates').replace(/\\"/g,'"').split(','),
-            asdf = this.model.get('asdf'),
+        var tfoot = "<tr>";
+        for (var index in covariates) {
+            tfoot += "<td><input type=\"text\" placeholder=\""+covariates[index]+"\"/></td>";
+        }
+        tfoot += "<td class=\"borderless\"><button class=\"add disabled\">Add</button></td></tr>";
+        this.$el.find('tfoot').empty().append(tfoot);
+        this.renderTable.apply(this);
+    },
+    renderTable: function() {
+        var covariates = this.model.get('covariates').split(','),
+            groupValue = this.model.get('groupValue'),
             thead = "<tr>",
             tbody = "",
             tfoot = "<tr>";
         for (var index in covariates) {
             thead += "<th>"+covariates[index]+"</th>";
-            tfoot += "<td><input type=\"text\" placeholder=\""+covariates[index].replace(/"/g,'&quot;')+"\"/></td>";
         }
-        for (var index in asdf) {
+        for (var index in groupValue) {
             tbody += "<tr>";
             for (var index2 in covariates) {
-                tbody += "<td>"+asdf[index][index2]+"</td>"
+                tbody += "<td>"+groupValue[index][covariates[index2]]+"</td>"
             }
-            tbody += "<td class=\"borderless\"><button>X</button></td></tr>";
+            tbody += "<td class=\"borderless\"><button name=\""+index+"\" class=\"remove\">X</button></td></tr>";
         }
         thead += "<th class=\"borderless\"></th></tr>";
-        tfoot += "<td class=\"borderless\">><button>Add</button></td></tr>";
-        this.$el.find('thead').append(thead);
-        this.$el.find('tfoot').append(tfoot);
+        this.$el.find('thead').empty().append(thead);
+        this.$el.find('tbody').empty().append(tbody);
     }
 });
 
