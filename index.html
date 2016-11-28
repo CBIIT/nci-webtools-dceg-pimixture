@@ -26,15 +26,15 @@
     <div>
         <div id="input">
             <form class="well">
-                <fieldset class="well">
+                <fieldset id="fileSet" class="well">
                     <div>
-                        <label>Dataset:</label>
+                        <label for="csvFile">Dataset:</label>
                         <input name="csvFile" type="file"/>
                     </div>
                 </fieldset>
-                <fieldset class="well">
+                <fieldset id="designSet" class="well">
                     <div>
-                        <label>Sample Design:</label>
+                        <label for="design">Sample Design:</label>
                         <select name="design">
                             <option value="">----Select Design---</option>
                             <option value="null">Cohort Sample</option>
@@ -43,9 +43,9 @@
                         </select>
                     </div>
                 </fieldset>
-                <fieldset class="well">
+                <fieldset id="modelSet" class="well">
                     <div>
-                        <label>Regression Model:</label>
+                        <label for="model">Regression Model:</label>
                         <select name="model">
                             <option value="">----Select Model----</option>
                             <option>Semi-parametric</option>
@@ -54,40 +54,44 @@
                         </select>
                     </div>
                 </fieldset>
-                <fieldset class="well">
+                <fieldset id="covariatesSet" class="well">
                     <div>
-                        <label>C:</label>
+                        <label for="outcomeC">C:</label>
                         <select name="outcomeC">
                         </select>
                     </div>
                     <div>
-                        <label>L:</label>
+                        <label for="outcomeL">L:</label>
                         <select name="outcomeL">
                         </select>
                     </div>
                     <div>
-                        <label>R:</label>
+                        <label for="outcomeR">R:</label>
                         <select name="outcomeR">
                         </select>
                     </div>
                     <div>
-                        <label>Covariates:</label>
+                        <label for="covariates">Covariates:</label>
                         <input type="text" name="covariates"/>
                     </div>
                 </fieldset>
-                <fieldset class="well">
+                <fieldSet id="emailSet" class="well">
                     <div>
-                        <input type="hidden" name="groupTrigger"/>
-                        <button id="dataGroups">Data Groups</button>
+                        <label for="effects">Interactive Effects?</label>
+                        <input type="checkbox" name="effects"/>
+                        <button id="effectsButton">Edit Interactive Effects</button>
                     </div>
-                </fieldset>
-                <fieldset class="well">
                     <div>
-                        <label>Email:</label>
+                        <label for="references">Reference Groups?</label>
+                        <input type="checkbox" name="references"/>
+                        <button id="referencesButton">Edit Reference Groups</button>
+                    </div>
+                    <div>
+                        <label for="email">Email:</label>
                         <input type="text" name="email"/>
                     </div>
                 </fieldset>
-                <fieldset>
+                <fieldset id="submitSet">
                     <input id="run" type="button" value="Submit"/>
                 </fieldset>
             </form>

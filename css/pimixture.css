@@ -25,12 +25,18 @@
     vertical-align: middle;
     width: 255px;
 }
-#input input {
-    display: inline-block;
+#input label ~ button {
+    width: 100%;
+}
+#input label ~ [type="checkbox"] {
+    width: auto;
 }
 #input fieldset:last-child {
     margin-top: 20px;
     text-align: center;
+}
+#emailSet [type="checkbox"]:not(:checked) ~ button {
+    display: none;
 }
 #output:not(.show) {
     display:none;
