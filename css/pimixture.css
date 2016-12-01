@@ -80,22 +80,26 @@ table td {
     padding: 6px 12px;
 }
 table select {
-    height: 2em;
     width: 100%;
-}
-table tbody button {
-    height: 2em;
 }
 table th:last-child,
 table td:last-child {
     text-align: center;
     width: 3em;
 }
-table tbody {
-    border-bottom:1px solid #000;
+table tfoot tr:first-child {
+    border-top:1px solid #000;
 }
 table tfoot tr:nth-child(odd) {
     background: #f9f9f9;
+}
+.glyphicon {
+    top: 0px;
+}
+button[disabled],
+input[disabled],
+[disabled] {
+    cursor: not-allowed;
 }
 @media (max-width: 960px) {
     #input {

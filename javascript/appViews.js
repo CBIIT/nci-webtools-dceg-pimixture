@@ -217,7 +217,6 @@ appMixture.FormView = Backbone.View.extend({
     }
 });
 
-
 appMixture.InteractiveEffectsView = Backbone.View.extend({
     initialize: function() {
         this.template = _.template(appMixture.templates.get('effects'));
@@ -231,10 +230,12 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
     events: {
         'hidden.bs.modal': 'remove',
         'change select': 'updateModel',
-        'click .glyphicon-plus': 'addInteractiveEffect',
-        'click .glyphicon-remove': 'removeInteractiveEffect'
+        'click .glyphicon-plus': 'addEffect',
+        'click .glyphicon-remove': 'removeEffect',
+        'click .modal-footer button.save': 'save',
+        'click .modal-footer button:not(.save)': 'close'
     },
-    addInteractiveEffect: function(e) {
+    addEffect: function(e) {
         var model = this.model,
             first = model.get('first'),
             second = model.get('second'),
@@ -249,18 +250,34 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
         });
         model.trigger('change:effects',model);
     },
-    removeInteractiveEffect: function(e) {
+    close: function(e) {
+        e.preventDefault(e);
+        this.$modal.close();
+    },
+    removeEffect: function(e) {
         var e = $(e.target)
             model = this.model,
             effects = model.get('effects');
         effects.splice(e.prop('data-index'),1);
         model.trigger('change:effects',model);
     },
+    save: function(e) {
+        e.preventDefault(e);
+        this.model.get('formModel').set('effects',this.model.get('effects'));
+        this.close.call(this,e);
+    },
     updateModel: appMixture.events.updateModel,
     render: function() {
         this.$modal = BootstrapDialog.show({
-            'message': $(this.template(this.model.attributes)),
-            'title': "Enter Interactive Effects"
+            buttons: [{
+                cssClass: 'btn-primary save',
+                label: 'Save'
+            }, {
+                cssClass: 'btn-primary',
+                label: 'Close'
+            }],
+            message: $(this.template(this.model.attributes)),
+            title: "Enter Interactive Effects"
         });
         this.setElement(this.$modal.getModal());
         this.rerenderSelects.apply(this);
@@ -268,6 +285,7 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
     },
     rerenderSelects: function() {
         var model = this.model,
+            effects = model.get('effects'),
             first = model.get('first'),
             second = model.get('second'),
             firstList = model.get('covariates').split(',').filter(function(entry) { return entry !== second; }),
@@ -300,7 +318,13 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
             }));
         });
         eS[0].selectedIndex = selectedIndex;
-        if (this.model.get('first') === '' || this.model.get('second') === '') {
+        first = this.model.get('first');
+        second = this.model.get('second');
+        var alreadyInserted = effects.length > 0 ? effects.filter(function(entry) {
+            console.log(first < second ? first : second)
+            return entry.first == (first < second ? first : second) && entry.second == (first < second ? second : first);
+        }).length > 0 : false;
+        if (first === '' || second === '' || alreadyInserted) {
             this.$el.find('.glyphicon-plus').attr('disabled',true);
         } else {
             this.$el.find('.glyphicon-plus').removeAttr('disabled');
@@ -313,17 +337,10 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
 
 appMixture.ReferenceGroupsView = Backbone.View.extend({
     initialize: function() {
-        var headers = this.model.get('covariates');
-        this.model.on({
-            'change:groupValue': this.renderTable
-        }, this)
         this.render();
     },
     events: {
-        'hidden.bs.modal': 'remove',
-        'keyup input[type="text"]': 'updateModel',
-        'click .remove': 'removeEntry',
-        'click .add': 'addEntry'
+        'hidden.bs.modal': 'remove'
     },
     addEntry: function(e) {
         var target = $(e.target),
