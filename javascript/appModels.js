@@ -1,3 +1,7 @@
+appMixture.TemplatesModel = Backbone.Model.extend({
+    url: '/templates/'
+});
+
 appMixture.BaseModel = Backbone.Model.extend({
     defaults: {
         'form': {},
@@ -14,9 +18,19 @@ appMixture.FormModel = Backbone.Model.extend({
         'outcomeL': "",
         'outcomeR': "",
         'covariates': "",
-        'groupTrigger': "",
-        'groupValue': [],
+        'effects': [],
+        'references': [],
         'email': ""
+    }
+});
+
+appMixture.EffectsModel = Backbone.Model.extend({
+    defaults: {
+        'formModel': {},
+        'covariates': [],
+        'first': "",
+        'second': "",
+        'effects': []
     }
 });
 
@@ -28,3 +42,4 @@ appMixture.ResultsModel = Backbone.Model.extend({
     },
     'url': "results.json"
 });
+

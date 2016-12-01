@@ -1,0 +1,7 @@
+<% _.each(effects,function(entry,i,arr) { %>
+<tr>
+    <td><%= entry.first %></td>
+    <td><%= entry.second %></td>
+    <td><button class="btn-default glyphicon glyphicon-remove" data-index="<%= i %>"/></td>
+</tr>
+<% }) %>

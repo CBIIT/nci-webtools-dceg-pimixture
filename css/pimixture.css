@@ -35,7 +35,8 @@
     margin-top: 20px;
     text-align: center;
 }
-#emailSet [type="checkbox"]:not(:checked) ~ button {
+#effectsSet [type="checkbox"]:not(:checked) ~ button,
+#referencesSet [type="checkbox"]:not(:checked) ~ button {
     display: none;
 }
 #output:not(.show) {
@@ -71,21 +72,30 @@
 table {
     width: 100%;
 }
+table th {
+    border-bottom: 1px solid #000;
+}
 table th,
 table td {
-    border: 1px solid black;
-    border-collapse: collapse;
-    padding: 2px;
+    padding: 6px 12px;
 }
-th.borderless,
-td.borderless {
-    border: 0px;
-}
-.footer {
-    clear: both;
-}
-#dataGroups {
+table select {
+    height: 2em;
     width: 100%;
+}
+table tbody button {
+    height: 2em;
+}
+table th:last-child,
+table td:last-child {
+    text-align: center;
+    width: 3em;
+}
+table tbody {
+    border-bottom:1px solid #000;
+}
+table tfoot tr:nth-child(odd) {
+    background: #f9f9f9;
 }
 @media (max-width: 960px) {
     #input {

@@ -24,7 +24,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeC': this.changeCovariates,
             'change:outcomeL': this.changeCovariates,
             'change:outcomeR': this.changeCovariates,
-            'change:covariates': this.changeCovariates,
+            'change:covariates': this.changeCovariateList,
             'change:email': this.changeEmail
         }, this);
         this.$el.find('[name="covariates"]').selectize({
@@ -45,7 +45,11 @@ appMixture.FormView = Backbone.View.extend({
     openInteractiveEffects: function(e) {
         e.preventDefault();
         new appMixture.InteractiveEffectsView({
-            model: this.model
+            model: new appMixture.EffectsModel({
+                'formModel': this.model,
+                'covariates': this.model.get('covariates'),
+                'effects': this.model.get('effects').slice()
+            })
         });
     },
     openReferenceGroups: function(e) {
@@ -97,12 +101,39 @@ appMixture.FormView = Backbone.View.extend({
         }
         this.model.set(name,val);
     },
+    changeCovariateList: function() {
+        var model = this.model,
+            covariates = this.model.get('covariates');
+        if (covariates.length > 1) {
+            model.set('effects',[]);
+        } else {
+            model.set('effects',model.get('effects').filter(function(entry) {
+                return covariates.indexOf(entry.first) > -1 && covariates.indexOf(entry.second) > -1;
+            }));
+            model.set('references',model.get('references').filter(function(entry) {
+                for (var index in entry) {
+                    if (covariates.indexOf(entry[index]) < 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }));
+        }
+        this.changeCovariates.apply(this);
+    },
     changeCovariates: function() {
-        var model = this.model;
-        if (model.get('outcomeC') === "" || model.get('outcomeL') === "" || model.get('outcomeR') === "" || model.get('covariates') === "") {
+        var model = this.model,
+            covariates = model.get('covariates');
+        if (model.get('outcomeC') === "" || model.get('outcomeL') === "" || model.get('outcomeR') === "" || covariates === "") {
             this.clearAfter('#covariatesSet');
         } else {
-            this.showNext('#covariatesSet');
+            if (covariates.split(',').length > 1) {
+                this.showNext('#covariatesSet');
+            } else {
+                this.clearAfter('#covariatesSet');
+            }
+            this.showNext('#effectsSet');
+            this.showNext('#referencesSet');
         }
     },
     changeDesign: function() {
@@ -152,9 +183,7 @@ appMixture.FormView = Backbone.View.extend({
         covariates.addOption(options);
     },
     clearAfter: function(id) {
-        console.log(id);
         var next = $(id).next();
-        console.log(next);
         next.find('input,select,.selectized').each(function(index,child) {
             var $child = $(child);
             if (child.selectize) {
@@ -191,87 +220,94 @@ appMixture.FormView = Backbone.View.extend({
 
 appMixture.InteractiveEffectsView = Backbone.View.extend({
     initialize: function() {
-        var headers = this.model.get('covariates');
+        this.template = _.template(appMixture.templates.get('effects'));
         this.model.on({
-            'change:groupValue': this.renderTable
-        }, this)
+            'change:effects': this.rerenderFooter,
+            'change:first': this.rerenderSelects,
+            'change:second': this.rerenderSelects
+        }, this);
         this.render();
     },
     events: {
         'hidden.bs.modal': 'remove',
-        'keyup input[type="text"]': 'updateModel',
-        'click .remove': 'removeEntry',
-        'click .add': 'addEntry'
+        'change select': 'updateModel',
+        'click .glyphicon-plus': 'addInteractiveEffect',
+        'click .glyphicon-remove': 'removeInteractiveEffect'
     },
-    addEntry: function(e) {
-        var target = $(e.target),
-            inputs = target.parent().parent().find('input'),
-            covariates = this.model.get('covariates').split(','),
-            groupValue = this.model.get('groupValue');
-        var obj = {};
-        for (var index in covariates) {
-            var input = inputs.eq(index);
-            obj[covariates[index]] = input.val();
-            input.val('');
-        }
-        groupValue.push(obj);
-        this.model.trigger('change:groupValue',this.model);
-        this.model.set({
-            'groupTrigger': 'something'
+    addInteractiveEffect: function(e) {
+        var model = this.model,
+            first = model.get('first'),
+            second = model.get('second'),
+            effects = model.get('effects');
+        effects.push({
+            'first': first < second ? first : second,
+            'second': first < second ? second : first
         });
+        model.set({
+            'first': '',
+            'second': ''
+        });
+        model.trigger('change:effects',model);
     },
-    removeEntry: function(e) {
-        var index = $(e.target).prop('name'),
-            groupValue = this.model.get('groupValue');
-        groupValue.splice(index,1);
-        this.model.trigger('change:groupValue',this.model);
-        if (groupValue.length < 1) {
-            this.model.set({
-                'groupTrigger': ''
-            });
-        }
+    removeInteractiveEffect: function(e) {
+        var e = $(e.target)
+            model = this.model,
+            effects = model.get('effects');
+        effects.splice(e.prop('data-index'),1);
+        model.trigger('change:effects',model);
     },
-    updateModel: function(e) {
-        if (e.keyCode == 13) {
-            this.createList.call(this,e);
-        } else {
-            appMixture.events.updateModel.call(this,e);
-        }
-    },
+    updateModel: appMixture.events.updateModel,
     render: function() {
-        var covariates = this.model.get('covariates').split(',');
         this.$modal = BootstrapDialog.show({
-            'message': $("<table><thead></thead><tbody></tbody><tfoot></tfoot></table>"),
-            'title': "Enter Data Groups"
+            'message': $(this.template(this.model.attributes)),
+            'title': "Enter Interactive Effects"
         });
         this.setElement(this.$modal.getModal());
-        var tfoot = "<tr>";
-        for (var index in covariates) {
-            tfoot += "<td><input type=\"text\" placeholder=\""+covariates[index]+"\"/></td>";
-        }
-        tfoot += "<td class=\"borderless\"><button class=\"add disabled\">Add</button></td></tr>";
-        this.$el.find('tfoot').empty().append(tfoot);
-        this.renderTable.apply(this);
+        this.rerenderSelects.apply(this);
+        this.rerenderFooter.apply(this);
     },
-    renderTable: function() {
-        var covariates = this.model.get('covariates').split(','),
-            groupValue = this.model.get('groupValue'),
-            thead = "<tr>",
-            tbody = "",
-            tfoot = "<tr>";
-        for (var index in covariates) {
-            thead += "<th>"+covariates[index]+"</th>";
+    rerenderSelects: function() {
+        var model = this.model,
+            first = model.get('first'),
+            second = model.get('second'),
+            firstList = model.get('covariates').split(',').filter(function(entry) { return entry !== second; }),
+            secondList = model.get('covariates').split(',').filter(function(entry) { return entry !== first; }),
+            eF = this.$el.find('[name="first"]'),
+            eS = this.$el.find('[name="second"]'),
+            selectedIndex = 0;
+        eF.empty().append($('<option>',{
+            text: "---Select Covariate---",
+            value: ""
+        }));
+        firstList.forEach(function(entry,index) {
+            if (entry === first) selectedIndex = index+1;
+            eF.append($('<option>',{
+                text: entry.replace(/&quot;/g,"\""),
+                value: entry
+            }));
+        });
+        eF[0].selectedIndex = selectedIndex;
+        selectedIndex = 0;
+        eS.empty().append($('<option>',{
+            text: "---Select Covariate---",
+            value: ""
+        }));
+        secondList.forEach(function(entry,index) {
+            if (entry === second) selectedIndex = index+1;
+            eS.append($('<option>',{
+                text: entry.replace(/&quot;/g,"\""),
+                value: entry
+            }));
+        });
+        eS[0].selectedIndex = selectedIndex;
+        if (this.model.get('first') === '' || this.model.get('second') === '') {
+            this.$el.find('.glyphicon-plus').attr('disabled',true);
+        } else {
+            this.$el.find('.glyphicon-plus').removeAttr('disabled');
         }
-        for (var index in groupValue) {
-            tbody += "<tr>";
-            for (var index2 in covariates) {
-                tbody += "<td>"+groupValue[index][covariates[index2]]+"</td>"
-            }
-            tbody += "<td class=\"borderless\"><button name=\""+index+"\" class=\"remove\">X</button></td></tr>";
-        }
-        thead += "<th class=\"borderless\"></th></tr>";
-        this.$el.find('thead').empty().append(thead);
-        this.$el.find('tbody').empty().append(tbody);
+    },
+    rerenderFooter: function() {
+        this.$el.find('tfoot').empty().append(_.template(appMixture.templates.get('effectsFooter'))(this.model.attributes));
     }
 });
 
@@ -364,13 +400,10 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
 appMixture.ResultsView = Backbone.View.extend({
     el: '#output',
     initialize: function() {
-        var $that = this;
         this.model.on({
             'change': this.render
         }, this);
-        $.get('templates/results.html').done(function(response) {
-            $that.template = _.template(response);
-        });
+        this.template = _.template(appMixture.templates.get('results'));
     },
     render: function() {
         this.$el.addClass('show');
@@ -396,20 +429,23 @@ appMixture.BaseView = Backbone.View.extend({
 });
 
 $(function () {
-        appMixture.models.form = new appMixture.FormModel();
-        appMixture.models.results = new appMixture.ResultsModel();
-        appMixture.models.base = new appMixture.BaseModel({
-            'form': appMixture.models.form,
-            'results': appMixture.models.results
-        });
+        appMixture.templates = new appMixture.TemplatesModel();
+        appMixture.templates.fetch().done(function() {
+            appMixture.models.form = new appMixture.FormModel();
+            appMixture.models.results = new appMixture.ResultsModel();
+            appMixture.models.base = new appMixture.BaseModel({
+                'form': appMixture.models.form,
+                'results': appMixture.models.results
+            });
 
-        appMixture.views.base = new appMixture.BaseView({
-            model: appMixture.models.base
-        });
-        appMixture.views.form = new appMixture.FormView({
-            model: appMixture.models.form
-        });
-        appMixture.views.results = new appMixture.ResultsView({
-            model: appMixture.models.results
+            appMixture.views.base = new appMixture.BaseView({
+                model: appMixture.models.base
+            });
+            appMixture.views.form = new appMixture.FormView({
+                model: appMixture.models.form
+            });
+            appMixture.views.results = new appMixture.ResultsView({
+                model: appMixture.models.results
+            });
         });
 });
