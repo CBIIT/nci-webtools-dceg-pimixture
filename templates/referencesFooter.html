@@ -1,0 +1,8 @@
+<%  _.each(references,function(entry,i,arr) { %>
+<tr>
+<%      _.each(covariates.split(","),function(cov,i,arr) { %>
+    <td><%= entry[cov] %></td>
+<% }); %>
+    <td><button class="btn-default glyphicon glyphicon-remove" data-index="<%= i %>"/></td>
+</tr>
+<%  }) %>

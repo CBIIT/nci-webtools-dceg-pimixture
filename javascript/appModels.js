@@ -34,6 +34,15 @@ appMixture.EffectsModel = Backbone.Model.extend({
     }
 });
 
+appMixture.ReferencesModel = Backbone.Model.extend({
+    defaults: {
+        'covariates': [],
+        'formModel': {},
+        'referenceGroup': {},
+        'references': []
+    }
+});
+
 appMixture.ResultsModel = Backbone.Model.extend({
     defaults: {
         'tables': {},

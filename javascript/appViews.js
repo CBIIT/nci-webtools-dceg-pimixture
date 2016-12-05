@@ -55,7 +55,11 @@ appMixture.FormView = Backbone.View.extend({
     openReferenceGroups: function(e) {
         e.preventDefault();
         new appMixture.ReferenceGroupsView({
-            model: this.model
+            model: new appMixture.ReferencesModel({
+                'covariates': this.model.get('covariates'),
+                'formModel': this.model,
+                'references': this.model.get('references').slice()
+            })
         });
     },
     uploadFile: function(e) {
@@ -337,80 +341,111 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
 
 appMixture.ReferenceGroupsView = Backbone.View.extend({
     initialize: function() {
+        this.template = _.template(appMixture.templates.get('references'));
+        this.resetReference();
+        this.model.on({
+            'change:referenceGroup': this.rerenderButton,
+            'change:references': this.rerenderFooter
+        }, this);
         this.render();
     },
     events: {
-        'hidden.bs.modal': 'remove'
+        'hidden.bs.modal': 'remove',
+        'keyup input[type="text"]': 'updateModel',
+        'click .glyphicon-plus': 'addReferenceGroup',
+        'click .glyphicon-remove': 'removeReferenceGroup',
+        'click .modal-footer button.save': 'save',
+        'click .modal-footer button:not(.save)': 'close'
     },
-    addEntry: function(e) {
-        var target = $(e.target),
-            inputs = target.parent().parent().find('input'),
-            covariates = this.model.get('covariates').split(','),
-            groupValue = this.model.get('groupValue');
-        var obj = {};
+    resetReference: function() {
+        var referenceGroup = {},
+            covariates = this.model.get('covariates').split(',');
         for (var index in covariates) {
-            var input = inputs.eq(index);
-            obj[covariates[index]] = input.val();
-            input.val('');
+            var cov = covariates[index];
+            this.$el.find('[name="'+cov.replace(/&quot;/g,"\\\"")+'"]').val("");
+            referenceGroup[cov] = "";
         }
-        groupValue.push(obj);
-        this.model.trigger('change:groupValue',this.model);
-        this.model.set({
-            'groupTrigger': 'something'
-        });
+        this.model.set('referenceGroup', referenceGroup);
     },
-    removeEntry: function(e) {
-        var index = $(e.target).prop('name'),
-            groupValue = this.model.get('groupValue');
-        groupValue.splice(index,1);
-        this.model.trigger('change:groupValue',this.model);
-        if (groupValue.length < 1) {
-            this.model.set({
-                'groupTrigger': ''
-            });
-        }
+    addReferenceGroup: function(e) {
+        var e = $(e.target),
+            model = this.model;
+        model.get('references').push(model.get('referenceGroup'));
+        model.trigger('change:references',model);
+        this.resetReference();
+    },
+    close: function(e) {
+        e.preventDefault(e);
+        this.$modal.close();
+    },
+    removeReferenceGroup: function(e) {
+        var e = $(e.target)
+            model = this.model,
+            referenceGroups = model.get('references');
+        referenceGroups.splice(e.prop('data-index'),1);
+        model.trigger('change:references',model);
+    },
+    save: function(e) {
+        e.preventDefault(e);
+        this.model.get('formModel').set('references',this.model.get('references'));
+        this.close.call(this,e);
     },
     updateModel: function(e) {
+        e.preventDefault();
         if (e.keyCode == 13) {
-            this.createList.call(this,e);
+            var button = this.$el.find('.glyphicon-plus');
+            if (!button.prop('disabled')) button.trigger('click');
         } else {
-            appMixture.events.updateModel.call(this,e);
+            var model = this.model,
+                input = $(e.target),
+                referenceGroup = model.get('referenceGroup'),
+                name = input.attr('name') || input.attr('id');
+            referenceGroup[name.replace(/\"/g,"&quot;")] = input.val();
+            model.trigger('change:referenceGroup',model);
         }
     },
     render: function() {
-        var covariates = this.model.get('covariates').split(',');
         this.$modal = BootstrapDialog.show({
-            'message': $("<table><thead></thead><tbody></tbody><tfoot></tfoot></table>"),
-            'title': "Enter Data Groups"
+            buttons: [{
+                cssClass: 'btn-primary save',
+                label: 'Save'
+            }, {
+                cssClass: 'btn-primary',
+                label: 'Close'
+            }],
+            message: $(this.template(this.model.attributes)),
+            title: "Enter Reference Groups"
         });
         this.setElement(this.$modal.getModal());
-        var tfoot = "<tr>";
-        for (var index in covariates) {
-            tfoot += "<td><input type=\"text\" placeholder=\""+covariates[index]+"\"/></td>";
-        }
-        tfoot += "<td class=\"borderless\"><button class=\"add disabled\">Add</button></td></tr>";
-        this.$el.find('tfoot').empty().append(tfoot);
-        this.renderTable.apply(this);
+        this.rerenderFooter.apply(this);
     },
-    renderTable: function() {
-        var covariates = this.model.get('covariates').split(','),
-            groupValue = this.model.get('groupValue'),
-            thead = "<tr>",
-            tbody = "",
-            tfoot = "<tr>";
-        for (var index in covariates) {
-            thead += "<th>"+covariates[index]+"</th>";
-        }
-        for (var index in groupValue) {
-            tbody += "<tr>";
-            for (var index2 in covariates) {
-                tbody += "<td>"+groupValue[index][covariates[index2]]+"</td>"
+    rerenderButton: function() {
+        var referenceGroup = this.model.get('referenceGroup'),
+            references = this.model.get('references');
+        for (var index in referenceGroup) {
+            if (referenceGroup[index] === "") {
+                this.$el.find('.glyphicon-plus').attr('disabled',true);
+                return;
             }
-            tbody += "<td class=\"borderless\"><button name=\""+index+"\" class=\"remove\">X</button></td></tr>";
         }
-        thead += "<th class=\"borderless\"></th></tr>";
-        this.$el.find('thead').empty().append(thead);
-        this.$el.find('tbody').empty().append(tbody);
+        for (var index in references) {
+            var reference = references[index],
+                disabled = true;
+            for (var param in referenceGroup) {
+                if (reference[param] !== referenceGroup[param]) {
+                    disabled = false;
+                    break;
+                }
+            }
+            if (disabled) {
+                this.$el.find('.glyphicon-plus').attr('disabled',true);
+                return;
+            }
+        }
+        this.$el.find('.glyphicon-plus').removeAttr('disabled');
+    },
+    rerenderFooter: function() {
+        this.$el.find('tfoot').empty().append(_.template(appMixture.templates.get('referencesFooter'))(this.model.attributes));
     }
 });
 
