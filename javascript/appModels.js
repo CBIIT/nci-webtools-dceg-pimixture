@@ -49,6 +49,10 @@ appMixture.ResultsModel = Backbone.Model.extend({
         'hazardimg': "",
         'riskimg': ""
     },
-    'url': "results.json"
+    url: "/pimixtureRest/run",
+    parse: function(response) {
+        console.log(response);
+        return response;
+    }
 });
 

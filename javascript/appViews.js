@@ -40,7 +40,8 @@ appMixture.FormView = Backbone.View.extend({
         'change input[type="checkbox"]': 'updateModel',
         'change select': 'updateModel',
         'click #effectsButton': 'openInteractiveEffects',
-        'click #referencesButton': 'openReferenceGroups'
+        'click #referencesButton': 'openReferenceGroups',
+        'click #run': 'runCalculation'
     },
     openInteractiveEffects: function(e) {
         e.preventDefault();
@@ -69,14 +70,14 @@ appMixture.FormView = Backbone.View.extend({
             var file = e.target.files[0];
             var reader = new window.FileReader();
             reader.onload = function (event) {
-                var contents = event.target.result.replace('\r','').split('\n'),
+                var contents = event.target.result.replace(/\r|"/g,'').split('\n'),
                     headers = contents.shift().split(','),
                     file = [];
                 contents = contents.map(function(e) {
                     var cols = e.split(','),
                         obj = {};
                     for (var index in cols) {
-                        obj[headers[index]] = cols[index];
+                        obj[headers[index]] = parseFloat(cols[index]);
                     }
                     return obj;
                 });
@@ -94,6 +95,7 @@ appMixture.FormView = Backbone.View.extend({
         var e = $(e.target),
             name = e.prop('name'),
             val = e.val();
+        if (name.length < 1) return;
         switch (e.prop('type')) {
             case 'checkbox':
                 val = e.prop('checked') || false;
@@ -176,7 +178,7 @@ appMixture.FormView = Backbone.View.extend({
         var optionsList = "<option value=\"\">----Select Outcome----</option>",
             covariates = $('[name="covariates"]')[0].selectize;
         if (options === null) return;
-        var options = Object.keys(contents[0]).map(function(e) { return {'text':e,'value':e.replace(/"/g,'&quot;')}; });
+        var options = Object.keys(contents[0]).map(function(e) { return {'text':e,'value':e}; });
         for (var index = 0; index < options.length; index++) {
             optionsList += "<option value=\""+options[index].value+"\">"+options[index].text+"</option>";
         }
@@ -304,7 +306,7 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
         firstList.forEach(function(entry,index) {
             if (entry === first) selectedIndex = index+1;
             eF.append($('<option>',{
-                text: entry.replace(/&quot;/g,"\""),
+                text: entry,
                 value: entry
             }));
         });
@@ -317,7 +319,7 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
         secondList.forEach(function(entry,index) {
             if (entry === second) selectedIndex = index+1;
             eS.append($('<option>',{
-                text: entry.replace(/&quot;/g,"\""),
+                text: entry,
                 value: entry
             }));
         });
@@ -325,7 +327,6 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
         first = this.model.get('first');
         second = this.model.get('second');
         var alreadyInserted = effects.length > 0 ? effects.filter(function(entry) {
-            console.log(first < second ? first : second)
             return entry.first == (first < second ? first : second) && entry.second == (first < second ? second : first);
         }).length > 0 : false;
         if (first === '' || second === '' || alreadyInserted) {
@@ -362,7 +363,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             covariates = this.model.get('covariates').split(',');
         for (var index in covariates) {
             var cov = covariates[index];
-            this.$el.find('[name="'+cov.replace(/&quot;/g,"\\\"")+'"]').val("");
+            this.$el.find('[name="'+cov+'"]').val("");
             referenceGroup[cov] = "";
         }
         this.model.set('referenceGroup', referenceGroup);
@@ -400,7 +401,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
                 input = $(e.target),
                 referenceGroup = model.get('referenceGroup'),
                 name = input.attr('name') || input.attr('id');
-            referenceGroup[name.replace(/\"/g,"&quot;")] = input.val();
+            referenceGroup[name] = input.val();
             model.trigger('change:referenceGroup',model);
         }
     },
@@ -471,9 +472,12 @@ appMixture.BaseView = Backbone.View.extend({
     onSubmit: function(e) {
         e.preventDefault();
         var $that = this,
-            params = JSON.stringify(this.model.get('form').attributes);
+            params = _.extend({},this.model.get('form').attributes);
+        params.covariates = params.covariates.split(';');
+        params = JSON.stringify(params);
         this.model.get('results').fetch({
             type: "POST",
+            contentType: "application/json",
             data: params,
             dataType: "json"
         });
@@ -489,7 +493,6 @@ $(function () {
                 'form': appMixture.models.form,
                 'results': appMixture.models.results
             });
-
             appMixture.views.base = new appMixture.BaseView({
                 model: appMixture.models.base
             });
