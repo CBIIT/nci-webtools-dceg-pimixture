@@ -1,6 +1,11 @@
 .division-logo {
     max-width: 600px;
 }
+#mainbody:after {
+    clear: both;
+    content: '';
+    display: block;
+}
 #input {
     float: left;
     margin: 0px 0px 0px 15px;
