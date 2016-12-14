@@ -34,7 +34,8 @@ def templates():
 def runModel():
     try:
         data = request.json
-        results = json.loads(wrapper.runCalculation(json.dumps(data))[0])
+        with open("results.json") as file:
+            results = json.loads(file.read())
         response = buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()

@@ -476,10 +476,9 @@ appMixture.BaseView = Backbone.View.extend({
         params.covariates = params.covariates.split(';');
         params = JSON.stringify(params);
         this.model.get('results').fetch({
-            type: "GET",
-            //type: "POST",
-            //contentType: "application/json",
-            //data: params,
+            type: "POST",
+            contentType: "application/json",
+            data: params,
             dataType: "json"
         });
     }

@@ -1,22 +1,5 @@
 appMixture.TemplatesModel = Backbone.Model.extend({
-    url: 'templates/',
-    fetch: function() {
-        var $that = this,
-            deferred = $.Deferred(),
-            files = ['effects.html','effectsFooter.html','references.html','referencesFooter.html','results.html'],
-            templates = {};
-        var after = _.after(files.length,function() {
-            $that.set(templates);
-            deferred.resolve();
-        });
-        _.each(files,function(file) {
-            $.get('templates/'+file).then(function(contents) {
-                templates[file.slice(0,-5)] = contents;
-                after();
-            });
-        });
-        return deferred.promise();
-    }
+    url: 'templates/'
 });
 
 appMixture.BaseModel = Backbone.Model.extend({
@@ -66,8 +49,7 @@ appMixture.ResultsModel = Backbone.Model.extend({
         'hazardimg': "",
         'riskimg': ""
     },
-    url: 'results.json',
-    //url: "/pimixtureRest/run",
+    url: "/pimixtureRest/run",
     parse: function(response) {
         console.log(response);
         return response;
