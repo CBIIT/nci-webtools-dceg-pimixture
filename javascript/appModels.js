@@ -1,5 +1,5 @@
 appMixture.TemplatesModel = Backbone.Model.extend({
-    url: 'templates/'
+    url: 'templateList'
 });
 
 appMixture.BaseModel = Backbone.Model.extend({
@@ -49,7 +49,7 @@ appMixture.ResultsModel = Backbone.Model.extend({
         'hazardimg': "",
         'riskimg': ""
     },
-    url: "/pimixtureRest/run",
+    url: "run",
     parse: function(response) {
         console.log(response);
         return response;

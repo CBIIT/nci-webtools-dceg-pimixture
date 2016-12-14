@@ -1,9 +1,9 @@
 import json, os, sys
 from flask import Flask, jsonify, request, Response, send_from_directory
-from rpy2.robjects import r as wrapper
+#from rpy2.robjects import r as wrapper
 
 app = Flask(__name__)
-wrapper.source('./pimixtureWrapper.R')
+#wrapper.source('./pimixtureWrapper.R')
 
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
@@ -21,7 +21,7 @@ def buildSuccess(message):
         yield forOutput
     return Response(generate(),status=200)
 
-@app.route('/templates/')
+@app.route('/templateList', methods=["GET"])
 def templates():
     templateSet = {}
     path = os.path.join(os.getcwd(),'templates')
@@ -30,7 +30,7 @@ def templates():
             templateSet[fileName[:-5]] = file.read()
     return jsonify(templateSet)
 
-@app.route('/pimixtureRest/run', methods=["POST"])
+@app.route('/run', methods=["POST"])
 def runModel():
     try:
         data = request.json
