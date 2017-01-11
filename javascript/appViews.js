@@ -67,24 +67,23 @@ appMixture.FormView = Backbone.View.extend({
         e.preventDefault();
         var $that = this;
         if (window.FileReader) {                 
-            var file = e.target.files[0];
-            var reader = new window.FileReader();
-            reader.onload = function (event) {
-                var contents = event.target.result.replace(/\r|"/g,'').split('\n'),
-                    headers = contents.shift().split(','),
-                    file = [];
-                contents = contents.map(function(e) {
-                    var cols = e.split(','),
-                        obj = {};
-                    for (var index in cols) {
-                        obj[headers[index]] = parseFloat(cols[index]);
+            var file = e.target.files[0],
+                reader = new window.FileReader(),
+                content = "",
+                block = "";
+            reader.onloadend = function(evt) {
+                if (evt.target.readyState == FileReader.DONE) {
+                    if (evt.target.result !== "\n") {
+                        content += evt.target.result;
+                        reader.readAsBinaryString(file.slice(content.length,content.length+1));
+                    } else {
+                        content = content.replace(/\r|"/g,'').split(",").sort();
+                        $that.model.set('csvFile', content);
                     }
-                    return obj;
-                });
-                $that.model.set('csvFile', contents);
+                }
             };
             if (file) {
-                reader.readAsText(file);
+                reader.readAsBinaryString(file.slice(content.length,content.length+1));
             } else {
                 $that.model.set('csvFile', null);
             }
@@ -178,7 +177,7 @@ appMixture.FormView = Backbone.View.extend({
         var optionsList = "<option value=\"\">----Select Outcome----</option>",
             covariates = $('[name="covariates"]')[0].selectize;
         if (options === null) return;
-        var options = Object.keys(contents[0]).map(function(e) { return {'text':e,'value':e}; });
+        var options = contents.map(function(e) { return {'text':e,'value':e}; });
         for (var index = 0; index < options.length; index++) {
             optionsList += "<option value=\""+options[index].value+"\">"+options[index].text+"</option>";
         }
