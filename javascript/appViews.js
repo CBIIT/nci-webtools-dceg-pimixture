@@ -18,7 +18,7 @@ appMixture.FormView = Backbone.View.extend({
     initialize: function() {
         var $that = this;
         this.model.on({
-            'change:csvFile': this.updateOptions,
+            'change:headers': this.updateOptions,
             'change:design': this.changeDesign,
             'change:model': this.changeModel,
             'change:outcomeC': this.changeCovariates,
@@ -78,14 +78,20 @@ appMixture.FormView = Backbone.View.extend({
                         reader.readAsBinaryString(file.slice(content.length,content.length+1));
                     } else {
                         content = content.replace(/\r|"/g,'').split(",").sort();
-                        $that.model.set('csvFile', content);
+                        $that.model.set({
+                          'csvFile': e.target.files[0],
+                          'headers': content
+                        });
                     }
                 }
             };
             if (file) {
                 reader.readAsBinaryString(file.slice(content.length,content.length+1));
             } else {
-                $that.model.set('csvFile', null);
+                $that.model.set({
+                  'csvFile': null,
+                  'headers': null
+                });
             }
         }
     },
@@ -167,7 +173,7 @@ appMixture.FormView = Backbone.View.extend({
         this.showNext.apply(this);
     },
     updateOptions: function() {
-        var contents = this.model.get('csvFile');
+        var contents = this.model.get('headers');
         if (contents) {
             this.showNext('#fileSet');
         } else {
@@ -455,11 +461,31 @@ appMixture.ResultsView = Backbone.View.extend({
         this.model.on({
             'change': this.render
         }, this);
-        this.template = _.template(appMixture.templates.get('results'));
+        this.template = _.template(appMixture.templates.get('results'),{'variable':'data'});
     },
     render: function() {
         this.$el.addClass('show');
         this.$el.html(this.template(this.model.attributes));
+        var data = this.model.get('cumulative.hazard'),
+            xAxis = data['xAxis'],
+            yAxis = data['yAxis'];
+        Plotly.newPlot(
+          'tab-hazard',
+          [{
+            x: xAxis,
+            y: yAxis,
+            model: 'lines'
+          }],
+          {
+            title: "Reference Group",
+            xaxis: {
+              title: "Time"
+            },
+            yaxis: {
+              title: "Cumulative Hazard"
+            }
+          }
+        );
     }
 });
 
@@ -472,18 +498,26 @@ appMixture.BaseView = Backbone.View.extend({
         e.preventDefault();
         var $that = this,
             params = _.extend({},this.model.get('form').attributes);
+        var formData = new FormData();
         params.covariates = params.covariates.split(';');
-        params = JSON.stringify(params);
+        for (var index in params) {
+          formData.append(index,params[index]);
+        }
         this.model.get('results').fetch({
-            type: "POST",
-            contentType: "application/json",
-            data: params,
-            dataType: "json"
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: "POST"
         });
     }
 });
 
 $(function () {
+        Number.prototype.countDecimals = function () {
+            if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+            return this.toString().split(".")[1].length || 0; 
+        }
         appMixture.templates = new appMixture.TemplatesModel();
         appMixture.templates.fetch().done(function() {
             appMixture.models.form = new appMixture.FormModel();

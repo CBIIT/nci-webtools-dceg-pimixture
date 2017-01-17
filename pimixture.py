@@ -1,9 +1,9 @@
-import json, os, sys
+import json, os, sys, time
 from flask import Flask, jsonify, request, Response, send_from_directory
-#from rpy2.robjects import r as wrapper
+from rpy2.robjects import r as wrapper
 
 app = Flask(__name__)
-#wrapper.source('./pimixtureWrapper.R')
+wrapper.source('./pimixtureWrapper.R')
 
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
@@ -33,9 +33,20 @@ def templates():
 @app.route('/run', methods=["POST"])
 def runModel():
     try:
-        data = request.json
-        with open("results.json") as file:
-            results = json.loads(file.read())
+        filename = None
+        if (len(request.files) > 0):
+            userFile = request.files['csvFile']
+            filename = "pimixtureInput_" + time.strftime("%Y_%m_%d_%I_%M") + os.path.splitext(userFile.filename)[1]
+            saveFile = userFile.save(os.path.join('tmp',filename))
+            if os.path.isfile(os.path.join('tmp', filename)):
+                print("Successfully Uploaded")
+        parameters = dict(request.form)
+        for field in parameters:
+            parameters[field] = parameters[field][0]
+        parameters['filename'] = os.path.join('tmp',filename)
+        results = json.loads(wrapper.runCalculation(json.dumps(parameters))[0])
+        #with open("results.json") as file:
+        #    results = json.loads(file.read())
         response = buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()

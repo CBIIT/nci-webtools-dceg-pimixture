@@ -13,6 +13,7 @@ appMixture.FormModel = Backbone.Model.extend({
     defaults: {
         'csvFile': null,
         'design': "",
+        'headers': [],
         'model': "",
         'outcomeC': "",
         'outcomeL': "",
@@ -45,9 +46,13 @@ appMixture.ReferencesModel = Backbone.Model.extend({
 
 appMixture.ResultsModel = Backbone.Model.extend({
     defaults: {
-        'tables': {},
-        'hazardimg': "",
-        'riskimg': ""
+        'data.summary': {},
+        'cumulative.hazard': {
+          'min.time': 0,
+          'max.time': 1,
+          'value': []
+        },
+        'riskimg': "images/risk.png"
     },
     url: "run",
     parse: function(response) {

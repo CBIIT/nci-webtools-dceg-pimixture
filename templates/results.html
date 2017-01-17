@@ -6,38 +6,109 @@
 <div class="tab-content">
     <div id="tab-tables" class="tab-pane active">
         <div class="panel-group">
-<% var panelCount = 0;
-   _.each(tables,function(table,key,list) {
-       panelCount++; %>
+<%  if (data["data.summary"]) { %>
             <div class="panel panel-default">
-                <div class="panel-heading" data-toggle="collapse" data-target="#collapse<%=panelCount%>">
-                    <h4 class="panel-title"><%=key%></h4>
+                <div class="panel-heading" data-toggle="collapse" data-target="#dataSummary">
+                    <h4 class="panel-title">Data Summary</h4>
                 </div>
-                <div id="collapse<%=panelCount%>" class="panel-collapse collapse<%=(panelCount==1?" in":"")%>">
+                <div id="dataSummary" class="panel-collapse collapse in">
                     <div class="panel-body">
                         <table>
-<%     _.each(table,function(row,index,list) { %>
                             <tr>
-<%         _.each(row,function(element,index2,list) {
-               if (element instanceof Object) { %>
-                                <t<%=(index==0?"h":"d")%> colspan="<%=element.span%>"><%=element.label%></t<%=(index==0?"h":"d")%>>
-<%             } else { %>
-                                <%=(index==0?"<th>":"<td>")%><%=element%><%=(index==0?"</th>":"</td>")%>
-<%             } %>
-<%         }); %>
+                                <th>Label</th>
+                                <th>Number of the cases</th>
                             </tr>
-<%     }); %>
+<%    for (var index in data["data.summary"]) { %>
+                            <tr>
+                                <td><%= index %></td>
+                                <td><%= data["data.summary"][index] %></td>
+                            </tr>
+<%    } %>
                         </table>
                     </div>
                 </div>
             </div>
-<% }); %>
+<%  } %>
+<%  if (data["regression.coefficient"]) { %>
+            <div class="panel panel-default">
+                <div class="panel-heading" data-toggle="collapse" data-target="#regressionCoefficient">
+                    <h4 class="panel-title">Regression coefficient estimates</h4>
+                </div>
+                <div id="regressionCoefficient" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table>
+                            <tr>
+                                <th>Model</th>
+                                <th>Label</th>
+                                <th>Coefficient</th>
+                            </tr>
+<%    _.each(data["regression.coefficient"],function(entry) { %>
+                            <tr>
+                                <td><%= entry.Model %></td>
+                                <td><%= entry.Label %></td>
+                                <td><%= entry["Coef."] %></td>
+                            </tr>
+<%    }); %>
+                        </table>
+                    </div>
+                </div>
+            </div>
+<%  } %>
+<%  if (data["odds.ratio"]) { %>
+            <div class="panel panel-default">
+                <div class="panel-heading" data-toggle="collapse" data-target="#oddsRatio">
+                    <h4 class="panel-title">Odds Ratio (OR) for the prevalence</h4>
+                </div>
+                <div id="oddsRatio" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table>
+                            <tr>
+                                <th>Model</th>
+                                <th>Label</th>
+                                <th>OR</th>
+                            </tr>
+<%    _.each(data["odds.ratio"],function(entry) { %>
+                            <tr>
+                                <td><%= entry.Model %></td>
+                                <td><%= entry.Label %></td>
+                                <td><%= entry["exp(Coef.)"] %></td>
+                            </tr>
+<%    }); %>
+                        </table>
+                    </div>
+                </div>
+            </div>
+<%  } %>
+<%  if (data["hazard.ratio"]) { %>
+            <div class="panel panel-default">
+                <div class="panel-heading" data-toggle="collapse" data-target="#hazardRatio">
+                    <h4 class="panel-title">Hazard Ratio (HR) for the incidence</h4>
+                </div>
+                <div id="hazardRatio" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table>
+                            <tr>
+                                <th>Model</th>
+                                <th>Label</th>
+                                <th>HR</th>
+                            </tr>
+<%    _.each(data["hazard.ratio"],function(entry) { %>
+                            <tr>
+                                <td><%= entry.Model %></td>
+                                <td><%= entry.Label %></td>
+                                <td><%= entry["exp(Coef.)"] %></td>
+                            </tr>
+<%    }); %>
+                        </table>
+                    </div>
+                </div>
+            </div>
+<%  } %>
         </div>
     </div>
     <div id="tab-hazard" class="tab-pane">
-        <img src="<%=hazardimg%>"/>
     </div>
     <div id="tab-risk" class="tab-pane">
-        <img src="<%=riskimg%>"/>
+        <img src="<%= data.riskimg %>"/>
     </div>
 </div>
