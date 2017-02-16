@@ -25,6 +25,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeL': this.changeCovariates,
             'change:outcomeR': this.changeCovariates,
             'change:covariates': this.changeCovariateList,
+            'change:effects': this.changeEffectsList,
             'change:email': this.changeEmail
         }, this);
         this.$el.find('[name="covariates"]').selectize({
@@ -59,7 +60,7 @@ appMixture.FormView = Backbone.View.extend({
             model: new appMixture.ReferencesModel({
                 'covariates': this.model.get('covariates'),
                 'formModel': this.model,
-                'references': this.model.get('references').slice()
+                'references': _.extend({},this.model.get('references'))
             })
         });
     },
@@ -146,6 +147,19 @@ appMixture.FormView = Backbone.View.extend({
             this.showNext('#effectsSet');
             this.showNext('#referencesSet');
         }
+    },
+    changeEffectsList: function(){
+        var model = this.model
+        console.log(appMixture.models.form.attributes.effects)
+        var effects=appMixture.models.form.attributes.effects;
+        var effects_String="";
+        counter=1
+        _.each(effects,function(val,attribute){
+            if(counter<=5)
+                effects_String+="<p>"+val.first+" &nbsp "+val.second+"</p>";
+            counter++;
+        });
+        $("#effects").html(effects_String);
     },
     changeDesign: function() {
         if (this.model.get('design') === "") {
@@ -348,48 +362,21 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
 appMixture.ReferenceGroupsView = Backbone.View.extend({
     initialize: function() {
         this.template = _.template(appMixture.templates.get('references'));
-        this.resetReference();
+        /*
         this.model.on({
-            'change:referenceGroup': this.rerenderButton,
-            'change:references': this.rerenderFooter
         }, this);
+        */
         this.render();
     },
     events: {
         'hidden.bs.modal': 'remove',
-        'keyup input[type="text"]': 'updateModel',
-        'click .glyphicon-plus': 'addReferenceGroup',
-        'click .glyphicon-remove': 'removeReferenceGroup',
+        'change input[type="checkbox"]': 'updateModel',
         'click .modal-footer button.save': 'save',
         'click .modal-footer button:not(.save)': 'close'
-    },
-    resetReference: function() {
-        var referenceGroup = {},
-            covariates = this.model.get('covariates').split(',');
-        for (var index in covariates) {
-            var cov = covariates[index];
-            this.$el.find('[name="'+cov+'"]').val("");
-            referenceGroup[cov] = "";
-        }
-        this.model.set('referenceGroup', referenceGroup);
-    },
-    addReferenceGroup: function(e) {
-        var e = $(e.target),
-            model = this.model;
-        model.get('references').push(model.get('referenceGroup'));
-        model.trigger('change:references',model);
-        this.resetReference();
     },
     close: function(e) {
         e.preventDefault(e);
         this.$modal.close();
-    },
-    removeReferenceGroup: function(e) {
-        var e = $(e.target)
-            model = this.model,
-            referenceGroups = model.get('references');
-        referenceGroups.splice(e.prop('data-index'),1);
-        model.trigger('change:references',model);
     },
     save: function(e) {
         e.preventDefault(e);
@@ -397,18 +384,12 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
         this.close.call(this,e);
     },
     updateModel: function(e) {
-        e.preventDefault();
-        if (e.keyCode == 13) {
-            var button = this.$el.find('.glyphicon-plus');
-            if (!button.prop('disabled')) button.trigger('click');
-        } else {
             var model = this.model,
                 input = $(e.target),
-                referenceGroup = model.get('referenceGroup'),
+                references = model.get('references'),
                 name = input.attr('name') || input.attr('id');
-            referenceGroup[name] = input.val();
-            model.trigger('change:referenceGroup',model);
-        }
+            references[name] = input.prop('checked');
+            model.trigger('change:references',model);
     },
     render: function() {
         this.$modal = BootstrapDialog.show({
@@ -417,41 +398,12 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
                 label: 'Save'
             }, {
                 cssClass: 'btn-primary',
-                label: 'Close'
+                label: 'Cancel'
             }],
             message: $(this.template(this.model.attributes)),
-            title: "Enter Reference Groups"
+            title: "Select References"
         });
         this.setElement(this.$modal.getModal());
-        this.rerenderFooter.apply(this);
-    },
-    rerenderButton: function() {
-        var referenceGroup = this.model.get('referenceGroup'),
-            references = this.model.get('references');
-        for (var index in referenceGroup) {
-            if (referenceGroup[index] === "") {
-                this.$el.find('.glyphicon-plus').attr('disabled',true);
-                return;
-            }
-        }
-        for (var index in references) {
-            var reference = references[index],
-                disabled = true;
-            for (var param in referenceGroup) {
-                if (reference[param] !== referenceGroup[param]) {
-                    disabled = false;
-                    break;
-                }
-            }
-            if (disabled) {
-                this.$el.find('.glyphicon-plus').attr('disabled',true);
-                return;
-            }
-        }
-        this.$el.find('.glyphicon-plus').removeAttr('disabled');
-    },
-    rerenderFooter: function() {
-        this.$el.find('tfoot').empty().append(_.template(appMixture.templates.get('referencesFooter'))(this.model.attributes));
     }
 });
 

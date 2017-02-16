@@ -1,19 +1,17 @@
 <table>
     <thead>
         <tr>
-<%  _.each(covariates.split(","),function(entry,i,arr) { %>
-            <th><%= entry %></th>
-<%  }); %>
-            <th></th>
+            <th>Covariate</th>
+            <th>Selected</th>
         </tr>
     </thead>
     <tbody>
-        <tr>
+
 <%  _.each(covariates.split(","),function(entry,i,arr) { %>
-            <td><input type="text" name="<%= entry %>" placeholder="<%= entry %>"/></td>
-<%  }); %>
-            <td><button class="btn-default glyphicon glyphicon-plus" disabled=true/></td>
+        <tr>
+            <td style="width:1%"> <%= entry %></td><td><input type="checkbox" name="<%= entry %>"<%=references[entry]?' checked=true':''%> style="text-align:left" /></td>
         </tr>
+<%  }); %>
     </tbody>
     <tfoot>
     </tfoot>

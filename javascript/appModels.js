@@ -39,8 +39,7 @@ appMixture.ReferencesModel = Backbone.Model.extend({
     defaults: {
         'covariates': [],
         'formModel': {},
-        'referenceGroup': {},
-        'references': []
+        'references': {}
     }
 });
 
