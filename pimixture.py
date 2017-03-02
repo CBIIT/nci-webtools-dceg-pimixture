@@ -60,6 +60,36 @@ def runModel():
     finally:
         return response
 
+@app.route('/predict', methods=["POST"])
+def runPredict():
+    try:
+        filename = None
+        if (len(request.files) > 0):
+            userFile = request.files['csvFile']
+            filename = "pimixtureInput_predict_" + time.strftime("%Y_%m_%d_%I_%M") + os.path.splitext(userFile.filename)[1]
+            saveFile = userFile.save(os.path.join('tmp',filename))
+            if os.path.isfile(os.path.join('tmp', filename)):
+                print("Successfully Uploaded")
+        parameters = dict(request.form)
+        for field in parameters:
+            parameters[field] = parameters[field][0]
+        parameters['filename'] = os.path.join('tmp',filename)
+        results = json.loads(wrapper.runPredict(json.dumps(parameters))[0])
+        #with open("results.json") as file:
+        #    results = json.loads(file.read())
+        response = buildSuccess(results)
+    except Exception as e:
+        exc_type, exc_obj, tb = sys.exc_info()
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        filename = f.f_code.co_filename
+        linecache.checkcache(filename)
+        line = linecache.getline(filename, lineno, f.f_globals)
+        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
+        response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+    finally:
+        return response
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()

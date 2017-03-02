@@ -1,7 +1,6 @@
 <ul class="nav nav-tabs responsive">
     <li class="active"><a href="#tab-tables" data-toggle="tab">Tables</a></li>
-    <li><a href="#tab-hazard" data-toggle="tab">Cumulative Hazard</a></li>
-    <li><a href="#tab-risk" data-toggle="tab">Cumulative Risk</a></li>
+    <li><a href="#tab-predict" data-toggle="tab">Prediction</a></li>
 </ul>
 <div class="tab-content">
     <div id="tab-tables" class="tab-pane active">
@@ -106,9 +105,20 @@
 <%  } %>
         </div>
     </div>
-    <div id="tab-hazard" class="tab-pane">
-    </div>
-    <div id="tab-risk" class="tab-pane">
-        <img src="<%= data.riskimg %>"/>
+    <div id="tab-predict" class="tab-pane" style="margin-left:1%">
+        <label for="csvFile">Dataset:</label>
+        <input name="csvFile" type="file"/>
+
+        <div>
+        <h2 class="stage-header" >Advanced Options</h2>
+        <label for="begin">Begin:</label>
+        <input type="text" name="begin" id="begin"/>
+
+        <label for="end">End:</label>
+        <input type="text" name="end" id="end"/>
+
+        <label for="increment">Increment:</label>
+        <input type="text" name="increment" id="increment"/>
+        </div>
     </div>
 </div>

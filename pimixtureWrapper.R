@@ -21,3 +21,18 @@ runCalculation <- function(jsonData) {
       regression.coefficient = result$regression.coef
     ), auto_unbox = T)
 }
+
+runPredict <- function(jsonData) {
+    input = fromJSON(jsonData)
+    filename=input$filename
+    start=input$start
+    end=input$end
+    inc=input$inc
+    time.points=c(start,end,inc)
+    data_file <- read.csv(filename, header=TRUE, sep=",", stringsAsFactors=FALSE)
+    predict<-PIMixture.predict(x=result, data=data_file, time.points=time.points)
+
+    jsonl =list("predict"=predict)
+    exportJson <- toJSON(jsonl)
+    return (exportJson)
+}

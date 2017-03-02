@@ -9,7 +9,7 @@
 
 <%  _.each(covariates.split(","),function(entry,i,arr) { %>
         <tr>
-            <td style="width:1%"> <%= entry %></td><td><input type="checkbox" name="<%= entry %>"<%=references[entry]?' checked=true':''%> style="text-align:left" /></td>
+            <td style="width:1%"> <%= entry %></td><td><input type="checkbox" name="<%= entry %>"<%=references[entry]?' checked=true':''%> style="text-align:left" /></td><td><input type="text" name="<%= entry %>" style="visibility:hidden"/></td>
         </tr>
 <%  }); %>
     </tbody>

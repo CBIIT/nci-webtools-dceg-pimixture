@@ -429,7 +429,7 @@ appMixture.ResultsView = Backbone.View.extend({
             model: 'lines'
           }],
           {
-            title: "Reference Group",
+            title: "Categorical Variables",
             xaxis: {
               title: "Time"
             },

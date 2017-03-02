@@ -132,3 +132,10 @@ input[disabled],
         padding: 15px;
     }
 }
+h2.stage-header {
+  font-weight:bold;
+  font-style:normal;
+  padding:0px;
+  margin-top:-15px;
+  font-size: 14px;
+}
