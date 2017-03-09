@@ -18,7 +18,8 @@ appMixture.FormModel = Backbone.Model.extend({
         'outcomeC': "",
         'outcomeL': "",
         'outcomeR': "",
-        'covariates': "",
+        'covariatesSelection': "",
+        'covariatesArr': [],
         'effects': [],
         'references': [],
         'email': ""
