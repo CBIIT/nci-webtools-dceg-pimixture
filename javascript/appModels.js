@@ -50,13 +50,16 @@ appMixture.ResultsModel = Backbone.Model.extend({
         'cumulative.hazard': {
           'min.time': 0,
           'max.time': 1,
-          'value': []
+          'value': [],
+          'Rfile':""
         },
         'riskimg': "images/risk.png"
     },
     url: "run",
     parse: function(response) {
-        console.log(response);
+        appMixture.ResultsModel.prototype.defaults.Rfile=response.Rfile
+        console.log(appMixture.ResultsModel.prototype.defaults.Rfile);
+
         return response;
     }
 });

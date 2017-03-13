@@ -89,6 +89,26 @@ def runPredict():
         response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
     finally:
         return response
+@app.route('/predictDummy', methods=["POST"])
+def runPredictDummy():
+    print("In dummy")
+    try:
+        parameters = dict(request.form)
+        for field in parameters:
+            parameters[field] = parameters[field][0]
+        results = json.loads(wrapper.runPredictDummy(json.dumps(parameters))[0])
+        #with open("results.json") as file:
+        #    results = json.loads(file.read())
+        response = buildSuccess(results)
+    except Exception as e:
+        exc_type, exc_obj, tb = sys.exc_info()
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        linecache.checkcache(filename)
+        line = linecache.getline(filename, lineno, f.f_globals)
+        response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+    finally:
+        return response
 
 if __name__ == '__main__':
     import argparse

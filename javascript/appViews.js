@@ -42,7 +42,8 @@ appMixture.FormView = Backbone.View.extend({
         'change select': 'updateModel',
         'click #effectsButton': 'openInteractiveEffects',
         'click #referencesButton': 'openReferenceGroups',
-        'click #run': 'runCalculation'
+        'click #run': 'runCalculation',
+        'click #runPredict': 'runPredictCalculation'
     },
     openInteractiveEffects: function (e) {
         e.preventDefault();
@@ -497,7 +498,8 @@ appMixture.ResultsView = Backbone.View.extend({
 appMixture.BaseView = Backbone.View.extend({
     el: 'body',
     events: {
-        'click #run': 'onSubmit'
+        'click #run': 'onSubmit',
+        'click #runPredict':'onSubmitPredict'
     },
     onSubmit: function (e) {
         e.preventDefault();
@@ -515,6 +517,33 @@ appMixture.BaseView = Backbone.View.extend({
             processData: false,
             type: "POST"
         });
+
+    },
+    onSubmitPredict: function (e) {
+        e.preventDefault();
+        var $that = this,
+            params = _.extend({}, this.model.get('form').attributes);
+        var formData = new FormData();
+
+        params.covariatesSelection = params.covariatesSelection.split(';');
+        for (var index in params) {
+            formData.append(index, params[index]);
+        }
+
+        formData.append("Rfile",appMixture.ResultsModel.prototype.defaults.Rfile)
+        console.log('parameters', params)
+        $.ajax({
+          url: '/predictDummy',
+          data: formData,
+          processData: false,
+          contentType: false,
+          type: 'POST',
+          success: function(data){
+            console.log(data);
+
+          }
+        });
+
     }
 });
 
