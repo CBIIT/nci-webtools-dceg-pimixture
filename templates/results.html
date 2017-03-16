@@ -124,5 +124,24 @@
                     <input id="runPredict" type="button" value="Submit"/>
         </fieldset>
         </div>
+<%  if (data["prediction.results"]) { %>        
+        <div id="prediction-results">
+               <table>
+                    <tr>
+                        <% _.each(data["prediction.results"]["headers"],function(entry) { %>
+                        <th><%= entry %></th>
+                        <% }); %>
+                    </tr>
+                    <% _.each(data["prediction.results"]["values"],function(valueArr) { %>
+                    <tr>
+                            <% _.each(valueArr,function(value) { %>  
+                                <td><%= value%></td>
+                            <% }); %>
+                    </tr>
+                    <% }); %>
+                </table>
+        </div>
+
+        <%}%>
     </div>
 </div>

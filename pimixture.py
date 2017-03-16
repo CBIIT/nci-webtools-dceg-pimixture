@@ -44,7 +44,8 @@ def runModel():
         for field in parameters:
             parameters[field] = parameters[field][0]
         parameters['filename'] = os.path.join('tmp',filename)
-        results = json.loads(wrapper.runCalculation(json.dumps(parameters))[0])
+        results = json.loads(wrapper.runCalculation(json.dumps(parameters))[0]) 
+        results['prediction.results'] = None
         #with open("results.json") as file:
         #    results = json.loads(file.read())
         response = buildSuccess(results)

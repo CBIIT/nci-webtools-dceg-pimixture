@@ -474,24 +474,24 @@ appMixture.ResultsView = Backbone.View.extend({
     render: function () {
         this.$el.addClass('show');
         this.$el.html(this.template(this.model.attributes));
-        var data = this.model.get('cumulative.hazard'),
-            xAxis = data['xAxis'],
-            yAxis = data['yAxis'];
-        Plotly.newPlot(
-            'tab-hazard', [{
-                x: xAxis,
-                y: yAxis,
-                model: 'lines'
-            }], {
-                title: "Categorical Variables",
-                xaxis: {
-                    title: "Time"
-                },
-                yaxis: {
-                    title: "Cumulative Hazard"
-                }
-            }
-        );
+        // var data = this.model.get('cumulative.hazard'),
+        //     xAxis = data['xAxis'],
+        //     yAxis = data['yAxis'];
+        // Plotly.newPlot(
+        //     'tab-hazard', [{
+        //         x: xAxis,
+        //         y: yAxis,
+        //         model: 'lines'
+        //     }], {
+        //         title: "Categorical Variables",
+        //         xaxis: {
+        //             title: "Time"
+        //         },
+        //         yaxis: {
+        //             title: "Cumulative Hazard"
+        //         }
+        //     }
+        // );
     }
 });
 
@@ -539,7 +539,26 @@ appMixture.BaseView = Backbone.View.extend({
           contentType: false,
           type: 'POST',
           success: function(data){
-            console.log(data);
+            var dataArr = $.parseJSON(data);
+
+            var headers = Object.keys(dataArr[0]);
+            var values = [];
+            dataArr.forEach(function(element){
+                 var arr = [];
+                 headers.forEach(function(header) {
+                    arr.push(element[header]);
+                 });
+                 values.push(arr);
+            });
+            var predictionResults = {
+                 headers: headers,
+                 values: values
+            };
+
+            $that.model.get('results').set('prediction.results', predictionResults);
+
+            console.log($that.model.get('results'));
+            $that.model.get('results').trigger('change');
 
           }
         });
