@@ -20,12 +20,8 @@ runCalculation <- function(jsonData) {
       xAxis=as.vector(result$cum.hazard[[1]]),
       yAxis=as.vector(result$cum.hazard[[2]])
     )
-
-  
-
   print ("saving RDS")
-
-      toJSON(list(
+    returnValue = toJSON(list(
       cumulative.hazard = result$cum.hazard,
       data.summary = result$data.summary,
       hazard.ratio = result$HR,
@@ -33,7 +29,12 @@ runCalculation <- function(jsonData) {
       regression.coefficient = result$regression.coef,
       Rfile=outputFileName
     ), auto_unbox = T)
-
+    output = returnValue
+    filename = paste0('tmp/',as.integer(Sys.time()),'.out')
+    fileConn = file(filename)
+    writeLines(output,fileConn)
+    close(fileConn)
+    filename
 }
 
 runPredict <- function(jsonData) {
@@ -46,7 +47,7 @@ runPredict <- function(jsonData) {
     data_file <- read.csv(filename, header=TRUE, sep=",", stringsAsFactors=FALSE)
     predict<-PIMixture.predict(x=result, data=data_file, time.points=time.points)
 
-    jsonl =list("predict"=predict)
+    jsonl = list("predict"=predict)
     exportJson <- toJSON(jsonl)
     return (exportJson)
 }
