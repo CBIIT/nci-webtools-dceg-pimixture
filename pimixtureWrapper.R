@@ -13,11 +13,17 @@ runCalculation <- function(jsonData) {
       xAxis=as.vector(result$cum.hazard[[1]]),
       yAxis=as.vector(result$cum.hazard[[2]])
     )
-    toJSON(list(
+    returnValue = toJSON(list(
       cumulative.hazard = result$cum.hazard,
       data.summary = result$data.summary,
       hazard.ratio = result$HR,
       odds.ratio = result$OR,
       regression.coefficient = result$regression.coef
     ), auto_unbox = T)
+    output = returnValue
+    filename = paste0('tmp/',as.integer(Sys.time()),'.out')
+    fileConn = file(filename)
+    writeLines(output,fileConn)
+    close(fileConn)
+    filename
 }

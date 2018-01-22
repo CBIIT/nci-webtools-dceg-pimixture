@@ -1,9 +1,8 @@
 import json, os, sys, time
 from flask import Flask, jsonify, request, Response, send_from_directory
-from rpy2.robjects import r as wrapper
+import pyper as pr
 
 app = Flask(__name__)
-wrapper.source('./pimixtureWrapper.R')
 
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
@@ -44,10 +43,16 @@ def runModel():
         for field in parameters:
             parameters[field] = parameters[field][0]
         parameters['filename'] = os.path.join('tmp',filename)
-        results = json.loads(wrapper.runCalculation(json.dumps(parameters))[0])
-        #with open("results.json") as file:
-        #    results = json.loads(file.read())
-        response = buildSuccess(results)
+        r = pr.R();
+        r('source("./pimixtureWrapper.R")')
+        r.assign('parameters',json.dumps(parameters));
+        r('returnFile = runCalculation(parameters)')
+        returnFile = r['returnFile']
+        del r
+        with open(returnFile) as file:
+            result = json.loads(file.read())
+        os.remove(returnFile)
+        response = buildSuccess(result)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
