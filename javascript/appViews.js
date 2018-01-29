@@ -189,9 +189,15 @@ appMixture.FormView = Backbone.View.extend({
         $("#effects").html(effects_String);
     },
     changeDesign: function () {
+        this.$el.find('[name="model"] option:last-child').attr('disabled',(this.model.get('design') === 1));
         if (this.model.get('design') === "") {
             this.clearAfter('#designSet');
         } else {
+            var modelSelect = this.$el.find('[name="model"]')[0];
+            if ($(modelSelect.options[modelSelect.selectedIndex]).attr('disabled') !== undefined) {
+                modelSelect.selectedIndex = 0;
+                this.model.set('model','');
+            }
             this.showNext('#designSet');
         }
     },

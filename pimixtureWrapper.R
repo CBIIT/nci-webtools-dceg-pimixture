@@ -20,7 +20,7 @@ runCalculation <- function(jsonData) {
       xAxis=as.vector(result$cum.hazard[[1]]),
       yAxis=as.vector(result$cum.hazard[[2]])
     )
-  print ("saving RDS")
+    print ("saving RDS")
     returnValue = toJSON(list(
       cumulative.hazard = result$cum.hazard,
       data.summary = result$data.summary,
