@@ -12,11 +12,15 @@
                 <td style="width:1%">
                     <%= entry.text %>
                 </td>
-                <td><input type="checkbox" name="<%= entry.text %>" <%=entry.categorical ? ' checked=true': ''%> style="text-align:left"
-                    />
+                <td>
+                    <select name="<%=entry.text%>_type">
+                        <option value="">Not Included</option>
+                        <option value="continuous" <%=entry.type=='continuous'?' selected="selected"':''%>>Continuous</option>
+                        <option value="nominal" <%=entry.type=='nominal'?' selected="selected"':''%>>Nominal</option>
+                    </select>
                 </td>
-                <td id="<%=entry.text%>_text" <%=entry.categorical ? 'style="visibility:visible"' : 'style="visibility:hidden"' %>"><input type="text" name="<%= entry.text %>" value="<%= entry.category %>">
-
+                <td>
+                    <input type="text" name="<%=entry.text%>_category" value="<%= entry.category %>" <%=entry.categorical!='continuous'?' disabled="disabled"':''%>/>
                 </td>
             </tr>
             <%  }); %>

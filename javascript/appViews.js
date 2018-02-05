@@ -139,6 +139,7 @@ appMixture.FormView = Backbone.View.extend({
         var model = this.model,
             covariatesSelection = model.get('covariatesSelection');
 
+        this.updateSelectize.apply(this);
         var covariatesSelectionSplit = [];
         if (covariatesSelection !== "") {
             covariatesSelectionSplit = covariatesSelection.split(',');
@@ -154,7 +155,7 @@ appMixture.FormView = Backbone.View.extend({
                 } else {
                     covariatesArrNew.push({
                         text: covariate,
-                        categorical: false,
+                        type: '',
                         category: ''
                     });
                 }
@@ -227,8 +228,7 @@ appMixture.FormView = Backbone.View.extend({
             this.clearAfter('#fileSet');
             return;
         }
-        var optionsList = "<option value=\"\">----Select Outcome----</option>",
-            covariatesSelection = $('[name="covariatesSelection"]')[0].selectize;
+        var optionsList = "<option value=\"\">----Select Outcome----</option>";
         if (options === null) return;
         var options = contents.map(function (e) {
             return {
@@ -242,7 +242,32 @@ appMixture.FormView = Backbone.View.extend({
         this.$el.find('[name="outcomeC"]').html(optionsList);
         this.$el.find('[name="outcomeL"]').html(optionsList);
         this.$el.find('[name="outcomeR"]').html(optionsList);
-        covariatesSelection.clearOptions();
+        this.$el.find('[name="covariatesSelection"]')[0].selectize.clearOptions();
+        this.updateSelectize.apply(this);
+    },
+    updateSelectize: function() {
+        var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize,
+            outcomeC = this.model.get('outcomeC'),
+            outcomeL = this.model.get('outcomeL'),
+            outcomeR = this.model.get('outcomeR'),
+            options = this.model.get('headers').map(function (e) {
+                return {
+                    'text': e,
+                    'value': e
+                };
+            });
+        if (outcomeC !== "") {
+            options = options.filter(function(entry) { return entry.value !== outcomeC; });
+            covariatesSelection.removeOption(outcomeC);
+        }
+        if (outcomeL !== "") {
+            options = options.filter(function(entry) { return entry.value !== outcomeL; });
+            covariatesSelection.removeOption(outcomeL);
+        }
+        if (outcomeR !== "") {
+            options = options.filter(function(entry) { return entry.value !== outcomeR; });
+            covariatesSelection.removeOption(outcomeR);
+        }
         covariatesSelection.addOption(options);
     },
     clearAfter: function (id) {
@@ -404,54 +429,64 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
 appMixture.ReferenceGroupsView = Backbone.View.extend({
     initialize: function () {
         this.template = _.template(appMixture.templates.get('references'));
-        /*
         this.model.on({
+            'change:covariatesArr': this.updateView
         }, this);
-        */
         this.render();
     },
     events: {
         'hidden.bs.modal': 'remove',
-        'change input[type="checkbox"]': 'updateModel',
+        'change select': 'updateModel',
         'change input[type="text"]': 'updateModel',
         'click .modal-footer button.save': 'save',
         'click .modal-footer button:not(.save)': 'close'
     },
-    close: function (e) {
+    close: function(e) {
         e.preventDefault(e);
         this.$modal.close();
     },
-    save: function (e) {
+    save: function(e) {
         e.preventDefault(e);
         this.model.get('formModel').set('covariatesArr', this.model.get('covariatesArr'));
         this.close.call(this, e);
     },
-    updateModel: function (e) {
+    updateModel: function(e) {
         var model = this.model,
             input = $(e.target),
-            type = input.attr('type'),
             covariatesArr = model.get('covariatesArr'),
-            name = input.attr('name') || input.attr('id');
+            name = (input.attr('name') || input.attr('id')).split('_'),
+            type = name.splice(name.length-1,1)[0];
+        name = name.join('_');
 
         var covariateObj = _.find(covariatesArr, function (obj) {
             return obj.text === name;
         });
-
-        if (type === 'checkbox') {
-            var isChecked = input.prop('checked');
-            covariateObj.categorical = isChecked;
-            if (!isChecked) {
-                covariateObj.category = '';
-            }
-
-        } else if (type === 'text') {
-            covariateObj.category = input.val();
+        covariateObj[type] = input.val();
+        if ((type == 'type') && (input.val() != 'continuous')) {
+            covariateObj.category = '';
         }
-        this.$modal.close();
-        this.render();
-        // model.trigger('change:covariatesArr', model);
+        model.trigger('change:covariatesArr', model);
     },
-    render: function () {
+    updateView: function() {
+        var model = this.model,
+            covariatesArr = model.get('covariatesArr'),
+            $that = this;
+        covariatesArr.forEach(function(entry) {
+            var name = entry.text,
+                type = entry.type,
+                category = entry.category;
+                eType = $that.$el.find('[name="'+name+'_type"]'),
+                eCat = $that.$el.find('[name="'+name+'_category"]');
+            if (type != eType.val()) {
+                eType.find('option[value="'+type+'"]').prop('selected',true);
+            }
+            if (category != eCat.val()) {
+                eCat.val(category);
+            }
+            eCat.prop('disabled',type!='continuous');
+        });
+    },
+    render: function() {
         this.$modal = BootstrapDialog.show({
             buttons: [{
                 cssClass: 'btn-primary save',
