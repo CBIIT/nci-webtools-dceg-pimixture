@@ -6,9 +6,21 @@
     content: '';
     display: block;
 }
+#title-bar {
+    background-color: #2A71A5;
+    margin-bottom: 20px;
+}
+
+#title {
+    font-size: 17.6px;
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 #input {
-    float: left;
-    margin: 0px 0px 0px 15px;
+    /*float: left;*/
+    /*margin: 0px 0px 0px 15px;*/
     max-width: 480px;
 }
 .well {
