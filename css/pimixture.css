@@ -56,9 +56,7 @@
 #referencesSet [type="checkbox"]:not(:checked) ~ button {
     display: none;
 }
-#output:not(.show) {
-    display:none;
-}
+
 #output {
     overflow: auto;
 }

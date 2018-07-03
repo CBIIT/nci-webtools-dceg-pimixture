@@ -31,81 +31,86 @@
                 <h1 id="title">Prevalence-Incidence Mixture</h1>
             </div>
         </div>
-        <div id="input" class="center-block">
-            <form class="well">
-                <fieldset id="fileSet" class="well">
-                    <div>
-                        <label for="csvFile">Dataset:</label>
-                        <input name="csvFile" type="file"/>
-                    </div>
-                </fieldset>
-                <fieldset id="designSet" class="well">
-                    <div>
-                        <label for="design">Sample Design:</label>
-                        <select name="design">
-                            <option value="">----Select Design---</option>
-                            <option value="null">Cohort Sample</option>
-                            <option value="1">Stratified Probability Sample</option>
-                        </select>
-                    </div>
-                </fieldset>
-                <fieldset id="modelSet" class="well">
-                    <div>
-                        <label for="model">Regression Model:</label>
-                        <select name="model">
-                            <option value="">----Select Model----</option>
-                            <option>Semi-parametric</option>
-                            <option>Weakly-parametric</option>
-                            <option>Parametric</option>
-                        </select>
-                    </div>
-                </fieldset>
-                <fieldset id="covariatesSet" class="well">
-                    <div>
-                        <label for="outcomeC">C:</label>
-                        <select name="outcomeC">
-                        </select>
-                    </div>
-                    <div>
-                        <label for="outcomeL">L:</label>
-                        <select name="outcomeL">
-                        </select>
-                    </div>
-                    <div>
-                        <label for="outcomeR">R:</label>
-                        <select name="outcomeR">
-                        </select>
-                    </div>
-                    <div>
-                        <label for="covariatesSelection">Covariates:</label>
-                        <input type="text" name="covariatesSelection"/>
-                    </div>
-                    <div>
-                        <label for="editReferences">Categorical Groups:</label>
-                        <button id="referencesButton" style="width:63%;margin-top:2%">Edit Categorical Groups</button>
-                    </div>
-                </fieldset>
-                <fieldSet id="effectsSet" class="well">
-                    <div>
-                        <label for="editEffects">Interactive Effects:</label>
-                        <button id="effectsButton">Edit Interactive Effects</button>
-                        </br>
-                        </br>
-                        <div id="effects"></div>
-                    </div>
-                </fieldset>
-                <fieldSet id="emailSet" class="well">
-                    <div>
-                        <label for="email">Email:</label>
-                        <input type="text" name="email"/>
-                    </div>
-                </fieldset>
-                <fieldset id="submitSet">
-                    <input id="run" type="button" value="Submit"/>
-                </fieldset>
-            </form>
-        </div>
-        <div id="output">
+        <div class="container">
+            <div class="row">
+                <div id="input" class="col-md-6">
+                    <form class="well form-horizontal">
+                        <fieldset id="fileSet" class="well form-group">
+                            <div>
+                                <label for="csvFile">Dataset:</label>
+                                <input name="csvFile" type="file"/>
+                            </div>
+                        </fieldset>
+                        <fieldset id="designSet" class="well form-group">
+                            <div>
+                                <label for="design">Sample Design:</label>
+                                <select name="design">
+                                    <option value="">----Select Design---</option>
+                                    <option value="null">Cohort Sample</option>
+                                    <option value="1">Stratified Probability Sample</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                        <fieldset id="modelSet" class="well form-group">
+                            <div>
+                                <label for="model">Regression Model:</label>
+                                <select name="model">
+                                    <option value="">----Select Model----</option>
+                                    <option>Semi-parametric</option>
+                                    <option>Weakly-parametric</option>
+                                    <option>Parametric</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                        <fieldset id="covariatesSet" class="well form-group">
+                            <div>
+                                <label for="outcomeC">C:</label>
+                                <select name="outcomeC">
+                                </select>
+                            </div>
+                            <div>
+                                <label for="outcomeL">L:</label>
+                                <select name="outcomeL">
+                                </select>
+                            </div>
+                            <div>
+                                <label for="outcomeR">R:</label>
+                                <select name="outcomeR">
+                                </select>
+                            </div>
+                            <div>
+                                <label for="covariatesSelection">Covariates:</label>
+                                <input type="text" name="covariatesSelection"/>
+                            </div>
+                            <div>
+                                <label for="editReferences">Categorical Groups:</label>
+                                <button id="referencesButton" style="width:63%;margin-top:2%">Edit Categorical Groups</button>
+                            </div>
+                        </fieldset>
+                        <fieldSet id="effectsSet" class="well form-group">
+                            <div>
+                                <label for="editEffects">Interactive Effects:</label>
+                                <button id="effectsButton">Edit Interactive Effects</button>
+                                </br>
+                                </br>
+                                <div id="effects"></div>
+                            </div>
+                        </fieldset>
+                        <fieldSet id="emailSet" class="well form-group">
+                            <div>
+                                <label for="email">Email:</label>
+                                <input type="text" name="email"/>
+                            </div>
+                        </fieldset>
+                        <fieldset id="submitSet">
+                            <input id="run" type="button" value="Submit"/>
+                        </fieldset>
+                    </form>
+                </div>
+                <div id="output" class="col-md-6">
+                    <p class="well">Enter parameters in the left form, and click "Submit" button to see results.</p>
+                </div>
+            </div>
         </div>
     </div>
     <div class="container-fluid footer">
