@@ -53,7 +53,7 @@ def runModel():
             results = json.loads(file.read())
         os.remove(returnFile)
         results['prediction.results'] = None
-        response = buildSuccess(results)
+        return buildSuccess(result)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
@@ -62,9 +62,7 @@ def runModel():
         linecache.checkcache(filename)
         line = linecache.getline(filename, lineno, f.f_globals)
         print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
-        response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
-    finally:
-        return response
+        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
 
 @app.route('/predict', methods=["POST"])
 def runPredict():
