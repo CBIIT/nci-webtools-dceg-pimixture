@@ -3,3 +3,4 @@ localserver.py
 examples/*
 .vscode/
 tmp/
+common/
