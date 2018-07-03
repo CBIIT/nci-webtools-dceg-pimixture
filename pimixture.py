@@ -54,7 +54,7 @@ def runModel():
             results = json.loads(file.read())
         os.remove(returnFile)
         results['prediction.results'] = None
-        return buildSuccess(result)
+        return buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
