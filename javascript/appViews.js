@@ -60,12 +60,14 @@ appMixture.FormView = Backbone.View.extend({
         new appMixture.ReferenceGroupsView({
             model: new appMixture.ReferencesModel({
                 'covariatesArr': this.model.get('covariatesArr'),
+                'uniqueValues': this.model.get('uniqueValues'),
                 'formModel': this.model,
                 'references': _.extend({}, this.model.get('references'))
             })
         });
     },
     uploadFile: function (e) {
+        const MAX_UNIQUE_VALUES = 20;
         e.preventDefault();
         var $that = this;
         if (window.FileReader) {
@@ -73,23 +75,31 @@ appMixture.FormView = Backbone.View.extend({
                 reader = new window.FileReader(),
                 content = "",
                 block = "";
-            reader.onloadend = function (evt) {
-                if (evt.target.readyState == FileReader.DONE) {
-                    if (evt.target.result !== "\n") {
-                        content += evt.target.result;
-                        reader.readAsBinaryString(file.slice(content.length, content.length + 1));
-                    } else {
-                        content = content.replace(/\r|"/g, '').split(",").sort();
-                        var i = 1;
-                        $that.model.set({
-                            'csvFile': e.target.files[0],
-                            'headers': content
-                        });
+            reader.onload = function(evt) {
+                var lines = $.csv.toArrays(evt.target.result);
+                if (lines && lines.length > 0) {
+                    var headers = lines[0];
+                    var uniqueValues = {};
+                    for (var j = 0; j < headers.length; ++j) {
+                        uniqueValues[headers[j]] = new Set();
                     }
+                    for (var i = 1; i < lines.length; ++i) {
+                        for (var j = 0; j < headers.length; ++j) {
+                            if (uniqueValues[headers[j]].size < MAX_UNIQUE_VALUES) {
+                                uniqueValues[headers[j]].add(lines[i][j]);
+                            }
+                        }
+                    }
+                    $that.model.set({
+                        'csvFile': e.target.files[0],
+                        'headers': headers.sort(),
+                        'uniqueValues': uniqueValues
+                    });
                 }
             };
+
             if (file) {
-                reader.readAsBinaryString(file.slice(content.length, content.length + 1));
+                reader.readAsText(file.slice());
             } else {
                 $that.model.set({
                     'csvFile': null,
@@ -455,6 +465,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             input = $(e.target),
             covariatesArr = model.get('covariatesArr'),
             name = (input.attr('name') || input.attr('id')).split('_'),
+            value = input.val(),
             type = name.splice(name.length-1,1)[0];
         name = name.join('_');
 
@@ -462,8 +473,13 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             return obj.text === name;
         });
         covariateObj[type] = input.val();
-        if ((type == 'type') && (input.val() != 'continuous')) {
-            covariateObj.category = '';
+        if (type === 'type') {
+            if (value === 'continuous') {
+                covariateObj.category = '0';
+            } else if (value === 'nominal') {
+            } else {
+                covariateObj.category = '';
+            }
         }
         model.trigger('change:covariatesArr', model);
     },
@@ -476,14 +492,26 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
                 type = entry.type,
                 category = entry.category;
                 eType = $that.$el.find('[name="'+name+'_type"]'),
-                eCat = $that.$el.find('[name="'+name+'_category"]');
+                eCatText = $that.$el.find('[id="'+name+'_category_text"]');
+                eCatSelect = $that.$el.find('[id="'+name+'_category_select"]');
             if (type != eType.val()) {
                 eType.find('option[value="'+type+'"]').prop('selected',true);
             }
-            if (category != eCat.val()) {
-                eCat.val(category);
+            if (category != eCatText.val()) {
+                eCatText.val(category);
             }
-            eCat.prop('disabled',type!='continuous');
+            if (type === 'continuous') {
+                eCatText.prop('hidden', false);
+                eCatSelect.prop('hidden', true);
+            } else if (type === 'nominal') {
+                eCatText.prop('hidden', true);
+                eCatSelect.prop('hidden', false);
+            } else {
+                eCatText.val('');
+                eCatSelect.val('');
+                eCatText.prop('hidden', true);
+                eCatSelect.prop('hidden', true);
+            }
         });
     },
     render: function() {

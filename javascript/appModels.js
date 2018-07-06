@@ -14,6 +14,7 @@ appMixture.FormModel = Backbone.Model.extend({
         'csvFile': null,
         'design': "",
         'headers': [],
+        'uniqueValues': {},
         'model': "",
         'outcomeC': "",
         'outcomeL': "",
@@ -39,6 +40,7 @@ appMixture.EffectsModel = Backbone.Model.extend({
 appMixture.ReferencesModel = Backbone.Model.extend({
     defaults: {
         'covariates': [],
+        'uniqueValues': {},
         'formModel': {},
         'references': {}
     }

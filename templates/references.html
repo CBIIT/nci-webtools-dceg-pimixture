@@ -7,7 +7,9 @@
     </thead>
     <tbody>
 
-        <%  _.each(covariatesArr, function(entry) { %>
+        <%  _.each(covariatesArr, function(entry) { 
+            var values = uniqueValues[entry.text].values();
+        %>
             <tr>
                 <td style="width:1%">
                     <%= entry.text %>
@@ -20,7 +22,15 @@
                     </select>
                 </td>
                 <td>
-                    <input type="text" name="<%=entry.text%>_category" value="<%= entry.category %>" <%=entry.categorical!='continuous'?' disabled="disabled"':''%>/>
+                        <input type="text" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category" value="<%= entry.category %>" 
+                            <%= entry.type != 'continuous' ? 'hidden' : '' %>/>
+                        <select id="<%=entry.text%>_category_select" name="<%=entry.text%>_category"
+                            <%= entry.type!= 'nominal' ? 'hidden' : '' %>>
+                                <option value="">Select</option>
+                            <% for (let value of values) { %>
+                                <option value="<%= value %>" <%= value === entry.category ? 'selected' : '' %>><%= value %></option>
+                            <% } %>
+                        </select>
                 </td>
             </tr>
             <%  }); %>

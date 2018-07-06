@@ -96,6 +96,7 @@ table td {
 }
 table select {
     width: 100%;
+    min-width: 172px;
 }
 table th:last-child,
 table td:last-child {
