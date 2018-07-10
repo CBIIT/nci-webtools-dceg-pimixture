@@ -10,7 +10,12 @@ var appMixture = {
         }
     },
     models: {},
-    views: {}
+    views: {},
+    variables: [
+        'outcomeC',
+        'outcomeL',
+        'outcomeR'
+    ]
 };
 
 appMixture.FormView = Backbone.View.extend({
@@ -124,6 +129,7 @@ appMixture.FormView = Backbone.View.extend({
                 break;
         }
         this.model.set(name, val);
+        this.updateOptions();
     },
     changeCovariateList: function () {
         var model = this.model,
@@ -231,53 +237,60 @@ appMixture.FormView = Backbone.View.extend({
         this.showNext.apply(this);
     },
     updateOptions: function () {
-        var contents = this.model.get('headers');
-        if (contents) {
+        var headers = this.model.get('headers');
+        if (headers) {
             this.showNext('#fileSet');
         } else {
             this.clearAfter('#fileSet');
             return;
         }
+        if (headers === null) return;
+        var selected = [];
+        var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
+        for (var i = 0; i < appMixture.variables.length; ++i) {
+            var value = this.model.get(appMixture.variables[i]);
+            var optionsList = this.getOptionTags(headers, selected, value);
+            this.$el.find('[name="' + appMixture.variables[i] + '"]').html(optionsList);
+            if (value) {
+                selected.push(value);
+                covariatesSelection.removeOption(value); 
+            }  
+        }
+
+        for (var opt of _.difference(headers, selected)) {
+            covariatesSelection.addOption({'text': opt, 'value': opt});
+        }
+    },
+    getOptionTags: function(options, selected, current) {
         var optionsList = "<option value=\"\">----Select Outcome----</option>";
-        if (options === null) return;
-        var options = contents.map(function (e) {
+        for (var index = 0; index < options.length; index++) {
+            if (selected.indexOf(options[index]) === -1) {
+                optionsList += '<option value="' + options[index] + '"';
+                if (options[index] === current) {
+                    optionsList += ' selected ';
+                }
+                optionsList += '>' + options[index] + '</option>';
+            }
+        }
+        return optionsList;
+    },
+    updateSelectize: function() {
+        var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
+        var selected = [];
+        for (var i = 0; i < appMixture.variables.length; ++i) {
+            var value = this.model.get(appMixture.variables[i]);
+            if (value) {
+                selected.push(value);
+                covariatesSelection.removeOption(value); 
+            }  
+        }
+        var headers = this.model.get('headers');
+        options = _.difference(headers, selected).map(function (e) {
             return {
                 'text': e,
                 'value': e
             };
         });
-        for (var index = 0; index < options.length; index++) {
-            optionsList += "<option value=\"" + options[index].value + "\">" + options[index].text + "</option>";
-        }
-        this.$el.find('[name="outcomeC"]').html(optionsList);
-        this.$el.find('[name="outcomeL"]').html(optionsList);
-        this.$el.find('[name="outcomeR"]').html(optionsList);
-        this.$el.find('[name="covariatesSelection"]')[0].selectize.clearOptions();
-        this.updateSelectize.apply(this);
-    },
-    updateSelectize: function() {
-        var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize,
-            outcomeC = this.model.get('outcomeC'),
-            outcomeL = this.model.get('outcomeL'),
-            outcomeR = this.model.get('outcomeR'),
-            options = this.model.get('headers').map(function (e) {
-                return {
-                    'text': e,
-                    'value': e
-                };
-            });
-        if (outcomeC !== "") {
-            options = options.filter(function(entry) { return entry.value !== outcomeC; });
-            covariatesSelection.removeOption(outcomeC);
-        }
-        if (outcomeL !== "") {
-            options = options.filter(function(entry) { return entry.value !== outcomeL; });
-            covariatesSelection.removeOption(outcomeL);
-        }
-        if (outcomeR !== "") {
-            options = options.filter(function(entry) { return entry.value !== outcomeR; });
-            covariatesSelection.removeOption(outcomeR);
-        }
         covariatesSelection.addOption(options);
     },
     clearAfter: function (id) {
