@@ -175,16 +175,16 @@ appMixture.FormView = Backbone.View.extend({
             model.set('covariatesArr', []);
         }
 
-        if (model.get('outcomeC') === "" || model.get('outcomeL') === "" || model.get('outcomeR') === "" || covariatesSelection === "") {
-            this.clearAfter('#covariatesSet');
+        if (covariatesSelectionSplit.length > 1) {
+            this.show('#effectsSet');
+            this.show('#categoricalGroups');
         } else {
-            if (covariatesSelectionSplit.length > 1) {
-                this.showNext('#covariatesSet');
+            this.hide('#effectsSet');
+            if (covariatesSelectionSplit.length === 0) {
+                this.hide('#categoricalGroups');
             } else {
-                this.clearAfter('#covariatesSet');
+                this.show('#categoricalGroups');
             }
-            this.showNext('#effectsSet');
-            this.showNext('#referencesSet');
         }
     },
     changeEffectsList: function () {
@@ -312,6 +312,12 @@ appMixture.FormView = Backbone.View.extend({
     },
     showNext: function (id) {
         $(id).next().addClass('show');
+    },
+    show: function (id) {
+        $(id).addClass('show');
+    },
+    hide: function (id) {
+        $(id).removeClass('show');
     }
 });
 
