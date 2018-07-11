@@ -155,3 +155,7 @@ h2.stage-header {
   margin-top:-15px;
   font-size: 14px;
 }
+
+#download-button {
+    margin-top: 5px;
+}
