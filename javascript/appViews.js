@@ -594,7 +594,11 @@ appMixture.BaseView = Backbone.View.extend({
         var $that = this,
             params = _.extend({}, this.model.get('form').attributes);
         var formData = new FormData();
-        params.covariatesSelection = params.covariatesSelection.split(';');
+        if (params.covariatesSelection) {
+            params.covariatesSelection = params.covariatesSelection.split(',');
+        } else {
+            params.covariatesSelection = [];
+        }
         for (var index in params) {
             formData.append(index, params[index]);
         }
@@ -613,7 +617,11 @@ appMixture.BaseView = Backbone.View.extend({
             params = _.extend({}, this.model.get('form').attributes);
         var formData = new FormData();
 
-        params.covariatesSelection = params.covariatesSelection.split(';');
+        if (params.covariatesSelection) {
+            params.covariatesSelection = params.covariatesSelection.split(',');
+        } else {
+            params.covariatesSelection = [];
+        }
         for (var index in params) {
             formData.append(index, params[index]);
         }

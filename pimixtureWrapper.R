@@ -4,10 +4,12 @@ library(PIMixture)
 runCalculation <- function(jsonData) {
     input = fromJSON(jsonData)
     csvFile = read.csv(input$filename)
-    print("COVARIATES")
-    print(input$covariatesSelection)
     model=tolower(input$model)
-    p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "),paste(input$covariatesSelection,collapse=" + "),sep=" ~ ")
+    if (input$covariatesSelection == "") {
+        p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")
+    } else {
+        p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "),paste(input$covariatesSelection,collapse=" + "),sep=" ~ ")
+    }
     time.interval = 1e-2
     result <-PIMixture(p.model=p.model,data=csvFile, model=model)
     outputFileName=gsub('.{4}$', '', input$filename[[1]])
