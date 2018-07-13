@@ -8,6 +8,7 @@ app = Flask(__name__)
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
     response.status_code = statusCode
+    response.headers['Content-Type'] = 'application/json'
     return response
 
 def buildSuccess(message):
@@ -19,7 +20,9 @@ def buildSuccess(message):
                 yield forOutput
                 forOutput = ""
         yield forOutput
-    return Response(generate(),status=200)
+    response = Response(generate(), status=200)
+    response.headers['Content-Type'] = 'application/json'
+    return response
 
 @app.route('/templateList', methods=["GET"])
 def templates():
