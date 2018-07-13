@@ -39,7 +39,7 @@ def runModel():
         filename = None
         if (len(request.files) > 0):
             userFile = request.files['csvFile']
-            filename = "pimixtureInput_" + time.strftime("%Y_%m_%d_%I_%M") + os.path.splitext(userFile.filename)[1]
+            filename = "pimixtureInput_" + time.strftime("%Y_%m_%d_%H_%M_%S") + os.path.splitext(userFile.filename)[1]
             saveFile = userFile.save(os.path.join('tmp',filename))
             if os.path.isfile(os.path.join('tmp', filename)):
                 print("Successfully Uploaded")
