@@ -40,17 +40,20 @@ runCalculation <- function(jsonData) {
 }
 
 runPredict <- function(jsonData) {
-    input = fromJSON(jsonData)
-    filename=input$filename
-    start=input$start
-    end=input$end
-    inc=input$inc
-    time.points=c(start,end,inc)
-    data_file <- read.csv(filename, header=TRUE, sep=",", stringsAsFactors=FALSE)
-    predict<-PIMixture.predict(x=result, data=data_file, time.points=time.points)
+    input <- fromJSON(jsonData)
+    # Read fitted model from .rds file
+    filename <- input$rdsFile
+    model <- readRDS(filename)
 
-    jsonl = list("predict"=predict)
-    exportJson <- toJSON(jsonl)
+    # read test.data from input
+    test.data <- input$testData
+    # read time.points from input
+    time.points <- input$timePoints
+    print(time.points)
+
+    # run prediction function
+    predict<-PIMixture.predict(x=model, data=test.data, time.points=time.points)
+    exportJson <- toJSON(predict)
     return (exportJson)
 }
 

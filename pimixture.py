@@ -73,29 +73,31 @@ def runModel():
 @app.route('/predict', methods=["POST"])
 def runPredict():
     try:
-        filename = None
-        if (len(request.files) > 0):
-            userFile = request.files['csvFile']
-            filename = "pimixtureInput_predict_" + time.strftime("%Y_%m_%d_%I_%M") + os.path.splitext(userFile.filename)[1]
-            saveFile = userFile.save(os.path.join('tmp',filename))
-            if os.path.isfile(os.path.join('tmp', filename)):
-                print("Successfully Uploaded")
-        parameters = dict(request.form)
-        for field in parameters:
-            parameters[field] = parameters[field][0]
-        parameters['filename'] = os.path.join('tmp',filename)
-        results = json.loads(wrapper.runPredict(json.dumps(parameters))[0])
-        #with open("results.json") as file:
-        #    results = json.loads(file.read())
+        parameters = dict(request.json)
+        # generate timePoints from 'start', 'end' and optional 'step'
+        if 'timePoints' not in parameters:
+            if 'start' in parameters and 'end' in parameters:
+                start = int(parameters['start'])
+                end = int(parameters['end'])
+                step = int(parameters['step']) if 'step' in parameters else 1
+                parameters['timePoints'] = list(range(start, end + 1, step))
+
+        r = pr.R();
+        r('source("./pimixtureWrapper.R")')
+        r.assign('parameters',json.dumps(parameters));
+        rOutput = r('predictionResult = runPredict(parameters)')
+        rResults = r['predictionResult']
+        del r
+        results = json.loads(rResults)
         response = buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
         lineno = tb.tb_lineno
-        filename = f.f_code.co_filename
-        linecache.checkcache(filename)
-        line = linecache.getline(filename, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
+        errFileName = f.f_code.co_filename
+        linecache.checkcache(errFileName)
+        line = linecache.getline(errFileName, lineno, f.f_globals)
+        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
         response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
     finally:
         return response
