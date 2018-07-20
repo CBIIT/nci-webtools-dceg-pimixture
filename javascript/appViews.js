@@ -249,7 +249,7 @@ appMixture.FormView = Backbone.View.extend({
         var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
         for (var i = 0; i < appMixture.variables.length; ++i) {
             var value = this.model.get(appMixture.variables[i]);
-            var optionsList = this.getOptionTags(headers, selected, value);
+            var optionsList = this.getOptionTags(headers, [], value);
             this.$el.find('[name="' + appMixture.variables[i] + '"]').html(optionsList);
             if (value) {
                 selected.push(value);
