@@ -2,7 +2,8 @@
     <thead>
         <tr>
             <th>Covariate</th>
-            <th>Selected</th>
+            <th>Variable Type</th>
+            <th>Reference Level</th>
         </tr>
     </thead>
     <tbody>
@@ -16,17 +17,17 @@
                 </td>
                 <td>
                     <select name="<%=entry.text%>_type">
-                        <option value="">Not Included</option>
+                        <option value="">----Select Type----</option>
                         <option value="continuous" <%=entry.type=='continuous'?' selected="selected"':''%>>Continuous</option>
                         <option value="nominal" <%=entry.type=='nominal'?' selected="selected"':''%>>Nominal</option>
                     </select>
                 </td>
                 <td>
-                        <input type="text" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category" value="<%= entry.category %>" 
-                            <%= entry.type != 'continuous' ? 'hidden' : '' %>/>
+                        <input type="text" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category" value="<%= entry.category %>"
+                            <%= entry.type == 'nominal' ? 'hidden' : '' %> disabled/>
                         <select id="<%=entry.text%>_category_select" name="<%=entry.text%>_category"
-                            <%= entry.type!= 'nominal' ? 'hidden' : '' %>>
-                                <option value="">Select</option>
+                            <%= entry.type != 'nominal' ? 'hidden' : '' %>>
+                                <option value="">----Select----</option>
                             <% for (let value of values) { %>
                                 <option value="<%= value %>" <%= value === entry.category ? 'selected' : '' %>><%= value %></option>
                             <% } %>
