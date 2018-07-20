@@ -66,3 +66,12 @@ appMixture.ResultsModel = Backbone.Model.extend({
     }
 });
 
+appMixture.PredictionModel = Backbone.Model.extend({
+    defaults: {
+    },
+    url: "predict",
+    parse: function(response) {
+        console.log(response);
+        return response;
+    }
+});

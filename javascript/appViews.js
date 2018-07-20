@@ -613,52 +613,50 @@ appMixture.BaseView = Backbone.View.extend({
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
-        var $that = this,
-            params = _.extend({}, this.model.get('form').attributes);
-        var formData = new FormData();
+        var $that = this;
 
-        if (params.covariatesSelection) {
-            params.covariatesSelection = params.covariatesSelection.split(',');
-        } else {
-            params.covariatesSelection = [];
-        }
-        for (var index in params) {
-            formData.append(index, params[index]);
-        }
+        var hardCodedData = {
+            "start": 1,
+            "end": 8,
+            "step": 2,
 
-        formData.append("Rfile",appMixture.ResultsModel.prototype.defaults.Rfile)
-        console.log('parameters', params)
-        $.ajax({
-          url: '/predictDummy',
-          data: formData,
-          processData: false,
-          contentType: false,
-          type: 'POST',
-          success: function(data){
-            var dataArr = $.parseJSON(data);
+            "testData": [
+                {"RES_HPV16": 1, "AAA": "a"},
+                {"RES_HPV16": 0, "AAA": "b"}
+            ],
+            "rdsFile": "./tmp/pimixtureInput_2018_07_12_22_46_36.rds"
+        };
 
-            var headers = Object.keys(dataArr[0]);
-            var values = [];
-            dataArr.forEach(function(element){
-                 var arr = [];
-                 headers.forEach(function(header) {
-                    arr.push(element[header]);
-                 });
-                 values.push(arr);
-            });
-            var predictionResults = {
-                 headers: headers,
-                 values: values
-            };
+        this.model.get('prediction').fetch({
+            data: JSON.stringify(hardCodedData),
+            cache: false,
+            contentType: false,
+            contentType: 'application/json',
+             processData: false,
+             type: "POST"
+         });
 
-            $that.model.get('results').set('prediction.results', predictionResults);
 
-            console.log($that.model.get('results'));
-            $that.model.get('results').trigger('change');
+    }
+});
 
-          }
+appMixture.PredictionView = Backbone.View.extend({
+    el: '#prediction-results',
+    events: {
+    },
+    initialize: function () {
+        console.log("PredictionView initializing");
+        this.model.on({
+            'change': this.render
+        }, this);
+        this.template = _.template(appMixture.templates.get('prediction'), {
+            'variable': 'data'
         });
-
+        this.render();
+    },
+    render: function () {
+        console.log("PredicitonView rendering");
+        this.$el.html(this.template(this.model.attributes));
     }
 });
 
@@ -671,9 +669,11 @@ $(function () {
     appMixture.templates.fetch().done(function () {
         appMixture.models.form = new appMixture.FormModel();
         appMixture.models.results = new appMixture.ResultsModel();
+        appMixture.models.prediction = new appMixture.PredictionModel();
         appMixture.models.base = new appMixture.BaseModel({
             'form': appMixture.models.form,
-            'results': appMixture.models.results
+            'results': appMixture.models.results,
+            'prediction': appMixture.models.prediction
         });
         appMixture.views.base = new appMixture.BaseView({
             model: appMixture.models.base
@@ -683,6 +683,9 @@ $(function () {
         });
         appMixture.views.results = new appMixture.ResultsView({
             model: appMixture.models.results
+        });
+        appMixture.views.prediction = new appMixture.PredictionView({
+            model: appMixture.models.prediction
         });
     });
 });
