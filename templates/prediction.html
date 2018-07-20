@@ -1,0 +1,33 @@
+<div id="predict" class="well">
+    <% if (data) { %>
+    <table>
+        <thead>
+        <tr>
+            <th>time</th>
+            <th>cox.predictor</th>
+            <th>logit.predictor</th>
+            <th>CR</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for (var res in data) { %>
+        <tr>
+            <td>
+                <%= data[res].time %><br/>
+            </td>
+            <td>
+                <%= data[res]['cox.predictor'] %><br/>
+            </td>
+            <td>
+                <%= data[res]['logit.predictor']%><br/>
+            </td>
+            <td>
+                <%= data[res].CR %><br/>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+
+    </table>
+    <% } %>
+</div>
