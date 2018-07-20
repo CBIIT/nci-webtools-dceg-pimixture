@@ -528,7 +528,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             } else {
                 eCatText.val('');
                 eCatSelect.val('');
-                eCatText.prop('hidden', true);
+                eCatText.prop('hidden', false);
                 eCatSelect.prop('hidden', true);
             }
         });
@@ -543,7 +543,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
                 label: 'Cancel'
             }],
             message: $(this.template(this.model.attributes)),
-            title: "Select References"
+            title: "Configure Covariates"
         });
         this.setElement(this.$modal.getModal());
     }
