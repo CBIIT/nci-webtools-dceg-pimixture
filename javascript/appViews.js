@@ -707,7 +707,6 @@ appMixture.Router = Backbone.Router.extend({
         } else {
             appMixture.models.prediction.unset('serverFile');
         }
-        console.log("rdsFile: ", rdsFile);
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {
