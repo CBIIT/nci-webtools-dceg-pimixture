@@ -2,8 +2,14 @@ import json, os, sys, time
 import linecache
 from flask import Flask, jsonify, request, Response, send_from_directory
 import pyper as pr
+import csv
+import uuid
 
 app = Flask(__name__)
+
+TEMP_PATH = 'tmp'
+INPUT_FILE_PREFIX = 'pimixtureInput_'
+OUTPUT_FILE_PREFIX = 'pimixtureOutput_'
 
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
@@ -37,18 +43,21 @@ def templates():
 def runModel():
     try:
         inputFileName = None
+        id = str(uuid.uuid4())
         if (len(request.files) > 0):
             userFile = request.files['csvFile']
-            inputFileName = "pimixtureInput_" + time.strftime("%Y_%m_%d_%H_%M_%S") + os.path.splitext(userFile.filename)[1]
-            outputFileName = "pimixtureOutput_" + time.strftime("%Y_%m_%d_%H_%M_%S") + os.path.splitext(userFile.filename)[1]
-            saveFile = userFile.save(os.path.join('tmp',inputFileName))
-            if os.path.isfile(os.path.join('tmp', inputFileName)):
+            ext = os.path.splitext(userFile.filename)[1]
+            inputFileName = getInputFilePath(id, ext)
+            saveFile = userFile.save(inputFileName)
+            if os.path.isfile(inputFileName):
                 print("Successfully Uploaded")
+        outputFileName = getOutputFilePath(id, ext)
+        outputCSVFileName = getOutputFilePath(id, '.csv')
         parameters = dict(request.form)
         for field in parameters:
             parameters[field] = parameters[field][0]
-        parameters['filename'] = os.path.join('tmp',inputFileName)
-        parameters['outputFilename'] = os.path.join('tmp',outputFileName)
+        parameters['filename'] = inputFileName
+        parameters['outputFilename'] = outputFileName
 
         r = pr.R();
         r('source("./pimixtureWrapper.R")')
@@ -61,6 +70,32 @@ def runModel():
         os.remove(returnFile)
         os.remove(parameters['filename'])
         results['prediction.results'] = None
+        results['csvFile'] = outputCSVFileName
+        with open(outputCSVFileName, 'w') as outputCSVFile:
+            writer = csv.writer(outputCSVFile, dialect='excel')
+            writer.writerow(['Data Summary'])
+            writer.writerow(['Label', 'Number of the cases'])
+            for key, val in results['data.summary'].items():
+                writer.writerow([key, val])
+
+            writer.writerow([])
+            writer.writerow(['Regression coefficient estimates'])
+            writer.writerow(['Model', 'Label', 'Coefficient'])
+            for val in results['regression.coefficient']:
+                writer.writerow([val['Model'], val['Label'], val['Coef.']])
+
+            writer.writerow([])
+            writer.writerow(['Odds Ratio (OR) for the prevalence'])
+            writer.writerow(['Model', 'Label', 'OR'])
+            for val in results['odds.ratio']:
+                writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+
+            writer.writerow([])
+            writer.writerow(['Hazard Ratio (HR) for the incidence'])
+            writer.writerow(['Model', 'Label', 'HR'])
+            for val in results['hazard.ratio']:
+                writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+
         response = buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
@@ -95,7 +130,20 @@ def runPredict():
         rResults = r['predictionResult']
         del r
         results = json.loads(rResults)
-        response = buildSuccess(results)
+
+        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR']
+        id = str(uuid.uuid4())
+        csvFileName = getOutputFilePath(id, '.csv')
+        with open(csvFileName, 'w') as outputCSVFile:
+            writer = csv.DictWriter(outputCSVFile, fieldnames=fieldNames)
+            writer.writeheader()
+            writer.writerows(results)
+
+        data = {
+            'csvFile': csvFileName,
+            'prediction': results
+        }
+        response = buildSuccess(data)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
@@ -129,6 +177,17 @@ def runPredictDummy():
     finally:
         return response
 
+def getInputFilePath(id, extention):
+    return getFilePath(INPUT_FILE_PREFIX, id, extention)
+
+
+def getOutputFilePath(id, extention):
+    return getFilePath(OUTPUT_FILE_PREFIX, id, extention)
+
+def getFilePath(prefix, id, extention):
+    filename = prefix + id + extention
+    return os.path.join(TEMP_PATH, filename)
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
@@ -152,5 +211,4 @@ if __name__ == '__main__':
         def rootPath():
             return send_from_directory(os.getcwd(), 'index.html')
 
-    
     app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)

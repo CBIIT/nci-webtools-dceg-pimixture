@@ -57,7 +57,7 @@
         </div>
     </form>
 </div>
-<% if (data['0']) { %>
+<% if (data.prediction) { %>
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -74,25 +74,25 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <% for (var res in data) { %>
+                    <% for (var res in data.prediction) { %>
                     <tr>
                         <td>
-                            <%= data[res].time %><br/>
+                            <%= data.prediction[res].time %><br/>
                         </td>
                         <td>
-                            <%= data[res]['cox.predictor'] %><br/>
+                            <%= data.prediction[res]['cox.predictor'] %><br/>
                         </td>
                         <td>
-                            <%= data[res]['logit.predictor']%><br/>
+                            <%= data.prediction[res]['logit.predictor']%><br/>
                         </td>
                         <td>
-                            <%= data[res].CR %><br/>
+                            <%= data.prediction[res].CR %><br/>
                         </td>
                     </tr>
                     <% } %>
                     </tbody>
                 </table>
-                <a href="tmp/aaa.csv" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+                <a href="<%= data['csvFile'] %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
             </div>
         </div>
     </div>
