@@ -220,14 +220,14 @@ appMixture.FormView = Backbone.View.extend({
         }
 
         if (covariatesSelectionSplit.length > 1) {
-            this.show('#effectsSet');
-            this.show('#categoricalGroups');
+            this.$el.find('#effectsButton').prop("disabled", false);
+            this.$el.find('#referencesButton').prop("disabled", false);
         } else {
-            this.hide('#effectsSet');
+            this.$el.find('#effectsButton').prop("disabled", true);
             if (covariatesSelectionSplit.length === 0) {
-                this.hide('#categoricalGroups');
+                this.$el.find('#referencesButton').prop("disabled", true);
             } else {
-                this.show('#categoricalGroups');
+                this.$el.find('#referencesButton').prop("disabled", false);
             }
         }
     },
