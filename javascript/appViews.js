@@ -15,12 +15,25 @@ var appMixture = {
         'outcomeC',
         'outcomeL',
         'outcomeR'
-    ]
+    ],
+    currentView: null,
+    showView: function(view) {
+        if (this.currentView !== null && this.currentView.cid !== view.cid) {
+            this.currentView.$el.html("");
+        }
+        this.currentView = view;
+        return view.render();
+    }
 };
 
 appMixture.FormView = Backbone.View.extend({
-    el: '#input',
+    tagName: 'div',
+    className: 'col-md-6',
+    id: 'input',
     initialize: function () {
+        this.template = _.template(appMixture.templates.get('form'), {
+            'variable': 'data'
+        });
         var $that = this;
         this.model.on({
             'change:headers': this.updateOptions,
@@ -33,10 +46,6 @@ appMixture.FormView = Backbone.View.extend({
             'change:effects': this.changeEffectsList,
             'change:email': this.changeEmail
         }, this);
-        this.$el.find('[name="covariatesSelection"]').selectize({
-            plugins: ['remove_button'],
-            sortField: 'order'
-        });
     },
     events: {
         'change input[type="file"]': 'uploadFile',
@@ -47,8 +56,37 @@ appMixture.FormView = Backbone.View.extend({
         'change select': 'updateModel',
         'click #effectsButton': 'openInteractiveEffects',
         'click #referencesButton': 'openReferenceGroups',
-        'click #run': 'runCalculation',
-        'click #runPredict': 'runPredictCalculation'
+        'submit #calculationForm': 'runCalculation'
+    },
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        this.$el.find('[name="covariatesSelection"]').selectize({
+            plugins: ['remove_button'],
+            sortField: 'order'
+        });
+        return this;
+    },
+    runCalculation: function (e) {
+        this.$('#run').attr("disabled", "disabled");
+        e.preventDefault();
+        var $that = this,
+            params = _.extend({}, this.model.attributes);
+        var formData = new FormData();
+        if (params.covariatesSelection) {
+            params.covariatesSelection = params.covariatesSelection.split(',');
+        } else {
+            params.covariatesSelection = [];
+        }
+        for (var index in params) {
+            formData.append(index, params[index]);
+        }
+        appMixture.models.results.fetch({
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: "POST"
+        });
     },
     openInteractiveEffects: function (e) {
         e.preventDefault();
@@ -550,7 +588,9 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
 });
 
 appMixture.ResultsView = Backbone.View.extend({
-    el: '#output',
+    tagName: 'div',
+    className: 'col-md-6',
+    id: 'output',
     initialize: function () {
         this.model.on({
             'change': this.render
@@ -560,103 +600,120 @@ appMixture.ResultsView = Backbone.View.extend({
         });
     },
     render: function () {
-        this.$el.addClass('show');
         this.$el.html(this.template(this.model.attributes));
-        // var data = this.model.get('cumulative.hazard'),
-        //     xAxis = data['xAxis'],
-        //     yAxis = data['yAxis'];
-        // Plotly.newPlot(
-        //     'tab-hazard', [{
-        //         x: xAxis,
-        //         y: yAxis,
-        //         model: 'lines'
-        //     }], {
-        //         title: "Categorical Variables",
-        //         xaxis: {
-        //             title: "Time"
-        //         },
-        //         yaxis: {
-        //             title: "Cumulative Hazard"
-        //         }
-        //     }
-        // );
-    }
-});
-
-appMixture.BaseView = Backbone.View.extend({
-    el: 'body',
-    events: {
-        'click #run': 'onSubmit',
-        'click #runPredict':'onSubmitPredict'
-    },
-    onSubmit: function (e) {
-        e.preventDefault();
-        var $that = this,
-            params = _.extend({}, this.model.get('form').attributes);
-        var formData = new FormData();
-        if (params.covariatesSelection) {
-            params.covariatesSelection = params.covariatesSelection.split(',');
-        } else {
-            params.covariatesSelection = [];
-        }
-        for (var index in params) {
-            formData.append(index, params[index]);
-        }
-        this.model.get('results').fetch({
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: "POST"
-        });
-
-    },
-    onSubmitPredict: function (e) {
-        e.preventDefault();
-        var $that = this;
-
-        var hardCodedData = {
-            "start": 1,
-            "end": 8,
-            "step": 2,
-
-            "testData": [
-                {"RES_HPV16": 1, "AAA": "a"},
-                {"RES_HPV16": 0, "AAA": "b"}
-            ],
-            "rdsFile": "./tmp/pimixtureInput_2018_07_12_22_46_36.rds"
-        };
-
-        this.model.get('prediction').fetch({
-            data: JSON.stringify(hardCodedData),
-            cache: false,
-            contentType: false,
-            contentType: 'application/json',
-             processData: false,
-             type: "POST"
-         });
-
-
+        $('#run').removeAttr("disabled");
+        return this;
     }
 });
 
 appMixture.PredictionView = Backbone.View.extend({
-    el: '#prediction-results',
+    el: '#prediction-tool',
     events: {
+        // 'submit #predicitonForm':'onSubmitPredict'
+        'click #runPredict':'onSubmitPredict',
+        'click #timePointRange': 'changeTimePointType',
+        'click #timePointList': 'changeTimePointType',
     },
     initialize: function () {
-        console.log("PredictionView initializing");
         this.model.on({
             'change': this.render
         }, this);
         this.template = _.template(appMixture.templates.get('prediction'), {
             'variable': 'data'
         });
-        this.render();
     },
     render: function () {
-        console.log("PredicitonView rendering");
         this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+    onSubmitPredict: function (e) {
+        e.preventDefault();
+        this.$('#runPredict').attr('disabled', 'disabled');
+        var $that = this;
+        var jsonData = {
+            "testData": [
+                {"RES_HPV16": 1},
+                {"RES_HPV16": 0}
+            ]
+        };
+
+        var serverFile = this.$('[name="serverFile"]').val();
+        var rdsFile = this.$('[name="rdsFile"]').val();
+        if (serverFile) {
+            jsonData["rdsFile"] = serverFile;
+        } else if (rdsFile) {
+            // TODO: upload rdsFile
+        } else {
+            // TODO: display error when no files provided
+        }
+
+        var timePoints = this.$('[name="timePoints"]').val();
+        if (timePoints) {
+            jsonData.timePoints = timePoints.split(',');
+        } else {
+            jsonData["begin"] = this.$('[name="begin"]').val();
+            jsonData["end"] = this.$('[name="end"]').val();
+            jsonData["stepSize"] = this.$('[name="stepSize"]').val();
+        }
+
+        this.model.clear({silent: true});
+        this.model.set('serverFile', serverFile, {silent: true});
+        this.model.fetch({
+            data: JSON.stringify(jsonData),
+            cache: false,
+            contentType: 'application/json',
+            processData: false,
+            type: "POST"
+        });
+    },
+    changeTimePointType: function(e) {
+        console.log("radio clicked!");
+        if (e.target.id === "timePointRange") {
+            this.$('#timePointsRangeGroup').removeAttr('hidden');
+            this.$('#timePointsListGroup').attr('hidden', true);
+            this.$('#timePointsListGroup').val("");
+        } else if (e.target.id === "timePointList") {
+            this.$('#timePointsListGroup').removeAttr('hidden');
+            this.$('#timePointsRangeGroup').attr('hidden', true);
+        }
+    }
+});
+
+appMixture.BaseView = Backbone.View.extend({
+    el: '#main-tool',
+    render: function() {
+        appMixture.views.form = new appMixture.FormView({
+            model: this.model.get('form')
+        });
+        appMixture.views.results = new appMixture.ResultsView({
+            model: this.model.get('results')
+        });
+        this.$el.append(appMixture.views.form.render().el);
+        this.$el.append(appMixture.views.results.render().el);
+        return this;
+    }
+});
+
+appMixture.Router = Backbone.Router.extend({
+    routes: {
+        '': 'fitting',
+        'prediction(/*rdsFile)': 'prediction'
+    },
+    prediction: function(rdsFile) {
+        $('#prediction-li').addClass('active');
+        $('#fitting-li').removeClass('active');
+        if (rdsFile) {
+            appMixture.models.prediction.set('serverFile', rdsFile);
+        } else {
+            appMixture.models.prediction.unset('serverFile');
+        }
+        console.log("rdsFile: ", rdsFile);
+        appMixture.showView(appMixture.views.prediction);
+    },
+    fitting: function() {
+        $('#fitting-li').addClass('active');
+        $('#prediction-li').removeClass('active');
+        appMixture.showView(appMixture.views.base);
     }
 });
 
@@ -664,7 +721,8 @@ $(function () {
     Number.prototype.countDecimals = function () {
         if (Math.floor(this.valueOf()) === this.valueOf()) return 0;
         return this.toString().split(".")[1].length || 0;
-    }
+    };
+    appMixture.router = new appMixture.Router();
     appMixture.templates = new appMixture.TemplatesModel();
     appMixture.templates.fetch().done(function () {
         appMixture.models.form = new appMixture.FormModel();
@@ -672,20 +730,14 @@ $(function () {
         appMixture.models.prediction = new appMixture.PredictionModel();
         appMixture.models.base = new appMixture.BaseModel({
             'form': appMixture.models.form,
-            'results': appMixture.models.results,
-            'prediction': appMixture.models.prediction
+            'results': appMixture.models.results
         });
         appMixture.views.base = new appMixture.BaseView({
             model: appMixture.models.base
         });
-        appMixture.views.form = new appMixture.FormView({
-            model: appMixture.models.form
-        });
-        appMixture.views.results = new appMixture.ResultsView({
-            model: appMixture.models.results
-        });
         appMixture.views.prediction = new appMixture.PredictionView({
             model: appMixture.models.prediction
         });
+        Backbone.history.start();
     });
 });
