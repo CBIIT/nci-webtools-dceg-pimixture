@@ -1,11 +1,10 @@
-<ul class="nav nav-tabs responsive">
-    <li class="active"><a href="#tab-tables" data-toggle="tab">Tables</a></li>
-    <li><a href="#tab-predict" data-toggle="tab">Prediction</a></li>
-</ul>
-<div class="tab-content">
-    <div id="tab-tables" class="tab-pane active">
+<%  if (!data["data.summary"]) { %>
+    <p class="">Upload your data file and provide model configuration on the left panel. The results will be displayed here once you click on Submit button.</p>
+<% } else { %>
+<div class="">
+    <div id="tab-tables" class="">
         <div class="panel-group">
-<%  if (data["data.summary"]) { %>
+            <%  if (data["data.summary"]) { %>
             <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-target="#dataSummary">
                     <h4 class="panel-title">Data Summary</h4>
@@ -17,18 +16,18 @@
                                 <th>Label</th>
                                 <th>Number of the cases</th>
                             </tr>
-<%    for (var index in data["data.summary"]) { %>
+                            <%    for (var index in data["data.summary"]) { %>
                             <tr>
                                 <td><%= index %></td>
                                 <td><%= data["data.summary"][index] %></td>
                             </tr>
-<%    } %>
+                            <%    } %>
                         </table>
                     </div>
                 </div>
             </div>
-<%  } %>
-<%  if (data["regression.coefficient"]) { %>
+            <%  } %>
+            <%  if (data["regression.coefficient"]) { %>
             <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-target="#regressionCoefficient">
                     <h4 class="panel-title">Regression coefficient estimates</h4>
@@ -41,19 +40,19 @@
                                 <th>Label</th>
                                 <th>Coefficient</th>
                             </tr>
-<%    _.each(data["regression.coefficient"],function(entry) { %>
+                            <%    _.each(data["regression.coefficient"],function(entry) { %>
                             <tr>
                                 <td><%= entry.Model %></td>
                                 <td><%= entry.Label %></td>
                                 <td><%= entry["Coef."] %></td>
                             </tr>
-<%    }); %>
+                            <%    }); %>
                         </table>
                     </div>
                 </div>
             </div>
-<%  } %>
-<%  if (data["odds.ratio"]) { %>
+            <%  } %>
+            <%  if (data["odds.ratio"]) { %>
             <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-target="#oddsRatio">
                     <h4 class="panel-title">Odds Ratio (OR) for the prevalence</h4>
@@ -66,19 +65,19 @@
                                 <th>Label</th>
                                 <th>OR</th>
                             </tr>
-<%    _.each(data["odds.ratio"],function(entry) { %>
+                            <%    _.each(data["odds.ratio"],function(entry) { %>
                             <tr>
                                 <td><%= entry.Model %></td>
                                 <td><%= entry.Label %></td>
                                 <td><%= entry["exp(Coef.)"] %></td>
                             </tr>
-<%    }); %>
+                            <%    }); %>
                         </table>
                     </div>
                 </div>
             </div>
-<%  } %>
-<%  if (data["hazard.ratio"]) { %>
+            <%  } %>
+            <%  if (data["hazard.ratio"]) { %>
             <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-target="#hazardRatio">
                     <h4 class="panel-title">Hazard Ratio (HR) for the incidence</h4>
@@ -91,58 +90,30 @@
                                 <th>Label</th>
                                 <th>HR</th>
                             </tr>
-<%    _.each(data["hazard.ratio"],function(entry) { %>
+                            <%    _.each(data["hazard.ratio"],function(entry) { %>
                             <tr>
                                 <td><%= entry.Model %></td>
                                 <td><%= entry.Label %></td>
                                 <td><%= entry["exp(Coef.)"] %></td>
                             </tr>
-<%    }); %>
+                            <%    }); %>
                         </table>
                     </div>
                 </div>
             </div>
-<%  } %>
-            <a href="<%= data['Rfile'] %>" id="download-button" class="btn btn-success" download>Download result (.rds) file</a>
+            <%  } %>
+            <div class="row" id="result-buttons">
+                <a href="/#prediction/<%= data['Rfile'] %>" id="link-prediction-button" class="btn btn-primary" >Run Prediction</a>
+                <div class="dropdown" id="dropdown-button">
+                    <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Download Fitting Results <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="btn" href="<%= data['Rfile'] %>"  download>RDS file</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
-    <div id="tab-predict" class="tab-pane" style="margin-left:1%">
-        <label for="csvFile">Dataset:</label>
-        <input name="csvFile" type="file"/>
-
-        <div>
-        <h2 class="stage-header" style="margin-top:1%" >Advanced Options</h2>
-        <label for="begin">Begin:</label>
-        <input type="text" name="begin" id="begin"/>
-
-        <label for="end">End:</label>
-        <input type="text" name="end" id="end"/>
-
-        <label for="increment">Increment:</label>
-        <input type="text" name="increment" id="increment"/>
-
-        <fieldset id="submitSet" style="margin-left:2%;display:inline">
-                    <input id="runPredict" type="button" value="Submit"/>
-        </fieldset>
-        </div>
-<%  if (data["prediction.results"]) { %>        
-        <div id="prediction-results">
-               <table>
-                    <tr>
-                        <% _.each(data["prediction.results"]["headers"],function(entry) { %>
-                        <th><%= entry %></th>
-                        <% }); %>
-                    </tr>
-                    <% _.each(data["prediction.results"]["values"],function(valueArr) { %>
-                    <tr>
-                            <% _.each(valueArr,function(value) { %>  
-                                <td><%= value%></td>
-                            <% }); %>
-                    </tr>
-                    <% }); %>
-                </table>
-        </div>
-
-        <%}%>
     </div>
 </div>
+<% } %>
