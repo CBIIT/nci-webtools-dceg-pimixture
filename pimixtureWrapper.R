@@ -12,7 +12,7 @@ runCalculation <- function(jsonData) {
     }
     time.interval = 1e-2
     result <-PIMixture(p.model=p.model,data=csvFile, model=model)
-    outputFileName=gsub('.{4}$', '', input$filename[[1]])
+    outputFileName=gsub('.{4}$', '', input$outputFilename[[1]])
     outputFileName=paste("./",outputFileName,".rds",sep="")
     cat(outputFileName)
     saveRDS(result, outputFileName)

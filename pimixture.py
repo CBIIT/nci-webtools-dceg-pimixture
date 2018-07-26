@@ -36,17 +36,20 @@ def templates():
 @app.route('/run', methods=["POST"])
 def runModel():
     try:
-        filename = None
+        inputFileName = None
         if (len(request.files) > 0):
             userFile = request.files['csvFile']
-            filename = "pimixtureInput_" + time.strftime("%Y_%m_%d_%H_%M_%S") + os.path.splitext(userFile.filename)[1]
-            saveFile = userFile.save(os.path.join('tmp',filename))
-            if os.path.isfile(os.path.join('tmp', filename)):
+            inputFileName = "pimixtureInput_" + time.strftime("%Y_%m_%d_%H_%M_%S") + os.path.splitext(userFile.filename)[1]
+            outputFileName = "pimixtureOutput_" + time.strftime("%Y_%m_%d_%H_%M_%S") + os.path.splitext(userFile.filename)[1]
+            saveFile = userFile.save(os.path.join('tmp',inputFileName))
+            if os.path.isfile(os.path.join('tmp', inputFileName)):
                 print("Successfully Uploaded")
         parameters = dict(request.form)
         for field in parameters:
             parameters[field] = parameters[field][0]
-        parameters['filename'] = os.path.join('tmp',filename)
+        parameters['filename'] = os.path.join('tmp',inputFileName)
+        parameters['outputFilename'] = os.path.join('tmp',outputFileName)
+
         r = pr.R();
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters));
@@ -56,16 +59,17 @@ def runModel():
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)
+        os.remove(parameters['filename'])
         results['prediction.results'] = None
         response = buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
         lineno = tb.tb_lineno
-        filename = f.f_code.co_filename
-        linecache.checkcache(filename)
-        line = linecache.getline(filename, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
+        inputFileName = f.f_code.co_filename
+        linecache.checkcache(inputFileName)
+        line = linecache.getline(inputFileName, lineno, f.f_globals)
+        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
         response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
     finally:
         return response
