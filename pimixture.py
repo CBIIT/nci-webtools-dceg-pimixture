@@ -147,5 +147,10 @@ if __name__ == '__main__':
             if (path.endswith('/')):
                 path += 'index.html'
             return send_from_directory(os.getcwd(),path)
+
+        @app.route('/')
+        def rootPath():
+            return send_from_directory(os.getcwd(), 'index.html')
+
     
     app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
