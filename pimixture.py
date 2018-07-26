@@ -79,11 +79,13 @@ def runPredict():
     try:
         parameters = dict(request.json)
         # generate timePoints from 'start', 'end' and optional 'step'
-        if 'timePoints' not in parameters:
-            if 'start' in parameters and 'end' in parameters:
-                start = int(parameters['start'])
+        if 'timePoints' in parameters:
+            parameters['timePoints'] = [int(x) for x in parameters['timePoints']]
+        else:
+            if 'begin' in parameters and 'end' in parameters:
+                start = int(parameters['begin'])
                 end = int(parameters['end'])
-                step = int(parameters['step']) if 'step' in parameters else 1
+                step = int(parameters['stepSize']) if 'stepSize' in parameters else 1
                 parameters['timePoints'] = list(range(start, end + 1, step))
 
         r = pr.R();
@@ -105,6 +107,7 @@ def runPredict():
         response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
     finally:
         return response
+
 @app.route('/predictDummy', methods=["POST"])
 def runPredictDummy():
     print("In dummy")
