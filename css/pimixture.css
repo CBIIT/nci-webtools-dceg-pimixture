@@ -1,3 +1,6 @@
+body {
+    font-size: 15px;
+}
 .division-logo {
     max-width: 600px;
 }
@@ -8,31 +11,29 @@
 }
 #title-bar {
     background-color: #2A71A5;
-    margin-bottom: 20px;
 }
 
 #title {
-    font-size: 17.6px;
+    font-size: 1.3em;
     color: white;
     font-weight: bold;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 #input {
-    /*float: left;*/
-    /*margin: 0px 0px 0px 15px;*/
-    max-width: 480px;
+    max-width: 500px;
 }
+#prediction-input {
+    max-width: 560px;
+}
+
 .well {
     margin: 0px;
 }
 .well ~ .well {
     margin-top: 20px;
 }
-/*#input fieldset ~ fieldset:not(.show) {
-   display: none;
-}
-*/#input label {
+#input label {
     display: inline-block;
     vertical-align: middle;
     width: 140px;
@@ -59,17 +60,30 @@
 #effectsSet:not(.show),
 #categoricalGroups:not(.show)
 {
-    display: none;
+    /*display: none;*/
 }
 
-#output {
+#output,
+#prediction-output {
     overflow: auto;
+    min-height: 774px;
+    border: thin solid lightgray;
 }
+
+#prediction-output {
+    min-height: 488px;
+}
+
+#output p,
+#prediction-output p {
+    padding: 10px 10px;
+}
+
 #output h4 {
     margin: 0px;
 }
 .nav {
-    margin: 0px 15px;
+    /*margin: 0px 15px;*/
 }
 .nav li a {
     color: #666;
@@ -123,7 +137,8 @@ input[disabled],
     cursor: not-allowed;
 }
 @media (max-width: 960px) {
-    #input {
+    #input,
+    #prediction-input {
         float: none;
         margin-right: 15px;
         max-width: 100%;
@@ -133,7 +148,8 @@ input[disabled],
     }
 }
 @media (max-width: 540px) {
-    #input {
+    #input,
+    #prediction-input{
         margin: 0px;
     }
     #output {
@@ -156,6 +172,26 @@ h2.stage-header {
   font-size: 14px;
 }
 
-#download-button {
-    margin-top: 5px;
+#result-buttons a,
+#dropdown-button button{
+    margin-top: 10px;
+}
+
+#navigation-bar {
+    background-color: lightgray;
+    margin-bottom: 20px;
+    width: 100%;
+    font-weight: bold;
+}
+
+#result-buttons {
+    padding-left: 15px;
+}
+
+.submitButtons {
+    margin-top: 15px;
+}
+
+#dropdown-button {
+    display: inline-block;
 }

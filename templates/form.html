@@ -1,0 +1,72 @@
+<form id="calculationForm" class="well form-horizontal" method="POST">
+    <fieldset id="fileSet" class="well form-group">
+        <div>
+            <label for="csvFile">Dataset:</label>
+            <input name="csvFile" type="file" accept=".csv" required/>
+        </div>
+    </fieldset>
+    <fieldset id="designSet" class="well form-group">
+        <div>
+            <label for="design">Sample Design:</label>
+            <select name="design" required>
+                <option value="">----Select Design---</option>
+                <option value="null">Cohort Sample</option>
+                <option value="1">Stratified Probability Sample</option>
+            </select>
+        </div>
+    </fieldset>
+    <fieldset id="modelSet" class="well form-group">
+        <div>
+            <label for="model">Regression Model:</label>
+            <select name="model" required>
+                <option value="">----Select Model----</option>
+                <option>Semi-parametric</option>
+                <option>Weakly-parametric</option>
+                <option>Parametric</option>
+            </select>
+        </div>
+    </fieldset>
+    <fieldset id="covariatesSet" class="well form-group">
+        <div>
+            <label for="outcomeC">C:</label>
+            <select name="outcomeC" required>
+            </select>
+        </div>
+        <div>
+            <label for="outcomeL">L:</label>
+            <select name="outcomeL" required>
+            </select>
+        </div>
+        <div>
+            <label for="outcomeR">R:</label>
+            <select name="outcomeR" required>
+            </select>
+        </div>
+        <div>
+            <label for="covariatesSelection">Covariates:</label>
+            <input type="text" name="covariatesSelection"/>
+        </div>
+        <div id="categoricalGroups">
+            <label for="editReferences"></label>
+            <button id="referencesButton" class="btn btn-default" style="width:63%;margin-top:2%" disabled>Configure Covariates</button>
+        </div>
+    </fieldset>
+    <fieldSet id="effectsSet" class="well form-group">
+        <div>
+            <label for="editEffects">Interactive Effects:</label>
+            <button id="effectsButton" class="btn btn-default" disabled>Edit Interactive Effects</button>
+            </br>
+            </br>
+            <div id="effects"></div>
+        </div>
+    </fieldset>
+    <fieldSet id="emailSet" class="well form-group">
+        <div>
+            <label for="email">Email:</label>
+            <input type="text" name="email"/>
+        </div>
+    </fieldset>
+    <fieldset id="submitSet">
+        <input id="run" type="submit" value="Submit" class="btn btn-primary"/>
+    </fieldset>
+</form>

@@ -1,33 +1,103 @@
-<div id="predict" class="well">
-    <% if (data) { %>
-    <table>
-        <thead>
-        <tr>
-            <th>time</th>
-            <th>cox.predictor</th>
-            <th>logit.predictor</th>
-            <th>CR</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% for (var res in data) { %>
-        <tr>
-            <td>
-                <%= data[res].time %><br/>
-            </td>
-            <td>
-                <%= data[res]['cox.predictor'] %><br/>
-            </td>
-            <td>
-                <%= data[res]['logit.predictor']%><br/>
-            </td>
-            <td>
-                <%= data[res].CR %><br/>
-            </td>
-        </tr>
-        <% } %>
-        </tbody>
-
-    </table>
-    <% } %>
+<div id="prediction-input" class="col-md-6">
+    <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
+            <div class="form-group">
+                <label for="rdsFile" class="control-label col-md-3">Model file:</label>
+                <div class="col-md-9">
+                    <% if (data['serverFile']) { %>
+                        <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>"></input>
+                    <% } else { %>
+                        <input name="rdsFile" type="file" accept=".rds" class="form-control" />
+                    <% } %>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-9 col-md-offset-3">
+                    <button disabled class="form-control btn btn-default">Edit Test Data</button>
+                </div>
+            </div>
+        <fieldset class="well">
+            <legend class="">Time points:</legend>
+            <div class="form-group">
+                <div class="pull-right">
+                    <label class="radio-inline"><input type="radio" name="timePointType" id="timePointRange" checked> Enter a range</label>
+                    <label class="radio-inline"><input type="radio" name="timePointType" id="timePointList"> Enter individual time points</label>
+                </div>
+            </div>
+            <div id="timePointsRangeGroup">
+                <div class="form-group">
+                    <label for="begin" class="control-label col-md-3">Begin:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="begin" id="begin" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="end" class="control-label col-md-3">End:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="end" id="end" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="setSize" class="control-label col-md-3">Step size:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="stepSize" id="setSize" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="timePointsListGroup" hidden>
+                <label for="timePoints" class="control-label col-md-3">Time Points:</label>
+                <div class="col-md-9">
+                    <input type="text" name="timePoints" id="timePoints" placeholder="1,2,3..." class="form-control"/>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group submitButtons">
+            <div class="col-md-3 col-md-offset-5">
+                <input id="runPredict" type="submit" value="Submit" class="btn btn-primary form-control"/>
+            </div>
+        </div>
+    </form>
 </div>
+<% if (data['0']) { %>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Prediction Results</h4>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>time</th>
+                        <th>cox.predictor</th>
+                        <th>logit.predictor</th>
+                        <th>CR</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% for (var res in data) { %>
+                    <tr>
+                        <td>
+                            <%= data[res].time %><br/>
+                        </td>
+                        <td>
+                            <%= data[res]['cox.predictor'] %><br/>
+                        </td>
+                        <td>
+                            <%= data[res]['logit.predictor']%><br/>
+                        </td>
+                        <td>
+                            <%= data[res].CR %><br/>
+                        </td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <a href="tmp/aaa.csv" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div id="prediction-output" class="col-md-6">
+        <p class="">Upload your model file and provide prediction configuration on the left panel. The results will be displayed here once you click on Submit button.</p>
+    </div>
+<% } %>
