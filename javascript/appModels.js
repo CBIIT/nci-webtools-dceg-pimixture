@@ -47,31 +47,9 @@ appMixture.ReferencesModel = Backbone.Model.extend({
 });
 
 appMixture.ResultsModel = Backbone.Model.extend({
-    defaults: {
-        'data.summary': {},
-        'cumulative.hazard': {
-          'min.time': 0,
-          'max.time': 1,
-          'value': [],
-          'Rfile':""
-        },
-        'riskimg': "images/risk.png"
-    },
-    url: "run",
-    parse: function(response) {
-        appMixture.ResultsModel.prototype.defaults.Rfile=response.Rfile
-        console.log(appMixture.ResultsModel.prototype.defaults.Rfile);
-
-        return response;
-    }
+    url: "run"
 });
 
 appMixture.PredictionModel = Backbone.Model.extend({
-    defaults: {
-    },
-    url: "predict",
-    parse: function(response) {
-        console.log(response);
-        return response;
-    }
+    url: "predict"
 });
