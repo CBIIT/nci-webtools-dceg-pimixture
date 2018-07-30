@@ -60,15 +60,17 @@ def runModel():
                 message = "Upload file failed!"
                 print(message)
                 return buildFailure(message, 500)
-        outputFileName = getOutputFilePath(id, ext)
+        outputRdsFileName = getOutputFilePath(id, '.rds')
         outputCSVFileName = getOutputFilePath(id, '.csv')
+        outputFileName = getOutputFilePath(id, '.out')
         parameters['filename'] = inputFileName
+        parameters['outputRdsFilename'] = outputRdsFileName
         parameters['outputFilename'] = outputFileName
 
         r = pr.R();
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters));
-        r('returnFile = runCalculation(parameters)')
+        print(r('returnFile = runCalculation(parameters)'))
         returnFile = r['returnFile']
         del r
         with open(returnFile) as file:
@@ -102,7 +104,7 @@ def runModel():
             for val in results['hazard.ratio']:
                 writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
 
-        response = buildSuccess(results)
+        return buildSuccess(results)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
@@ -111,9 +113,7 @@ def runModel():
         linecache.checkcache(inputFileName)
         line = linecache.getline(inputFileName, lineno, f.f_globals)
         print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
-        response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
-    finally:
-        return response
+        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
 
 @app.route('/predict', methods=["POST"])
 def runPredict():

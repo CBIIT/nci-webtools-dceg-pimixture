@@ -12,8 +12,7 @@ runCalculation <- function(jsonData) {
     }
     time.interval = 1e-2
     result <-PIMixture(p.model=p.model,data=csvFile, model=model)
-    outputFileName=gsub('.{4}$', '', input$outputFilename[[1]])
-    outputFileName=paste("./",outputFileName,".rds",sep="")
+    outputFileName = input$outputRdsFilename
     cat(outputFileName)
     saveRDS(result, outputFileName)
     rownames(result$data.summary) <- result$data.summary$label
@@ -32,7 +31,7 @@ runCalculation <- function(jsonData) {
       Rfile=outputFileName
     ), auto_unbox = T)
     output = returnValue
-    filename = paste0('tmp/',as.integer(Sys.time()),'.out')
+    filename = input$outputFilename
     fileConn = file(filename)
     writeLines(output,fileConn)
     close(fileConn)
