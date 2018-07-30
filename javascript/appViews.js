@@ -630,6 +630,7 @@ appMixture.PredictionView = Backbone.View.extend({
         e.preventDefault();
         this.$('#runPredict').attr('disabled', 'disabled');
         var $that = this;
+        var formData = new FormData();
         var jsonData = {
             "testData": [
                 {"RES_HPV16": 1},
@@ -638,11 +639,10 @@ appMixture.PredictionView = Backbone.View.extend({
         };
 
         var serverFile = this.$('[name="serverFile"]').val();
-        var rdsFile = this.$('[name="rdsFile"]').val();
         if (serverFile) {
-            jsonData["rdsFile"] = serverFile;
-        } else if (rdsFile) {
-            // TODO: upload rdsFile
+            jsonData["serverFile"] = serverFile;
+        } else if (this.$('[name="rdsFile"]')[0].files.length > 0) {
+            formData.append('rdsFile', this.$('[name="rdsFile"]')[0].files[0]);
         } else {
             // TODO: display error when no files provided
         }
@@ -655,13 +655,14 @@ appMixture.PredictionView = Backbone.View.extend({
             jsonData["end"] = this.$('[name="end"]').val();
             jsonData["stepSize"] = this.$('[name="stepSize"]').val();
         }
+        formData.append('jsonData', JSON.stringify(jsonData));
 
         this.model.clear({silent: true});
         this.model.set('serverFile', serverFile, {silent: true});
         this.model.fetch({
-            data: JSON.stringify(jsonData),
+            data: formData,
             cache: false,
-            contentType: 'application/json',
+            contentType: false,
             processData: false,
             type: "POST"
         });

@@ -38,9 +38,11 @@ def runModel():
             userFile = request.files['csvFile']
             ext = os.path.splitext(userFile.filename)[1]
             inputFileName = getInputFilePath(id, ext)
-            saveFile = userFile.save(inputFileName)
-            if os.path.isfile(inputFileName):
-                print("Successfully Uploaded")
+            userFile.save(inputFileName)
+            if not os.path.isfile(inputFileName):
+                message = "Upload file failed!"
+                print(message)
+                return buildFailure(message, 500)
         outputFileName = getOutputFilePath(id, ext)
         outputCSVFileName = getOutputFilePath(id, '.csv')
         parameters = dict(request.form)
@@ -102,7 +104,40 @@ def runModel():
 @app.route('/predict', methods=["POST"])
 def runPredict():
     try:
-        parameters = dict(request.json)
+        if request.form and request.form['jsonData']:
+            parameters = json.loads(request.form['jsonData'])
+        else:
+            message = "Missing input jsonData!"
+            print(message)
+            return buildFailure(message, 400)
+
+        inputFileName = None
+        id = str(uuid.uuid4())
+        if 'serverFile' in parameters:
+            rdsFile = parameters['serverFile']
+            if os.path.isfile(rdsFile):
+                # Server file exists
+                parameters['rdsFile'] = rdsFile
+            else:
+                message = "Server file '{}' doesn't exit on server anymore!".format(rdsFile)
+                print(message)
+                return buildFailure(message, 400)
+        elif (len(request.files) > 0):
+            userFile = request.files['rdsFile']
+            ext = os.path.splitext(userFile.filename)[1]
+            inputFileName = getInputFilePath(id, ext)
+            userFile.save(inputFileName)
+            if os.path.isfile(inputFileName):
+                parameters['rdsFile'] = inputFileName
+            else:
+                message = "Upload file failed!"
+                print(message)
+                return buildFailure(message, 500)
+        else:
+            message = "Missing model file!"
+            print(message)
+            return buildFailure(message, 400)
+
         # generate timePoints from 'start', 'end' and optional 'step'
         if 'timePoints' in parameters:
             parameters['timePoints'] = [int(x) for x in parameters['timePoints']]
@@ -133,7 +168,7 @@ def runPredict():
             'csvFile': csvFileName,
             'prediction': results
         }
-        response = buildSuccess(data)
+        return buildSuccess(data)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
@@ -142,9 +177,7 @@ def runPredict():
         linecache.checkcache(errFileName)
         line = linecache.getline(errFileName, lineno, f.f_globals)
         print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
-        response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
-    finally:
-        return response
+        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
 
 @app.route('/predictDummy', methods=["POST"])
 def runPredictDummy():
