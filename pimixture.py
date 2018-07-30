@@ -7,7 +7,11 @@ import uuid
 
 app = Flask(__name__)
 
-TEMP_PATH = 'tmp'
+TEMP_PATH = os.environ['PIMIXTURE_DATA_FOLDER'] if 'PIMIXTURE_DATA_FOLDER' in os.environ else 'tmp'
+print('TEMP_PATH: {}'.format(TEMP_PATH))
+if not os.path.isdir(TEMP_PATH):
+    os.makedirs(TEMP_PATH)
+
 INPUT_FILE_PREFIX = 'pimixtureInput_'
 OUTPUT_FILE_PREFIX = 'pimixtureOutput_'
 
