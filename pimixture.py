@@ -14,21 +14,11 @@ OUTPUT_FILE_PREFIX = 'pimixtureOutput_'
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
     response.status_code = statusCode
-    response.headers['Content-Type'] = 'application/json'
     return response
 
 def buildSuccess(message):
-    def generate():
-        forOutput = ""
-        for chunk in json.JSONEncoder().iterencode(message):
-            forOutput += chunk
-            if (len(forOutput) > 10000):
-                yield forOutput
-                forOutput = ""
-        yield forOutput
-    response = Response(generate(), status=200)
-    response.headers['Content-Type'] = 'application/json'
-    return response
+    return jsonify(message)
+
 
 @app.route('/templateList', methods=["GET"])
 def templates():
