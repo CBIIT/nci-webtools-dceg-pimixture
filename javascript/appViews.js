@@ -77,9 +77,9 @@ appMixture.FormView = Backbone.View.extend({
         } else {
             params.covariatesSelection = [];
         }
-        for (var index in params) {
-            formData.append(index, params[index]);
-        }
+        formData.append('csvFile', params.csvFile);
+        delete params.csvFile;
+        formData.append('jsonData', JSON.stringify(params));
         appMixture.models.results.fetch({
             data: formData,
             cache: false,

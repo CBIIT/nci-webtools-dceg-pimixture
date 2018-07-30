@@ -32,6 +32,13 @@ def templates():
 @app.route('/run', methods=["POST"])
 def runModel():
     try:
+        if request.form and request.form['jsonData']:
+            parameters = json.loads(request.form['jsonData'])
+        else:
+            message = "Missing input jsonData!"
+            print(message)
+            return buildFailure(message, 400)
+
         inputFileName = None
         id = str(uuid.uuid4())
         if (len(request.files) > 0):
@@ -45,9 +52,6 @@ def runModel():
                 return buildFailure(message, 500)
         outputFileName = getOutputFilePath(id, ext)
         outputCSVFileName = getOutputFilePath(id, '.csv')
-        parameters = dict(request.form)
-        for field in parameters:
-            parameters[field] = parameters[field][0]
         parameters['filename'] = inputFileName
         parameters['outputFilename'] = outputFileName
 
