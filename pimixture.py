@@ -72,8 +72,12 @@ def runModel():
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters));
         print(r('returnFile = runCalculation(parameters)'))
-        returnFile = r['returnFile']
+        returnFile = r.get('returnFile')
         del r
+        if not returnFile:
+            message = "Got an error when running R runCalculation() function!"
+            print(message)
+            return buildFailure(message, 500)
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)

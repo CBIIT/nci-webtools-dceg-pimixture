@@ -85,7 +85,12 @@ appMixture.FormView = Backbone.View.extend({
             cache: false,
             contentType: false,
             processData: false,
-            type: "POST"
+            type: "POST",
+            error: function(model, res, options) {
+                console.log(res.responseJSON);
+                $that.$('#run').removeAttr("disabled");
+                appMixture.models.results.clear();
+            }
         });
     },
     openInteractiveEffects: function (e) {
@@ -668,7 +673,11 @@ appMixture.PredictionView = Backbone.View.extend({
             cache: false,
             contentType: false,
             processData: false,
-            type: "POST"
+            type: "POST",
+            error: function(model, res, options) {
+                console.log(res.responseJSON);
+                $that.model.trigger('change');
+            }
         });
     },
     changeTimePointType: function(e) {
