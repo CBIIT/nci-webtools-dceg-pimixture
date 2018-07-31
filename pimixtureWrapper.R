@@ -5,7 +5,7 @@ runCalculation <- function(jsonData) {
     input = fromJSON(jsonData)
     csvFile = read.csv(input$filename)
     model=tolower(input$model)
-    if (input$covariatesSelection == "") {
+    if (length(input$covariatesSelection) == 0) {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")
     } else {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "),paste(input$covariatesSelection,collapse=" + "),sep=" ~ ")
