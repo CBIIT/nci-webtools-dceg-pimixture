@@ -75,7 +75,7 @@ def runModel():
         returnFile = r.get('returnFile')
         del r
         if not returnFile:
-            message = "Got an error when running R runCalculation() function!"
+            message = "Got an error when trying to run PIMixture() function!"
             print(message)
             return buildFailure(message, 500)
         with open(returnFile) as file:
@@ -202,7 +202,11 @@ def runPredict():
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters));
         rOutput = r('predictionResult = runPredict(parameters)')
-        rResults = r['predictionResult']
+        rResults = r.get('predictionResult')
+        if not rResults:
+            message = "Got an error when trying to run PIMixture.predict() function"
+            print message
+            return buildFailure(message, 500)
         del r
         results = json.loads(rResults)
 
