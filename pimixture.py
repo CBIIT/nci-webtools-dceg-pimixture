@@ -127,6 +127,7 @@ def runPredict():
             return buildFailure(message, 400)
 
         id = str(uuid.uuid4())
+        filesToRemoveWhenDone = []
         if 'serverFile' in parameters:
             rdsFile = parameters['serverFile']
             if os.path.isfile(rdsFile):
@@ -136,52 +137,52 @@ def runPredict():
                 message = "Server file '{}' doesn't exit on server anymore!".format(rdsFile)
                 print(message)
                 return buildFailure(message, 400)
-        elif len(request.files) > 0:
-            if 'rdsFile' in request.files:
-                rdsFile = request.files['rdsFile']
-                ext = os.path.splitext(rdsFile.filename)[1]
-                inputRdsFileName = getInputFilePath(id, ext)
-                rdsFile.save(inputRdsFileName)
-                if os.path.isfile(inputRdsFileName):
-                    parameters['rdsFile'] = inputRdsFileName
-                else:
-                    message = "Upload RDS file failed!"
-                    print(message)
-                    return buildFailure(message, 500)
+        elif len(request.files) > 0 and 'rdsFile' in request.files:
+            rdsFile = request.files['rdsFile']
+            ext = os.path.splitext(rdsFile.filename)[1]
+            inputRdsFileName = getInputFilePath(id, ext)
+            rdsFile.save(inputRdsFileName)
+            if os.path.isfile(inputRdsFileName):
+                parameters['rdsFile'] = inputRdsFileName
+                filesToRemoveWhenDone.append(inputRdsFileName)
+            else:
+                message = "Upload RDS file failed!"
+                print(message)
+                return buildFailure(message, 500)
         else:
             message = "Missing model file!"
             print(message)
             return buildFailure(message, 400)
 
-        if len(request.files) > 0:
-            if 'testDataFile' in request.files:
-                testDataFile = request.files['testDataFile']
-                ext = os.path.splitext(testDataFile.filename)[1]
-                inputTestDataFileName = getInputFilePath(id, ext)
-                # couldn't make testDataFile.stream to work with csv files with BOM character (from excel)
-                # TODO: try to make testDataFile.stream work, so we don't have to save the file then open it again!
-                testDataFile.save(inputTestDataFileName)
-                if os.path.isfile(inputTestDataFileName):
-                    try:
-                        with codecs.open(inputTestDataFileName, encoding='utf-8-sig', mode='r') as testDataCsvFile:
-                            reader = csv.reader(testDataCsvFile, dialect='excel')
-                            variableNames = reader.next()
-                            if variableNames:
-                                testData = []
-                                for row in reader:
-                                    obj = {}
-                                    for idx, val in enumerate(row):
-                                        obj[variableNames[idx]] = float(val)
-                                    testData.append(obj)
-                                if testData:
-                                    parameters['testData'] = testData
-                    except Exception as e:
-                        print(e)
-                        return buildFailure(str(e), 400)
-                else:
-                    message = "Upload CSV file failed!"
-                    print(message)
-                    return buildFailure(message, 500)
+        if len(request.files) > 0 and 'testDataFile' in request.files:
+            testDataFile = request.files['testDataFile']
+            ext = os.path.splitext(testDataFile.filename)[1]
+            inputTestDataFileName = getInputFilePath(id, ext)
+            # couldn't make testDataFile.stream to work with csv files with BOM character (from excel)
+            # TODO: try to make testDataFile.stream work, so we don't have to save the file then open it again!
+            testDataFile.save(inputTestDataFileName)
+            if os.path.isfile(inputTestDataFileName):
+                filesToRemoveWhenDone.append(inputTestDataFileName)
+                try:
+                    with codecs.open(inputTestDataFileName, encoding='utf-8-sig', mode='r') as testDataCsvFile:
+                        reader = csv.reader(testDataCsvFile, dialect='excel')
+                        variableNames = reader.next()
+                        if variableNames:
+                            testData = []
+                            for row in reader:
+                                obj = {}
+                                for idx, val in enumerate(row):
+                                    obj[variableNames[idx]] = float(val)
+                                testData.append(obj)
+                            if testData:
+                                parameters['testData'] = testData
+                except Exception as e:
+                    print(e)
+                    return buildFailure(str(e), 400)
+            else:
+                message = "Upload CSV file failed!"
+                print(message)
+                return buildFailure(message, 500)
 
         # generate timePoints from 'start', 'end' and optional 'step'
         if 'timePoints' in parameters:
@@ -214,6 +215,7 @@ def runPredict():
             'prediction': results
         }
         return buildSuccess(data)
+
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
@@ -223,6 +225,12 @@ def runPredict():
         line = linecache.getline(errFileName, lineno, f.f_globals)
         print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
         return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+
+    finally:
+        if filesToRemoveWhenDone:
+            for filename in filesToRemoveWhenDone:
+                if os.path.isfile(filename):
+                    os.remove(filename)
 
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)
