@@ -195,3 +195,7 @@ h2.stage-header {
 #dropdown-button {
     display: inline-block;
 }
+
+#error-message {
+  color: red;
+}

@@ -61,6 +61,11 @@
                 <input id="runPredict" type="submit" value="Submit" class="btn btn-primary form-control"/>
             </div>
         </div>
+        <% if (data.error) { %>
+            <div id="error-message">
+                <%= data.error %>
+            </div>
+        <% } %>
     </form>
 </div>
 <% if (data.prediction) { %>

@@ -87,8 +87,9 @@ appMixture.FormView = Backbone.View.extend({
             processData: false,
             type: "POST",
             error: function(model, res, options) {
-                console.log(res.responseJSON);
+                console.log(res.responseText);
                 $that.$('#run').removeAttr("disabled");
+                $that.$('#error-message').html(res.responseText)
                 appMixture.models.results.clear();
             }
         });
@@ -676,7 +677,7 @@ appMixture.PredictionView = Backbone.View.extend({
             type: "POST",
             error: function(model, res, options) {
                 console.log(res.responseJSON);
-                $that.model.trigger('change');
+                $that.model.set('error', res.responseText);
             }
         });
     },
