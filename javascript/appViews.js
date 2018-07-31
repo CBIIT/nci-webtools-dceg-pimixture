@@ -582,6 +582,7 @@ appMixture.ResultsView = Backbone.View.extend({
 appMixture.PredictionView = Backbone.View.extend({
     el: '#prediction-tool',
     events: {
+        'click #reset': 'resetForm',
         // 'submit #predicitonForm':'onSubmitPredict'
         'click #runPredict':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
@@ -598,6 +599,11 @@ appMixture.PredictionView = Backbone.View.extend({
     render: function () {
         this.$el.html(this.template(this.model.attributes));
         return this;
+    },
+    resetForm: function(e) {
+        this.$('#timePointsRangeGroup').removeAttr('hidden');
+        this.$('#timePointsListGroup').attr('hidden', true);
+        this.$('#timePointsListGroup').val("");
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
@@ -649,7 +655,6 @@ appMixture.PredictionView = Backbone.View.extend({
         });
     },
     changeTimePointType: function(e) {
-        console.log("radio clicked!");
         if (e.target.id === "timePointRange") {
             this.$('#timePointsRangeGroup').removeAttr('hidden');
             this.$('#timePointsListGroup').attr('hidden', true);
