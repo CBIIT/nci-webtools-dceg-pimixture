@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, Response, send_from_directory
 import pyper as pr
 import csv
 import uuid
+import codecs
 
 app = Flask(__name__)
 
@@ -52,10 +53,10 @@ def runModel():
         inputFileName = None
         id = str(uuid.uuid4())
         if (len(request.files) > 0):
-            userFile = request.files['csvFile']
-            ext = os.path.splitext(userFile.filename)[1]
+            inputCSVFile = request.files['csvFile']
+            ext = os.path.splitext(inputCSVFile.filename)[1]
             inputFileName = getInputFilePath(id, ext)
-            userFile.save(inputFileName)
+            inputCSVFile.save(inputFileName)
             if not os.path.isfile(inputFileName):
                 message = "Upload file failed!"
                 print(message)
@@ -125,7 +126,6 @@ def runPredict():
             print(message)
             return buildFailure(message, 400)
 
-        inputFileName = None
         id = str(uuid.uuid4())
         if 'serverFile' in parameters:
             rdsFile = parameters['serverFile']
@@ -136,21 +136,52 @@ def runPredict():
                 message = "Server file '{}' doesn't exit on server anymore!".format(rdsFile)
                 print(message)
                 return buildFailure(message, 400)
-        elif (len(request.files) > 0):
-            userFile = request.files['rdsFile']
-            ext = os.path.splitext(userFile.filename)[1]
-            inputFileName = getInputFilePath(id, ext)
-            userFile.save(inputFileName)
-            if os.path.isfile(inputFileName):
-                parameters['rdsFile'] = inputFileName
-            else:
-                message = "Upload file failed!"
-                print(message)
-                return buildFailure(message, 500)
+        elif len(request.files) > 0:
+            if 'rdsFile' in request.files:
+                rdsFile = request.files['rdsFile']
+                ext = os.path.splitext(rdsFile.filename)[1]
+                inputRdsFileName = getInputFilePath(id, ext)
+                rdsFile.save(inputRdsFileName)
+                if os.path.isfile(inputRdsFileName):
+                    parameters['rdsFile'] = inputRdsFileName
+                else:
+                    message = "Upload RDS file failed!"
+                    print(message)
+                    return buildFailure(message, 500)
         else:
             message = "Missing model file!"
             print(message)
             return buildFailure(message, 400)
+
+        if len(request.files) > 0:
+            if 'testDataFile' in request.files:
+                testDataFile = request.files['testDataFile']
+                ext = os.path.splitext(testDataFile.filename)[1]
+                inputTestDataFileName = getInputFilePath(id, ext)
+                # couldn't make testDataFile.stream to work with csv files with BOM character (from excel)
+                # TODO: try to make testDataFile.stream work, so we don't have to save the file then open it again!
+                testDataFile.save(inputTestDataFileName)
+                if os.path.isfile(inputTestDataFileName):
+                    try:
+                        with codecs.open(inputTestDataFileName, encoding='utf-8-sig', mode='r') as testDataCsvFile:
+                            reader = csv.reader(testDataCsvFile, dialect='excel')
+                            variableNames = reader.next()
+                            if variableNames:
+                                testData = []
+                                for row in reader:
+                                    obj = {}
+                                    for idx, val in enumerate(row):
+                                        obj[variableNames[idx]] = float(val)
+                                    testData.append(obj)
+                                if testData:
+                                    parameters['testData'] = testData
+                    except Exception as e:
+                        print(e)
+                        return buildFailure(str(e), 400)
+                else:
+                    message = "Upload CSV file failed!"
+                    print(message)
+                    return buildFailure(message, 500)
 
         # generate timePoints from 'start', 'end' and optional 'step'
         if 'timePoints' in parameters:
@@ -192,27 +223,6 @@ def runPredict():
         line = linecache.getline(errFileName, lineno, f.f_globals)
         print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
         return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
-
-@app.route('/predictDummy', methods=["POST"])
-def runPredictDummy():
-    print("In dummy")
-    try:
-        parameters = dict(request.form)
-        for field in parameters:
-            parameters[field] = parameters[field][0]
-        results = json.loads(wrapper.runPredictDummy(json.dumps(parameters))[0])
-        #with open("results.json") as file:
-        #    results = json.loads(file.read())
-        response = buildSuccess(results)
-    except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        linecache.checkcache(filename)
-        line = linecache.getline(filename, lineno, f.f_globals)
-        response = buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
-    finally:
-        return response
 
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)

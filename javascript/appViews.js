@@ -647,6 +647,10 @@ appMixture.PredictionView = Backbone.View.extend({
             // TODO: display error when no files provided
         }
 
+        if (this.$('[name="testDataFile"]')[0].files.length > 0) {
+            formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
+        }
+
         var timePoints = this.$('[name="timePoints"]').val();
         if (timePoints) {
             jsonData.timePoints = timePoints.split(',');
