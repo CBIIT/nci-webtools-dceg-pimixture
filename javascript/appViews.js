@@ -48,6 +48,7 @@ appMixture.FormView = Backbone.View.extend({
         }, this);
     },
     events: {
+        'click #reset': 'resetModel',
         'change input[type="file"]': 'uploadFile',
         'change input.selectized': 'updateModel',
         'change input[type="text"]': 'updateModel',
@@ -93,6 +94,10 @@ appMixture.FormView = Backbone.View.extend({
                 appMixture.models.results.clear();
             }
         });
+    },
+    resetModel: function(e) {
+        this.model.clear();
+        this.updateOptions();
     },
     openInteractiveEffects: function (e) {
         e.preventDefault();
@@ -178,20 +183,25 @@ appMixture.FormView = Backbone.View.extend({
     changeCovariateList: function () {
         var model = this.model,
             covariatesSelection = this.model.get('covariatesSelection');
-        if (covariatesSelection.length > 1) {
+        if (covariatesSelection && covariatesSelection.split(',').length > 1) {
             model.set('effects', []);
         } else {
-            model.set('effects', model.get('effects').filter(function (entry) {
-                return covariatesSelection.indexOf(entry.first) > -1 && covariatesSelection.indexOf(entry.second) > -1;
-            }));
-            model.set('references', model.get('references').filter(function (entry) {
-                for (var index in entry) {
-                    if (covariatesSelection.indexOf(entry[index]) < 0) {
-                        return false;
+            if (model.get('effects')) {
+                model.set('effects', model.get('effects').filter(function (entry) {
+                    return covariatesSelection.indexOf(entry.first) > -1 && covariatesSelection.indexOf(entry.second) > -1;
+                }));
+            }
+
+            if (model.get('references')) {
+                model.set('references', model.get('references').filter(function (entry) {
+                    for (var index in entry) {
+                        if (covariatesSelection.indexOf(entry[index]) < 0) {
+                            return false;
+                        }
                     }
-                }
-                return true;
-            }));
+                    return true;
+                }));
+            }
         }
         this.changeCovariates.apply(this);
     },
@@ -201,7 +211,7 @@ appMixture.FormView = Backbone.View.extend({
 
         this.updateSelectize.apply(this);
         var covariatesSelectionSplit = [];
-        if (covariatesSelection !== "") {
+        if (covariatesSelection && covariatesSelection !== "") {
             covariatesSelectionSplit = covariatesSelection.split(',');
             var covariatesArrNew = [];
             var covariatesArr = model.get('covariatesArr');
@@ -252,40 +262,36 @@ appMixture.FormView = Backbone.View.extend({
     changeDesign: function () {
         this.$el.find('[name="model"] option:last-child').attr('disabled',(this.model.get('design') === 1));
         if (this.model.get('design') === "") {
-            this.clearAfter('#designSet');
         } else {
             var modelSelect = this.$el.find('[name="model"]')[0];
             if ($(modelSelect.options[modelSelect.selectedIndex]).attr('disabled') !== undefined) {
                 modelSelect.selectedIndex = 0;
                 this.model.set('model','');
             }
-            this.showNext('#designSet');
         }
     },
     changeEmail: function () {
         if (this.model.get('email') === "") {
-            this.clearAfter('#emailSet');
         } else {
-            this.showNext('#emailSet');
         }
     },
     changeModel: function () {
         if (this.model.get('model') === "") {
-            this.clearAfter('#modelSet');
         } else {
-            this.showNext('#modelSet');
         }
     },
     resetGroup: function () {
         this.model.set('groupValue', []);
-        this.showNext.apply(this);
     },
     updateOptions: function () {
         var headers = this.model.get('headers');
         if (headers) {
-            this.showNext('#fileSet');
         } else {
-            this.clearAfter('#fileSet');
+            for (var i = 0; i < appMixture.variables.length; ++i) {
+                this.$el.find('[name="' + appMixture.variables[i] + '"]').html('');
+            }
+            var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
+            covariatesSelection.clearOptions();
             return;
         }
         if (headers === null) return;
@@ -336,45 +342,6 @@ appMixture.FormView = Backbone.View.extend({
             };
         });
         covariatesSelection.addOption(options);
-    },
-    clearAfter: function (id) {
-        var next = $(id).next();
-        next.find('input,select,.selectized').each(function (index, child) {
-            var $child = $(child);
-            if (child.selectize) {
-                child.selectize.clear();
-            } else {
-                switch ($child.prop('tagName')) {
-                    case 'SELECT':
-                        child.selectedIndex = 0;
-                        $child.trigger('change');
-                        break;
-                    case 'INPUT':
-                        switch ($child.prop('type')) {
-                            case 'button':
-                                return;
-                            case 'checkbox':
-                                $child.removeAttr('checked');
-                                break;
-                            default:
-                                $child.val('');
-                                break;
-                        }
-                        $child.trigger('change');
-                        break;
-                }
-            }
-        });
-        next.removeClass('show');
-    },
-    showNext: function (id) {
-        $(id).next().addClass('show');
-    },
-    show: function (id) {
-        $(id).addClass('show');
-    },
-    hide: function (id) {
-        $(id).removeClass('show');
     }
 });
 
