@@ -1,19 +1,19 @@
 <div id="prediction-input" class="col-md-6">
     <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
         <div class="form-group">
-            <label for="rdsFile" class="control-label col-md-3">Model file:</label>
+            <label for="rdsFile" class="col-md-3 text-right">Model file:</label>
             <div class="col-md-9">
                 <% if (data['serverFile']) { %>
                     <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>"></input>
                 <% } else { %>
-                    <input name="rdsFile" type="file" accept=".rds" class="form-control">
+                    <input name="rdsFile" type="file" accept=".rds" required>
                 <% } %>
             </div>
         </div>
         <div class="form-group">
-            <label for="testDataFile" class="control-label col-md-3">Test data file:</label>
+            <label for="testDataFile" class="col-md-3 text-right">Test data file:</label>
             <div class="col-md-9">
-                <input name="testDataFile" type="file" accept=".csv" class="form-control">
+                <input name="testDataFile" type="file" accept=".csv" required>
             </div>
         </div>
             <div class="form-group">
