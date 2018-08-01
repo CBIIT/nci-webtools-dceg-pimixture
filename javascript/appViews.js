@@ -619,12 +619,7 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#runPredict').attr('disabled', 'disabled');
         var $that = this;
         var formData = new FormData();
-        var jsonData = {
-            "testData": [
-                {"RES_HPV16": 1},
-                {"RES_HPV16": 0}
-            ]
-        };
+        var jsonData = {};
 
         var serverFile = this.$('[name="serverFile"]').val();
         if (serverFile) {
