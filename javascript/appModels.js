@@ -53,3 +53,10 @@ appMixture.ResultsModel = Backbone.Model.extend({
 appMixture.PredictionModel = Backbone.Model.extend({
     url: "predict"
 });
+
+appMixture.TestDataModel = Backbone.Model.extend({
+    defaults: {
+        'testData': [],
+        'tempTestData': []
+    }
+});

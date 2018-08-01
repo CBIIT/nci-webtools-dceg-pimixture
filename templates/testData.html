@@ -1,0 +1,26 @@
+<div>
+    <table>
+        <thead>
+        <tr>
+            <%  _.each(covariatesArr, function(entry) { %>
+            <th><%= entry.name %></th>
+            <% }); %>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <%  _.each(covariatesArr, function(entry) { %>
+            <td>
+                <input type="number" id="<%=entry.name%>_value" name="<%=entry.name%>_value" value="<%= entry.value %>">
+            </td>
+            <%  }); %>
+            <td><button id="addTestData" class="btn btn-default">+</button></td>
+        </tr>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
+<div id="testDataRows">
+</div>

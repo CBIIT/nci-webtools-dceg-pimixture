@@ -587,6 +587,7 @@ appMixture.PredictionView = Backbone.View.extend({
         'click #runPredict':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
         'click #timePointList': 'changeTimePointType',
+        'click #enterTestData': 'showEnterTestDataView'
     },
     initialize: function () {
         this.model.on({
@@ -595,6 +596,14 @@ appMixture.PredictionView = Backbone.View.extend({
         this.template = _.template(appMixture.templates.get('prediction'), {
             'variable': 'data'
         });
+        var testDataModel = new appMixture.TestDataModel({
+            // name filed should be valid for HTML id (without spaces and special characters
+            'covariatesArr': [
+                {   name: "RES_HPV16",
+                    value: null
+                }]
+            });
+        this.model.set('testDataModel', testDataModel);
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
@@ -628,6 +637,8 @@ appMixture.PredictionView = Backbone.View.extend({
 
         if (this.$('[name="testDataFile"]')[0].files.length > 0) {
             formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
+        } else {
+            jsonData.testData = this.model.get('testDataModel').get('testData');
         }
 
         var timePoints = this.$('[name="timePoints"]').val();
@@ -640,7 +651,7 @@ appMixture.PredictionView = Backbone.View.extend({
         }
         formData.append('jsonData', JSON.stringify(jsonData));
 
-        this.model.clear({silent: true});
+        // this.model.clear({silent: true});
         this.model.set('serverFile', serverFile, {silent: true});
         this.model.fetch({
             data: formData,
@@ -663,6 +674,91 @@ appMixture.PredictionView = Backbone.View.extend({
             this.$('#timePointsListGroup').removeAttr('hidden');
             this.$('#timePointsRangeGroup').attr('hidden', true);
         }
+    },
+    showEnterTestDataView: function(e) {
+        e.preventDefault();
+        new appMixture.TestDataView({
+            model: this.model.get('testDataModel')
+        });
+    }
+});
+
+appMixture.TestDataView = Backbone.View.extend({
+    initialize: function () {
+        this.template = _.template(appMixture.templates.get('testData'));
+        this.tempDataTableView = new appMixture.TempTestDataTableView({model: this.model});
+        this.render();
+        this.model.on('change:tempTestData', this.updateSaveButtonStatus, this);
+    },
+    events: {
+        'click #saveTestData': 'save',
+        'click #cancelTestData': 'cancel',
+        'click #addTestData': 'addTestDataRow'
+    },
+    render: function() {
+        this.$modal = BootstrapDialog.show({
+            buttons: [{
+                id: 'saveTestData',
+                cssClass: 'btn-primary save',
+                label: 'Save'
+            }, {
+                id: 'cancelTestData',
+                cssClass: 'btn-primary',
+                label: 'Cancel'
+            }],
+            message: $(this.template(this.model.attributes)),
+            title: "Edit Test Data"
+        });
+        this.setElement(this.$modal.getModal());
+        this.$('#testDataRows').html(this.tempDataTableView.render().el);
+        this.updateSaveButtonStatus();
+    },
+    addTestDataRow: function(e) {
+        e.preventDefault();
+        console.log("Update model");
+        var tempTestData = this.model.get('tempTestData');
+        var row = {};
+        for (var model of this.model.get('covariatesArr')) {
+            row[model.name] = parseFloat(this.$('#' + model.name + '_value').val());
+            this.$('#' + model.name + '_value').val("");
+        }
+        tempTestData.push(row);
+        this.model.trigger('change:tempTestData');
+        this.tempDataTableView.render();
+    },
+    updateSaveButtonStatus: function() {
+        var testData = this.model.get('testData');
+        var tempTestData = this.model.get('tempTestData');
+        var diff1 = _.difference(testData, tempTestData);
+        var diff2 = _.difference(tempTestData, testData);
+        if( diff1.length > 0 || diff2.length > 0) {
+            this.$('#saveTestData').removeAttr('disabled');
+        } else {
+            this.$('#saveTestData').attr('disabled', 'disabled');
+        }
+    },
+    save: function(e) {
+        e.preventDefault();
+        console.log("Save test data");
+        this.model.set('testData', this.model.get('tempTestData').slice(0));
+        this.$modal.close();
+    },
+    cancel: function(e) {
+        e.preventDefault();
+        this.model.set('tempTestData', this.model.get('testData').slice(0));
+        this.$modal.close();
+    }
+});
+
+appMixture.TempTestDataTableView = Backbone.View.extend({
+    tagName: 'table',
+    initialize: function() {
+        this.template = _.template(appMixture.templates.get('tempTestData'));
+        this.render();
+    },
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
     }
 });
 

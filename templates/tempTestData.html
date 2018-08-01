@@ -1,0 +1,18 @@
+<% if (tempTestData && tempTestData.length > 0) { %>
+<thead>
+</thead>
+<tbody>
+    <%  _.each(tempTestData, function(row) { %>
+        <tr>
+            <% _.each(covariatesArr, function(field) { %>
+            <td>
+                <input type="number" disabled value="<%= row[field.name] %>">
+            </td>
+            <% }); %>
+            <td><button class="btn btn-danger">-</button></td>
+        </tr>
+    <%  }); %>
+</tbody>
+<tfoot>
+</tfoot>
+<% } %>
