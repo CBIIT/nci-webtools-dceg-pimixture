@@ -219,8 +219,10 @@ def runPredict():
             writer.writerows(results)
 
         data = {
-            'csvFile': csvFileName,
-            'prediction': results
+            'results': {
+                'prediction': results,
+                'csvFile': csvFileName
+            }
         }
         return buildSuccess(data)
 

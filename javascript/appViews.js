@@ -648,16 +648,21 @@ appMixture.PredictionView = Backbone.View.extend({
         }
         formData.append('jsonData', JSON.stringify(jsonData));
 
-        // this.model.clear({silent: true});
-        this.model.set('serverFile', serverFile, {silent: true});
+        this.model.unset('error', {silent: true});
+        this.model.unset('results', {silent: true});
+        this.model.trigger('change');
         this.model.fetch({
             data: formData,
             cache: false,
             contentType: false,
             processData: false,
             type: "POST",
+            success: function(model, res, options) {
+                $that.$('#runPredict').removeAttr('disabled');
+            },
             error: function(model, res, options) {
                 console.log(res.responseJSON);
+                $that.$('#runPredict').removeAttr('disabled');
                 $that.model.set('error', res.responseText);
             }
         });
