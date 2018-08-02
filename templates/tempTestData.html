@@ -2,16 +2,18 @@
 <thead>
 </thead>
 <tbody>
-    <%  _.each(tempTestData, function(row) { %>
+    <%  for(var index = 0; index < tempTestData.length; ++index) {
+        var row = tempTestData[index];
+    %>
         <tr>
             <% _.each(covariatesArr, function(field) { %>
             <td>
                 <input type="number" disabled value="<%= row[field.name] %>">
             </td>
             <% }); %>
-            <td><button class="btn btn-danger">-</button></td>
+            <td><button data-index="<%= index %>" class="btn btn-danger deleteTestDataButton">-</button></td>
         </tr>
-    <%  }); %>
+    <%  } %>
 </tbody>
 <tfoot>
 </tfoot>

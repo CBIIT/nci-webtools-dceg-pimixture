@@ -683,12 +683,13 @@ appMixture.TestDataView = Backbone.View.extend({
         this.template = _.template(appMixture.templates.get('testData'));
         this.tempDataTableView = new appMixture.TempTestDataTableView({model: this.model});
         this.render();
-        this.model.on('change:tempTestData', this.updateSaveButtonStatus, this);
+        this.model.on('change:tempTestData', this.updateTempTestData, this);
     },
     events: {
         'click #saveTestData': 'save',
         'click #cancelTestData': 'cancel',
-        'click #addTestData': 'addTestDataRow'
+        'click #addTestData': 'addTestDataRow',
+        'click .deleteTestDataButton': 'removeTestDataRow'
     },
     render: function() {
         this.$modal = BootstrapDialog.show({
@@ -705,8 +706,7 @@ appMixture.TestDataView = Backbone.View.extend({
             title: "Edit Test Data"
         });
         this.setElement(this.$modal.getModal());
-        this.$('#testDataRows').html(this.tempDataTableView.render().el);
-        this.updateSaveButtonStatus();
+        this.updateTempTestData();
     },
     addTestDataRow: function(e) {
         e.preventDefault();
@@ -720,6 +720,16 @@ appMixture.TestDataView = Backbone.View.extend({
         tempTestData.push(row);
         this.model.trigger('change:tempTestData');
         this.tempDataTableView.render();
+    },
+    removeTestDataRow: function(e) {
+        e.preventDefault();
+        var index = parseInt(e.target.dataset.index);
+        this.model.get('tempTestData').splice(index, 1);
+        this.model.trigger('change:tempTestData');
+    },
+    updateTempTestData: function() {
+        this.$('#testDataRows').html(this.tempDataTableView.render().el);
+        this.updateSaveButtonStatus();
     },
     updateSaveButtonStatus: function() {
         var testData = this.model.get('testData');
