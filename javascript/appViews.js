@@ -69,6 +69,7 @@ appMixture.FormView = Backbone.View.extend({
     },
     runCalculation: function (e) {
         this.$('#run').attr("disabled", "disabled");
+        appMixture.models.results.clear();
         e.preventDefault();
         var $that = this,
             params = _.extend({}, this.model.attributes);
@@ -87,11 +88,13 @@ appMixture.FormView = Backbone.View.extend({
             contentType: false,
             processData: false,
             type: "POST",
+            success: function(model, res, options) {
+                $that.$('#run').removeAttr("disabled");
+            },
             error: function(model, res, options) {
                 console.log(res.responseText);
                 $that.$('#run').removeAttr("disabled");
                 $that.$('#error-message').html(res.responseText)
-                appMixture.models.results.clear();
             }
         });
     },
@@ -574,7 +577,6 @@ appMixture.ResultsView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
-        $('#run').removeAttr("disabled");
         return this;
     }
 });
