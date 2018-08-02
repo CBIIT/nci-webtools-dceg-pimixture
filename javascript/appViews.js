@@ -590,20 +590,20 @@ appMixture.PredictionView = Backbone.View.extend({
         'click #enterTestData': 'showEnterTestDataView'
     },
     initialize: function () {
-        this.model.on({
-            'change': this.render
-        }, this);
-        this.template = _.template(appMixture.templates.get('prediction'), {
-            'variable': 'data'
-        });
         var testDataModel = new appMixture.TestDataModel({
             // name filed should be valid for HTML id (without spaces and special characters
             'covariatesArr': [
                 {   name: "RES_HPV16",
                     value: null
                 }]
-            });
-        this.model.set('testDataModel', testDataModel);
+        });
+        this.model.set('testDataModel', testDataModel, {silent: true});
+        this.template = _.template(appMixture.templates.get('prediction'), {
+            'variable': 'data'
+        });
+        this.model.on({
+            'change': this.render
+        }, this);
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
