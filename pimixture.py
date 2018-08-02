@@ -70,7 +70,7 @@ def runModel():
 
         r = pr.R();
         r('source("./pimixtureWrapper.R")')
-        r.assign('parameters',json.dumps(parameters));
+        r.assign('parameters',json.dumps(parameters))
         print(r('returnFile = runCalculation(parameters)'))
         returnFile = r.get('returnFile')
         del r
