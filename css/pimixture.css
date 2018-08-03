@@ -74,6 +74,11 @@ body {
     min-height: 488px;
 }
 
+#prediction-results {
+    max-height: 482px;
+    overflow-y: auto;
+}
+
 #output p,
 #prediction-output p {
     padding: 10px 10px;
