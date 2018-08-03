@@ -671,7 +671,7 @@ appMixture.PredictionView = Backbone.View.extend({
         if (e.target.id === "timePointRange") {
             this.$('#timePointsRangeGroup').removeAttr('hidden');
             this.$('#timePointsListGroup').attr('hidden', true);
-            this.$('#timePointsListGroup').val("");
+            this.$('#timePoints').val('');
         } else if (e.target.id === "timePointList") {
             this.$('#timePointsListGroup').removeAttr('hidden');
             this.$('#timePointsRangeGroup').attr('hidden', true);
