@@ -4,7 +4,7 @@
             <label for="rdsFile" class="col-md-3 text-right">Model file:</label>
             <div class="col-md-9">
                 <% if (data['serverFile']) { %>
-                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>"></input>
+                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>">
                 <% } else { %>
                     <input name="rdsFile" type="file" accept=".rds" required>
                 <% } %>
@@ -40,19 +40,19 @@
                 <div class="form-group">
                     <label for="begin" class="control-label col-md-3">Begin:</label>
                     <div class="col-md-9">
-                        <input type="text" name="begin" id="begin" class="form-control"/>
+                        <input type="number" name="begin" id="begin" class="form-control"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="end" class="control-label col-md-3">End:</label>
                     <div class="col-md-9">
-                        <input type="text" name="end" id="end" class="form-control"/>
+                        <input type="number" name="end" id="end" class="form-control"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="setSize" class="control-label col-md-3">Step size:</label>
                     <div class="col-md-9">
-                        <input type="text" name="stepSize" id="setSize" class="form-control"/>
+                        <input type="number" name="stepSize" id="setSize" class="form-control"/>
                     </div>
                 </div>
             </div>

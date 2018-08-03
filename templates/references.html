@@ -23,7 +23,7 @@
                     </select>
                 </td>
                 <td>
-                        <input type="text" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category" value="<%= entry.category %>"
+                        <input type="number" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category" value="<%= entry.category %>"
                             <%= entry.type == 'nominal' ? 'hidden' : '' %> disabled/>
                         <select id="<%=entry.text%>_category_select" name="<%=entry.text%>_category"
                             <%= entry.type != 'nominal' ? 'hidden' : '' %>>
