@@ -361,8 +361,8 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
     events: {
         'hidden.bs.modal': 'remove',
         'change select': 'updateModel',
-        'click .glyphicon-plus': 'addEffect',
-        'click .glyphicon-remove': 'removeEffect',
+        'click #add-effects': 'addEffect',
+        'click .remove-effects': 'removeEffect',
         'click .modal-footer button.save': 'save',
         'click .modal-footer button:not(.save)': 'close'
     },
@@ -459,9 +459,9 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
             return entry.first == (first < second ? first : second) && entry.second == (first < second ? second : first);
         }).length > 0 : false;
         if (first === '' || second === '' || alreadyInserted) {
-            this.$el.find('.glyphicon-plus').attr('disabled', true);
+            this.$('#add-effects').attr('disabled', true);
         } else {
-            this.$el.find('.glyphicon-plus').removeAttr('disabled');
+            this.$('#add-effects').removeAttr('disabled');
         }
     },
     rerenderFooter: function () {
