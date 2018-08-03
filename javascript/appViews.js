@@ -589,6 +589,8 @@ appMixture.PredictionView = Backbone.View.extend({
         'click #runPredict':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
         'click #timePointList': 'changeTimePointType',
+        'click #uploadTD': 'changeTestDataType',
+        'click #enterTD': 'changeTestDataType',
         'click #enterTestData': 'showEnterTestDataView'
     },
     initialize: function () {
@@ -675,6 +677,16 @@ appMixture.PredictionView = Backbone.View.extend({
         } else if (e.target.id === "timePointList") {
             this.$('#timePointsListGroup').removeAttr('hidden');
             this.$('#timePointsRangeGroup').attr('hidden', true);
+        }
+    },
+    changeTestDataType: function(e) {
+        if (e.target.id === "uploadTD") {
+            this.$('#testDataUpload').removeAttr('hidden');
+            this.$('#testDataEnter').attr('hidden', true);
+        } else if (e.target.id === "enterTD") {
+            this.$('#testDataEnter').removeAttr('hidden');
+            this.$('#testDataUpload').attr('hidden', true);
+            this.$('#testDataFile').val('');
         }
     },
     showEnterTestDataView: function(e) {
