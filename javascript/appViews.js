@@ -585,8 +585,7 @@ appMixture.PredictionView = Backbone.View.extend({
     el: '#prediction-tool',
     events: {
         'click #reset': 'resetForm',
-        // 'submit #predicitonForm':'onSubmitPredict'
-        'click #runPredict':'onSubmitPredict',
+        'submit #predictionForm':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
         'click #timePointList': 'changeTimePointType',
         'click #uploadTD': 'changeTestDataType',
@@ -673,19 +672,25 @@ appMixture.PredictionView = Backbone.View.extend({
         if (e.target.id === "timePointRange") {
             this.$('#timePointsRangeGroup').removeAttr('hidden');
             this.$('#timePointsListGroup').attr('hidden', true);
+            this.$('#timePointsRangeGroup input').prop('required', true);
+            this.$('#timePointsListGroup input').prop('required', false);
             this.$('#timePoints').val('');
         } else if (e.target.id === "timePointList") {
             this.$('#timePointsListGroup').removeAttr('hidden');
             this.$('#timePointsRangeGroup').attr('hidden', true);
+            this.$('#timePointsListGroup input').prop('required', true);
+            this.$('#timePointsRangeGroup input').prop('required', false);
         }
     },
     changeTestDataType: function(e) {
         if (e.target.id === "uploadTD") {
             this.$('#testDataUpload').removeAttr('hidden');
             this.$('#testDataEnter').attr('hidden', true);
+            this.$('#testDataFile').prop('required', true);
         } else if (e.target.id === "enterTD") {
             this.$('#testDataEnter').removeAttr('hidden');
             this.$('#testDataUpload').attr('hidden', true);
+            this.$('#testDataFile').prop('required', false);
             this.$('#testDataFile').val('');
             this.showEnterTestDataView();
         }
