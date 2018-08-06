@@ -68,7 +68,7 @@ appMixture.FormView = Backbone.View.extend({
         return this;
     },
     runCalculation: function (e) {
-        this.$('#run').attr("disabled", "disabled");
+        this.$('#run').prop("disabled", true);
         appMixture.models.results.clear();
         e.preventDefault();
         var $that = this,
@@ -89,11 +89,11 @@ appMixture.FormView = Backbone.View.extend({
             processData: false,
             type: "POST",
             success: function(model, res, options) {
-                $that.$('#run').removeAttr("disabled");
+                $that.$('#run').prop("disabled", false);
             },
             error: function(model, res, options) {
                 console.log(res.responseText);
-                $that.$('#run').removeAttr("disabled");
+                $that.$('#run').prop("disabled", false);
                 $that.$('#error-message').html(res.responseText)
             }
         });
@@ -263,7 +263,7 @@ appMixture.FormView = Backbone.View.extend({
         $("#effects").html(effects_String);
     },
     changeDesign: function () {
-        this.$el.find('[name="model"] option:last-child').attr('disabled',(this.model.get('design') === 1));
+        this.$el.find('[name="model"] option:last-child').prop('disabled',(this.model.get('design') === 1));
         if (this.model.get('design') === "") {
         } else {
             var modelSelect = this.$el.find('[name="model"]')[0];
@@ -459,9 +459,9 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
             return entry.first == (first < second ? first : second) && entry.second == (first < second ? second : first);
         }).length > 0 : false;
         if (first === '' || second === '' || alreadyInserted) {
-            this.$('#add-effects').attr('disabled', true);
+            this.$('#add-effects').prop('disabled', true);
         } else {
-            this.$('#add-effects').removeAttr('disabled');
+            this.$('#add-effects').prop('disabled', false);
         }
     },
     rerenderFooter: function () {
@@ -613,13 +613,13 @@ appMixture.PredictionView = Backbone.View.extend({
         return this;
     },
     resetForm: function(e) {
-        this.$('#timePointsRangeGroup').removeAttr('hidden');
-        this.$('#timePointsListGroup').attr('hidden', true);
+        this.$('#timePointsRangeGroup').prop('hidden', false);
+        this.$('#timePointsListGroup').prop('hidden', true);
         this.$('#timePointsListGroup').val("");
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
-        this.$('#runPredict').attr('disabled', 'disabled');
+        this.$('#runPredict').prop('disabled', true);
         var $that = this;
         var formData = new FormData();
         var jsonData = {};
@@ -659,37 +659,37 @@ appMixture.PredictionView = Backbone.View.extend({
             processData: false,
             type: "POST",
             success: function(model, res, options) {
-                $that.$('#runPredict').removeAttr('disabled');
+                $that.$('#runPredict').prop('disabled', false);
             },
             error: function(model, res, options) {
                 console.log(res.responseJSON);
-                $that.$('#runPredict').removeAttr('disabled');
+                $that.$('#runPredict').prop('disabled', false);
                 $that.model.set('error', res.responseText);
             }
         });
     },
     changeTimePointType: function(e) {
         if (e.target.id === "timePointRange") {
-            this.$('#timePointsRangeGroup').removeAttr('hidden');
-            this.$('#timePointsListGroup').attr('hidden', true);
+            this.$('#timePointsRangeGroup').prop('hidden', false);
             this.$('#timePointsRangeGroup input').prop('required', true);
+            this.$('#timePointsListGroup').prop('hidden', true);
             this.$('#timePointsListGroup input').prop('required', false);
             this.$('#timePoints').val('');
         } else if (e.target.id === "timePointList") {
-            this.$('#timePointsListGroup').removeAttr('hidden');
-            this.$('#timePointsRangeGroup').attr('hidden', true);
+            this.$('#timePointsListGroup').prop('hidden', false);
             this.$('#timePointsListGroup input').prop('required', true);
+            this.$('#timePointsRangeGroup').prop('hidden', true);
             this.$('#timePointsRangeGroup input').prop('required', false);
         }
     },
     changeTestDataType: function(e) {
         if (e.target.id === "uploadTD") {
-            this.$('#testDataUpload').removeAttr('hidden');
-            this.$('#testDataEnter').attr('hidden', true);
+            this.$('#testDataUpload').prop('hidden', false);
             this.$('#testDataFile').prop('required', true);
+            this.$('#testDataEnter').prop('hidden', true);
         } else if (e.target.id === "enterTD") {
-            this.$('#testDataEnter').removeAttr('hidden');
-            this.$('#testDataUpload').attr('hidden', true);
+            this.$('#testDataEnter').prop('hidden', false);
+            this.$('#testDataUpload').prop('hidden', true);
             this.$('#testDataFile').prop('required', false);
             this.$('#testDataFile').val('');
             this.showEnterTestDataView();
@@ -763,16 +763,16 @@ appMixture.TestDataView = Backbone.View.extend({
         var diff1 = _.difference(testData, tempTestData);
         var diff2 = _.difference(tempTestData, testData);
         if( diff1.length > 0 || diff2.length > 0) {
-            this.$('#saveTestData').removeAttr('disabled');
+            this.$('#saveTestData').prop('disabled', false);
         } else {
-            this.$('#saveTestData').attr('disabled', 'disabled');
+            this.$('#saveTestData').prop('disabled', true);
         }
     },
     updateAddButtonStatus: function(e) {
         if ($(e.target).val().length > 0) {
-            this.$('#addTestData').removeAttr('disabled');
+            this.$('#addTestData').prop('disabled', false);
         } else {
-            this.$('#addTestData').attr('disabled', 'disabled');
+            this.$('#addTestData').prop('disabled', true);
         }
     },
     save: function(e) {
