@@ -725,6 +725,7 @@ appMixture.TestDataView = Backbone.View.extend({
             title: "Edit Test Data"
         });
         this.setElement(this.$modal.getModal());
+        this.updateSaveButtonStatus();
     },
     render: function() {
         this.$('.bootstrap-dialog-message').html(this.template(this.model.attributes));
