@@ -749,10 +749,6 @@ appMixture.TestDataView = Backbone.View.extend({
         this.model.get('tempTestData').splice(index, 1);
         this.model.trigger('change:tempTestData');
     },
-    updateTempTestData: function() {
-        this.$('#testDataRows').html(this.tempDataTableView.render().el);
-        this.updateSaveButtonStatus();
-    },
     updateSaveButtonStatus: function() {
         var testData = this.model.get('testData');
         var tempTestData = this.model.get('tempTestData');
