@@ -707,6 +707,7 @@ appMixture.TestDataView = Backbone.View.extend({
         'click #saveTestData': 'save',
         'click #cancelTestData': 'cancel',
         'click #addTestData': 'addTestDataRow',
+        'input input': 'updateAddButtonStatus',
         'click .deleteTestDataButton': 'removeTestDataRow'
     },
     showModal: function() {
@@ -760,6 +761,13 @@ appMixture.TestDataView = Backbone.View.extend({
             this.$('#saveTestData').removeAttr('disabled');
         } else {
             this.$('#saveTestData').attr('disabled', 'disabled');
+        }
+    },
+    updateAddButtonStatus: function(e) {
+        if ($(e.target).val().length > 0) {
+            this.$('#addTestData').removeAttr('disabled');
+        } else {
+            this.$('#addTestData').attr('disabled', 'disabled');
         }
     },
     save: function(e) {
