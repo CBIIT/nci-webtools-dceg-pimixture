@@ -1,13 +1,15 @@
 <div id="prediction-input" class="col-md-6">
     <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
-        <div class="form-group">
-            <label for="rdsFile" class="col-md-3 text-right">Model file:</label>
-            <div class="col-md-9">
-                <% if (data['serverFile']) { %>
+        <div class="well">
+            <div class="form-group">
+                <label for="rdsFile" class="col-md-3 text-right">Model file:</label>
+                <div class="col-md-9">
+                    <% if (data['serverFile']) { %>
                     <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>">
-                <% } else { %>
+                    <% } else { %>
                     <input name="rdsFile" type="file" accept=".rds" required>
-                <% } %>
+                    <% } %>
+                </div>
             </div>
         </div>
         <fieldset class="well">
