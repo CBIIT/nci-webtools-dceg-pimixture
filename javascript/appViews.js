@@ -593,19 +593,16 @@ appMixture.PredictionView = Backbone.View.extend({
         'click #enterTestData': 'showEnterTestDataView'
     },
     initialize: function () {
-        var testDataModel = new appMixture.TestDataModel({
-            // name filed should be valid for HTML id (without spaces and special characters
-            'covariatesArr': [
+        // name filed should be valid for HTML id (without spaces and special characters
+        this.model.set('covariatesArr', [
                 {   name: "RES_HPV16",
                     value: null
-                }]
-        });
-        this.model.set('testDataModel', testDataModel, {silent: true});
+                }]);
         this.template = _.template(appMixture.templates.get('prediction'), {
             'variable': 'data'
         });
         this.model.on({
-            'change': this.render
+            'change:results': this.render
         }, this);
     },
     render: function () {
@@ -636,7 +633,7 @@ appMixture.PredictionView = Backbone.View.extend({
         if (this.$('[name="testDataFile"]')[0].files.length > 0) {
             formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
         } else {
-            jsonData.testData = this.model.get('testDataModel').get('testData');
+            jsonData.testData = this.model.get('testData');
         }
 
         var timePoints = this.$('[name="timePoints"]').val();
@@ -692,7 +689,7 @@ appMixture.PredictionView = Backbone.View.extend({
             this.$('#testDataUpload').prop('hidden', true);
             this.$('#testDataFile').prop('required', false);
             this.$('#testDataFile').val('');
-            if (this.model.get('testDataModel').get('testData').length === 0) {
+            if (this.model.get('testData').length === 0) {
                 this.showEnterTestDataView();
             }
         }
@@ -702,7 +699,7 @@ appMixture.PredictionView = Backbone.View.extend({
             e.preventDefault();
         }
         new appMixture.TestDataView({
-            model: this.model.get('testDataModel')
+            model: this.model
         });
     }
 });
