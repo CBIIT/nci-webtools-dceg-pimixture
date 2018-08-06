@@ -17,6 +17,18 @@
             <%  }); %>
             <td><button id="addTestData" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span></button></td>
         </tr>
+        <%  for(var index = 0; index < tempTestData.length; ++index) {
+            var row = tempTestData[index];
+            %>
+            <tr>
+                <% _.each(covariatesArr, function(field) { %>
+                <td>
+                    <input type="number" disabled value="<%= row[field.name] %>">
+                </td>
+                <% }); %>
+                <td><button class="btn btn-default deleteTestDataButton"><span data-index="<%= index %>" class="glyphicon glyphicon-remove"></span></button></td>
+            </tr>
+        <%  } %>
         </tbody>
         <tfoot>
         </tfoot>

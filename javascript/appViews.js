@@ -700,9 +700,8 @@ appMixture.PredictionView = Backbone.View.extend({
 appMixture.TestDataView = Backbone.View.extend({
     initialize: function () {
         this.template = _.template(appMixture.templates.get('testData'));
-        this.tempDataTableView = new appMixture.TempTestDataTableView({model: this.model});
-        this.render();
-        this.model.on('change:tempTestData', this.updateTempTestData, this);
+        this.showModal();
+        this.model.on('change:tempTestData', this.render, this);
     },
     events: {
         'click #saveTestData': 'save',
@@ -710,7 +709,7 @@ appMixture.TestDataView = Backbone.View.extend({
         'click #addTestData': 'addTestDataRow',
         'click .deleteTestDataButton': 'removeTestDataRow'
     },
-    render: function() {
+    showModal: function() {
         this.$modal = BootstrapDialog.show({
             buttons: [{
                 id: 'saveTestData',
@@ -725,7 +724,10 @@ appMixture.TestDataView = Backbone.View.extend({
             title: "Edit Test Data"
         });
         this.setElement(this.$modal.getModal());
-        this.updateTempTestData();
+    },
+    render: function() {
+        this.$('.bootstrap-dialog-message').html(this.template(this.model.attributes));
+        this.updateSaveButtonStatus();
     },
     addTestDataRow: function(e) {
         e.preventDefault();
@@ -738,7 +740,6 @@ appMixture.TestDataView = Backbone.View.extend({
         }
         tempTestData.push(row);
         this.model.trigger('change:tempTestData');
-        this.tempDataTableView.render();
     },
     removeTestDataRow: function(e) {
         e.preventDefault();
@@ -771,18 +772,6 @@ appMixture.TestDataView = Backbone.View.extend({
         e.preventDefault();
         this.model.set('tempTestData', this.model.get('testData').slice(0));
         this.$modal.close();
-    }
-});
-
-appMixture.TempTestDataTableView = Backbone.View.extend({
-    tagName: 'table',
-    initialize: function() {
-        this.template = _.template(appMixture.templates.get('tempTestData'));
-        this.render();
-    },
-    render: function() {
-        this.$el.html(this.template(this.model.attributes));
-        return this;
     }
 });
 
