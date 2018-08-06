@@ -692,7 +692,9 @@ appMixture.PredictionView = Backbone.View.extend({
             this.$('#testDataUpload').prop('hidden', true);
             this.$('#testDataFile').prop('required', false);
             this.$('#testDataFile').val('');
-            this.showEnterTestDataView();
+            if (this.model.get('testDataModel').get('testData').length === 0) {
+                this.showEnterTestDataView();
+            }
         }
     },
     showEnterTestDataView: function(e) {
