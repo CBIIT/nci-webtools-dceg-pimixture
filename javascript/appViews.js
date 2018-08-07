@@ -771,7 +771,7 @@ appMixture.PredictionView = Backbone.View.extend({
                 zIndex: 2e9, // The z-index (defaults to 2000000000)
                 className: 'spinner', // The CSS class to assign to the spinner
                 top: '50%', // Top position relative to parent
-                left: '50px', // Left position relative to parent
+                left: '50%', // Left position relative to parent
                 shadow: '0 0 1px transparent', // Box-shadow for the lines
                 position: 'absolute' // Element positioning
             };
