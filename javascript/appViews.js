@@ -595,18 +595,23 @@ appMixture.PredictionView = Backbone.View.extend({
     initialize: function () {
         // name filed should be valid for HTML id (without spaces and special characters
         this.model.set('covariatesArr', [
-                {   name: "RES_HPV16",
-                    value: null
-                }]);
+            {
+                name: "RES_HPV16",
+                value: null
+            }]);
         this.template = _.template(appMixture.templates.get('prediction'), {
             'variable': 'data'
         });
         this.model.on({
             'change:results': this.render
         }, this);
+
+        appMixture.predictionResultModel = new appMixture.PredictionResultModel();
+        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
+        this.$('#results').html(appMixture.predictionResultView.render().el);
         return this;
     },
     resetForm: function(e) {
@@ -646,10 +651,9 @@ appMixture.PredictionView = Backbone.View.extend({
         }
         formData.append('jsonData', JSON.stringify(jsonData));
 
-        this.model.unset('error', {silent: true});
-        this.model.unset('results', {silent: true});
-        this.model.trigger('change');
-        this.model.fetch({
+        this.$('#error-message').html('');
+        appMixture.predictionResultModel.clear();
+        appMixture.predictionResultModel.fetch({
             data: formData,
             cache: false,
             contentType: false,
@@ -661,7 +665,7 @@ appMixture.PredictionView = Backbone.View.extend({
             error: function(model, res, options) {
                 console.log(res.responseJSON);
                 $that.$('#runPredict').prop('disabled', false);
-                $that.model.set('error', res.responseText);
+                $that.$('#error-message').html(res.responseText);
             }
         });
     },
@@ -784,6 +788,22 @@ appMixture.TestDataView = Backbone.View.extend({
         e.preventDefault();
         this.model.set('tempTestData', this.model.get('testData').slice(0));
         this.$modal.close();
+    }
+});
+
+appMixture.PredictionResultView = Backbone.View.extend({
+    tagName: 'div',
+    initialize: function() {
+        this.template = _.template(appMixture.templates.get('predictionResults'), {
+            'variable': 'data'
+        });
+        this.model.on({
+            'change:results': this.render
+        }, this);
+    },
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
     }
 });
 
