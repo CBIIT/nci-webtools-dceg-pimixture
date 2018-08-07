@@ -621,7 +621,6 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
-        this.$('#runPredict').prop('disabled', true);
         var $that = this;
         var formData = new FormData();
         var jsonData = {};
@@ -635,15 +634,20 @@ appMixture.PredictionView = Backbone.View.extend({
             // TODO: display error when no files provided
         }
 
-        if (this.$('[name="testDataFile"]')[0].files.length > 0) {
+        if (this.model.get('testDataType') === 'Upload') {
             formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
         } else {
-            jsonData.testData = this.model.get('testData');
+            var testData = this.model.get('testData');
+            if (testData.length > 0) {
+                jsonData.testData = testData;
+            } else {
+                this.$('#error-message').html('Test Data is required, please enter test data or upload a csv file!');
+                return;
+            }
         }
 
-        var timePoints = this.$('[name="timePoints"]').val();
-        if (timePoints) {
-            jsonData.timePoints = timePoints.split(',');
+        if (this.model.get('timePointType') === 'List') {
+            jsonData.timePoints = this.$('[name="timePoints"]').val().split(',');
         } else {
             jsonData["begin"] = this.$('[name="begin"]').val();
             jsonData["end"] = this.$('[name="end"]').val();
@@ -653,6 +657,7 @@ appMixture.PredictionView = Backbone.View.extend({
 
         this.$('#error-message').html('');
         appMixture.predictionResultModel.clear();
+        this.$('#runPredict').prop('disabled', true);
         appMixture.predictionResultModel.fetch({
             data: formData,
             cache: false,
@@ -671,12 +676,13 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     changeTimePointType: function(e) {
         if (e.target.id === "timePointRange") {
+            this.model.set('timePointType', 'Range');
             this.$('#timePointsRangeGroup').prop('hidden', false);
             this.$('#timePointsRangeGroup input').prop('required', true);
             this.$('#timePointsListGroup').prop('hidden', true);
             this.$('#timePointsListGroup input').prop('required', false);
-            this.$('#timePoints').val('');
         } else if (e.target.id === "timePointList") {
+            this.model.set('timePointType', 'List');
             this.$('#timePointsListGroup').prop('hidden', false);
             this.$('#timePointsListGroup input').prop('required', true);
             this.$('#timePointsRangeGroup').prop('hidden', true);
@@ -685,14 +691,15 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     changeTestDataType: function(e) {
         if (e.target.id === "uploadTD") {
+            this.model.set('testDataType', 'Upload');
             this.$('#testDataUpload').prop('hidden', false);
             this.$('#testDataFile').prop('required', true);
             this.$('#testDataEnter').prop('hidden', true);
         } else if (e.target.id === "enterTD") {
+            this.model.set('testDataType', 'Enter');
             this.$('#testDataEnter').prop('hidden', false);
             this.$('#testDataUpload').prop('hidden', true);
             this.$('#testDataFile').prop('required', false);
-            this.$('#testDataFile').val('');
             if (this.model.get('testData').length === 0) {
                 this.showEnterTestDataView();
             }

@@ -52,6 +52,8 @@ appMixture.ResultsModel = Backbone.Model.extend({
 
 appMixture.PredictionModel = Backbone.Model.extend({
     defaults: {
+        'testDataType': 'Upload',
+        'timePointType': 'Range',
         'testData': [],
         'tempTestData': []
     }
