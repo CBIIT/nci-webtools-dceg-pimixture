@@ -658,6 +658,7 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#error-message').html('');
         appMixture.predictionResultModel.clear();
         this.$('#runPredict').prop('disabled', true);
+        this.startSpinner();
         appMixture.predictionResultModel.fetch({
             data: formData,
             cache: false,
@@ -666,11 +667,13 @@ appMixture.PredictionView = Backbone.View.extend({
             type: "POST",
             success: function(model, res, options) {
                 $that.$('#runPredict').prop('disabled', false);
+                $that.stopSpinner();
             },
             error: function(model, res, options) {
                 console.log(res.responseJSON);
                 $that.$('#runPredict').prop('disabled', false);
                 $that.$('#error-message').html(res.responseText);
+                $that.stopSpinner();
             }
         });
     },
@@ -712,6 +715,37 @@ appMixture.PredictionView = Backbone.View.extend({
         new appMixture.TestDataView({
             model: this.model
         });
+    },
+    startSpinner: function() {
+        var target = this.$('#indicator')[0];
+        if (this.spinner) {
+            this.spinner.spin(target);
+        } else {
+            var opts = {
+                lines: 13, // The number of lines to draw
+                length: 27, // The length of each line
+                width: 11, // The line thickness
+                radius: 20, // The radius of the inner circle
+                scale: 0.25, // Scales overall size of the spinner
+                corners: 1, // Corner roundness (0..1)
+                color: '#ffffff', // CSS color or array of colors
+                fadeColor: 'transparent', // CSS color or array of colors
+                speed: 0.8, // Rounds per second
+                rotate: 0, // The rotation offset
+                animation: 'spinner-line-fade-more', // The CSS animation name for the lines
+                direction: 1, // 1: clockwise, -1: counterclockwise
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                className: 'spinner', // The CSS class to assign to the spinner
+                top: '50%', // Top position relative to parent
+                left: '50px', // Left position relative to parent
+                shadow: '0 0 1px transparent', // Box-shadow for the lines
+                position: 'absolute' // Element positioning
+            };
+            this.spinner = new Spinner(opts).spin(target);
+        }
+    },
+    stopSpinner: function() {
+        this.spinner.stop();
     }
 });
 
