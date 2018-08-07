@@ -28,7 +28,7 @@ var appMixture = {
 
 appMixture.FormView = Backbone.View.extend({
     tagName: 'div',
-    className: 'col-md-6',
+    className: 'col-md-5',
     id: 'input',
     initialize: function () {
         this.template = _.template(appMixture.templates.get('form'), {
@@ -599,7 +599,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
 
 appMixture.ResultsView = Backbone.View.extend({
     tagName: 'div',
-    className: 'col-md-6',
+    className: 'col-md-7',
     id: 'output',
     initialize: function () {
         this.model.on({

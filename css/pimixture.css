@@ -19,12 +19,13 @@ body {
     font-weight: bold;
     margin-top: 10px;
     margin-bottom: 10px;
+    padding-left: 15px;
 }
 #input {
-    max-width: 500px;
+    /*max-width: 500px;*/
 }
 #prediction-input {
-    max-width: 560px;
+    /*max-width: 560px;*/
 }
 
 .well {
@@ -203,4 +204,23 @@ h2.stage-header {
 
 #error-message {
   color: red;
+}
+
+@media(min-width: 1440px){
+.container {
+    width: 1440px;
+  }
+}
+
+@media(max-width: 1439px) and (min-width: 994px){
+.container {
+    width: 98%;
+  }
+}
+
+
+@media(max-width: 993px) {
+    .container {
+        width: 98%;
+    }
 }
