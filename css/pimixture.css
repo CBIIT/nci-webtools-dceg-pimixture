@@ -34,16 +34,7 @@ body {
 .well ~ .well {
     margin-top: 20px;
 }
-#input label {
-    display: inline-block;
-    vertical-align: middle;
-    width: 140px;
-}
-#input label ~ * {
-    display: inline-block;
-    vertical-align: middle;
-    width: 255px;
-}
+
 #input label ~ button {
     width: 100%;
 }
@@ -64,19 +55,19 @@ body {
     /*display: none;*/
 }
 
-#output,
-#prediction-output {
+#output p,
+#prediction-output p{
     overflow: auto;
-    min-height: 774px;
+    min-height: 858px;
     border: thin solid lightgray;
 }
 
-#prediction-output {
-    min-height: 488px;
+#prediction-output p{
+    min-height: 621px;
 }
 
 #prediction-results {
-    max-height: 482px;
+    max-height: 580px;
     overflow-y: auto;
 }
 
@@ -204,6 +195,13 @@ h2.stage-header {
 
 #error-message {
   color: red;
+}
+
+#covariatesSet {
+    margin-left: -15px;
+    margin-right: -15px;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 @media(min-width: 1440px){

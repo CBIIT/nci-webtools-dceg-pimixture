@@ -61,10 +61,6 @@ appMixture.FormView = Backbone.View.extend({
     },
     render: function() {
         this.$el.html(this.template(this.model.attributes));
-        this.$el.find('[name="covariatesSelection"]').selectize({
-            plugins: ['remove_button'],
-            sortField: 'order'
-        });
         return this;
     },
     runCalculation: function (e) {
@@ -181,6 +177,12 @@ appMixture.FormView = Backbone.View.extend({
                             }
                         }
                     }
+                    $that.enableInputs();
+                    $that.$('[name="covariatesSelection"]').selectize({
+                        plugins: ['remove_button'],
+                        sortField: 'order'
+                    });
+
                     $that.model.set({
                         'csvFile': e.target.files[0],
                         'headers': headers.sort(),
@@ -198,6 +200,10 @@ appMixture.FormView = Backbone.View.extend({
                 });
             }
         }
+    },
+    enableInputs: function() {
+        this.$('[name="design"], [name="model"], [name="outcomeC"], [name="outcomeL"], '
+            + '[name="outcomeR"], [name="covariatesSelection"], [name="email"]').prop('disabled', false);
     },
     updateModel: function (e) {
         e.preventDefault();
