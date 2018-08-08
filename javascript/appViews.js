@@ -55,6 +55,7 @@ appMixture.FormView = Backbone.View.extend({
         'keyup input[type="text"]': 'updateModel',
         'change input[type="checkbox"]': 'updateModel',
         'change select': 'updateModel',
+        'change [name="sendToQueue"]': 'changeQueueStatus',
         'click #effectsButton': 'openInteractiveEffects',
         'click #referencesButton': 'openReferenceGroups',
         'submit #calculationForm': 'runCalculation'
@@ -203,7 +204,8 @@ appMixture.FormView = Backbone.View.extend({
     },
     enableInputs: function() {
         this.$('[name="design"], [name="model"], [name="outcomeC"], [name="outcomeL"], '
-            + '[name="outcomeR"], [name="covariatesSelection"], [name="email"]').prop('disabled', false);
+            + '[name="outcomeR"], [name="covariatesSelection"], [name="email"], [name="sendToQueue"]'
+        ).prop('disabled', false);
     },
     updateModel: function (e) {
         e.preventDefault();
@@ -222,6 +224,13 @@ appMixture.FormView = Backbone.View.extend({
         }
         this.model.set(name, val);
         this.updateOptions();
+    },
+    changeQueueStatus: function(e) {
+        if ($(e.target).prop('checked')) {
+            this.$('#queueMessage').prop('hidden', false);
+        } else {
+            this.$('#queueMessage').prop('hidden', true);
+        }
     },
     changeCovariateList: function () {
         var model = this.model,
