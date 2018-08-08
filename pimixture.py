@@ -198,9 +198,9 @@ def runPredict():
                 step = int(parameters['stepSize']) if 'stepSize' in parameters else 1
                 parameters['timePoints'] = list(range(start, end + 1, step))
 
-        r = pr.R();
+        r = pr.R()
         r('source("./pimixtureWrapper.R")')
-        r.assign('parameters',json.dumps(parameters));
+        r.assign('parameters',json.dumps(parameters))
         rOutput = r('predictionResult = runPredict(parameters)')
         rResults = r.get('predictionResult')
         if not rResults:
