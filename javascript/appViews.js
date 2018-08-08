@@ -703,13 +703,12 @@ appMixture.PredictionView = Backbone.View.extend({
         var formData = new FormData();
         var jsonData = {};
 
-        var serverFile = this.$('[name="serverFile"]').val();
+        var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
-        } else if (this.$('[name="rdsFile"]')[0].files.length > 0) {
-            formData.append('rdsFile', this.$('[name="rdsFile"]')[0].files[0]);
         } else {
-            // TODO: display error when no files provided
+            this.$('error-message').html('Please choose a valid model file!');
+            return;
         }
 
         if (this.model.get('testDataType') === 'Upload') {
