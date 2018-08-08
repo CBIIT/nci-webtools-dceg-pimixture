@@ -242,6 +242,55 @@ def runPredict():
                 if os.path.isfile(filename):
                     os.remove(filename)
 
+@app.route('/uploadModel', methods=["POST"])
+def uploadModelFile():
+    try:
+        if len(request.files) > 0 and 'rdsFile' in request.files:
+            id = str(uuid.uuid4())
+            modelFile = request.files['rdsFile']
+            ext = os.path.splitext(modelFile.filename)[1]
+            inputModelFileName = getInputFilePath(id, ext)
+            modelFile.save(inputModelFileName)
+            if os.path.isfile(inputModelFileName):
+                r = pr.R()
+                r('source("./pimixtureWrapper.R")')
+                r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
+                params = r.get('params')
+                print(params)
+                print(r('covariates <- readFromRDS(params)'))
+                results = r.get('covariates')
+                if results:
+                    covariatesArr = json.loads(results)
+                    return buildSuccess(
+                        {
+                            'serverFile': inputModelFileName,
+                            'covariatesArr': covariatesArr
+                        }
+                    )
+                else:
+                    message = "Couldn't read covariates from RDS file!"
+                    print message
+                    return buildFailure(message, 400)
+            else:
+                message = "Upload RDS file failed!"
+                print message
+                return buildFailure(message, 500)
+        else:
+            message = "No valid RDS file provided!"
+            print message
+            return buildFailure(message, 500)
+
+    except Exception as e:
+        exc_type, exc_obj, tb = sys.exc_info()
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        errFileName = f.f_code.co_filename
+        linecache.checkcache(errFileName)
+        line = linecache.getline(errFileName, lineno, f.f_globals)
+        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+
+
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)
 

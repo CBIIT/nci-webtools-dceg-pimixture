@@ -635,6 +635,7 @@ appMixture.PredictionView = Backbone.View.extend({
     events: {
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
+        'input [name="rdsFile"]': 'uploadModelFile',
         'click #timePointRange': 'changeTimePointType',
         'click #timePointList': 'changeTimePointType',
         'click #uploadTD': 'changeTestDataType',
@@ -642,17 +643,15 @@ appMixture.PredictionView = Backbone.View.extend({
         'click #enterTestData': 'showEnterTestDataView'
     },
     initialize: function () {
-        // name filed should be valid for HTML id (without spaces and special characters
-        this.model.set('covariatesArr', [
-            {
-                name: "RES_HPV16",
-                value: null
-            }]);
         this.template = _.template(appMixture.templates.get('prediction'), {
             'variable': 'data'
         });
+
         this.model.on({
             'change:results': this.render
+        }, this);
+        this.model.on({
+            'change:covariatesArr': this.covariatesUpdated
         }, this);
 
         appMixture.predictionResultModel = new appMixture.PredictionResultModel();
@@ -667,6 +666,36 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#timePointsRangeGroup').prop('hidden', false);
         this.$('#timePointsListGroup').prop('hidden', true);
         this.$('#timePointsListGroup').val("");
+    },
+    uploadModelFile: function(e) {
+        var $that = this;
+        var file = e.target.files[0];
+        if (file) {
+            var formData = new FormData();
+            formData.append('rdsFile', file);
+            this.model.fetch({
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "POST",
+                success: function(model, res, options) {
+                    // Model should be updated already
+                },
+                error: function(model, res, options) {
+                    console.log(res.responseText);
+                    $that.$('#error-message').html(res.responseText)
+                }
+            })
+
+        }
+    },
+    covariatesUpdated: function() {
+        if (this.model.get('covariatesArr').length > 0) {
+            this.$('#enterTestData').prop('disabled', false);
+        } else {
+            this.$('#enterTestData').prop('disabled', true);
+        }
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
@@ -752,7 +781,7 @@ appMixture.PredictionView = Backbone.View.extend({
             this.$('#testDataEnter').prop('hidden', false);
             this.$('#testDataUpload').prop('hidden', true);
             this.$('#testDataFile').prop('required', false);
-            if (this.model.get('testData').length === 0) {
+            if (this.model.get('covariatesArr').length > 0 && this.model.get('testData').length === 0) {
                 this.showEnterTestDataView();
             }
         }

@@ -12,6 +12,7 @@ runCalculation <- function(jsonData) {
     }
     time.interval = 1e-2
     result <-PIMixture(p.model=p.model,data=csvFile, model=model)
+    result$covariatesSelection <- input$covariatesSelection
     outputFileName = input$outputRdsFilename
     cat(outputFileName)
     saveRDS(result, outputFileName)
@@ -21,7 +22,6 @@ runCalculation <- function(jsonData) {
       xAxis=as.vector(result$cum.hazard[[1]]),
       yAxis=as.vector(result$cum.hazard[[2]])
     )
-    print ("saving RDS")
     returnValue = toJSON(list(
       cumulative.hazard = result$cum.hazard,
       data.summary = result$data.summary,
@@ -72,4 +72,13 @@ runPredictDummy <- function(jsonData) {
     print("predicted")
     exportJson <- toJSON(predict)
     return (exportJson)
+}
+
+readFromRDS <- function(jsonData) {
+    input = fromJSON(jsonData)
+    filename <- input$rdsFile
+    model <- readRDS(filename)
+    print(model$covariatesSelection)
+    print(model)
+    return (toJSON(model$covariatesSelection))
 }

@@ -51,7 +51,20 @@ appMixture.ResultsModel = Backbone.Model.extend({
 });
 
 appMixture.PredictionModel = Backbone.Model.extend({
+    url: 'uploadModel',
+    parse: function(res) {
+        if (res.covariatesArr) {
+            res.covariatesArr = res.covariatesArr.map(function(cov) {
+                return {
+                    name: cov, // name filed should be valid for HTML id (without spaces and special characters
+                    value: null
+                };
+            });
+        }
+        return res;
+    },
     defaults: {
+        'covariatesArr': [],
         'testDataType': 'Upload',
         'timePointType': 'Range',
         'testData': [],
