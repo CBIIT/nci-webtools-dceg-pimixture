@@ -1,44 +1,42 @@
 <% if (data.results) { %>
-    <div class="col-md-7">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">Prediction Results</h4>
-            </div>
-            <div id="prediction-results" class="panel-body">
-                <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>time</th>
-                        <th>cox.predictor</th>
-                        <th>logit.predictor</th>
-                        <th>CR</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% for (var res of data.results.prediction) { %>
-                    <tr>
-                        <td>
-                            <%= res.time %><br/>
-                        </td>
-                        <td>
-                            <%= res['cox.predictor'] %><br/>
-                        </td>
-                        <td>
-                            <%= res['logit.predictor']%><br/>
-                        </td>
-                        <td>
-                            <%= res.CR %><br/>
-                        </td>
-                    </tr>
-                    <% } %>
-                    </tbody>
-                </table>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">Prediction Results</h4>
+        </div>
+        <div id="prediction-results" class="panel-body">
+            <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+            <table>
+                <thead>
+                <tr>
+                    <th>time</th>
+                    <th>cox.predictor</th>
+                    <th>logit.predictor</th>
+                    <th>CR</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% for (var res of data.results.prediction) { %>
+                <tr>
+                    <td>
+                        <%= res.time %><br/>
+                    </td>
+                    <td>
+                        <%= res['cox.predictor'] %><br/>
+                    </td>
+                    <td>
+                        <%= res['logit.predictor']%><br/>
+                    </td>
+                    <td>
+                        <%= res.CR %><br/>
+                    </td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
         </div>
     </div>
 <% } else { %>
-    <div id="prediction-output" class="col-md-7">
+    <div id="prediction-output">
         <p class="">Upload your model file and provide prediction configuration on the left panel. The results will be displayed here once you click on Submit button.</p>
     </div>
 <% } %>
