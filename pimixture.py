@@ -261,12 +261,15 @@ def uploadModelFile():
                 results = r.get('covariates')
                 if results:
                     covariatesArr = json.loads(results)
-                    return buildSuccess(
-                        {
-                            'serverFile': inputModelFileName,
-                            'covariatesArr': covariatesArr
-                        }
-                    )
+                    if len(covariatesArr) > 0:
+                        return buildSuccess({
+                                'serverFile': inputModelFileName,
+                                'covariatesArr': covariatesArr
+                            })
+                    else:
+                        message = "Couldn't read covariates from RDS file!"
+                        print message
+                        return buildFailure(message, 400)
                 else:
                     message = "Couldn't read covariates from RDS file!"
                     print message

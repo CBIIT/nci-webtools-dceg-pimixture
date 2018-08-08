@@ -78,7 +78,10 @@ readFromRDS <- function(jsonData) {
     input = fromJSON(jsonData)
     filename <- input$rdsFile
     model <- readRDS(filename)
-    print(model$covariatesSelection)
-    print(model)
-    return (toJSON(model$covariatesSelection))
+    covariatesArr <- model$covariatesSelection
+    if (is.null(covariatesArr)) {
+        return ("[]")
+    } else {
+        return (toJSON(covariatesArr))
+    }
 }

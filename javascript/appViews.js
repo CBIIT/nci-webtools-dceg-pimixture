@@ -680,7 +680,7 @@ appMixture.PredictionView = Backbone.View.extend({
                 processData: false,
                 type: "POST",
                 success: function(model, res, options) {
-                    // Model should be updated already
+                    $that.$('#error-message').html('');
                 },
                 error: function(model, res, options) {
                     console.log(res.responseText);
