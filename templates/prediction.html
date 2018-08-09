@@ -11,23 +11,10 @@
                     <% } %>
                 </div>
             </div>
-        </fieldset>
-        <fieldset class="well">
-            <h4 class="">Test Data:</h4>
             <div class="form-group">
-                <div class="pull-left">
-                    <label class="radio-inline"><input type="radio" name="testDataType" id="uploadTD" checked>Upload file</label>
-                    <label class="radio-inline"><input type="radio" name="testDataType" id="enterTD"> Enter manually</label>
-                </div>
-            </div>
-            <div id="testDataUpload" class="form-group">
-                <div class="col-md-8 col-md-offset-4">
+                <label for="testDataFile" class="col-md-4 text-right">Test Data:</label>
+                <div class="col-md-8">
                     <input id="testDataFile" name="testDataFile" type="file" accept=".csv" required>
-                </div>
-            </div>
-            <div id="testDataEnter" class="form-group" hidden>
-                <div class="col-md-9 pull-right">
-                    <button id="enterTestData" class="form-control btn btn-default" disabled>Enter Test Data</button>
                 </div>
             </div>
         </fieldset>
