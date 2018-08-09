@@ -208,6 +208,19 @@ fieldset.well .form-group {
     margin: 0 0 15px 0;
 }
 
+.modal-header {
+    background-color: #2A71A5;
+}
+
+.modal-header,
+.modal-header .close{
+    color: white;
+}
+
+.modal-header .close{
+    opacity: 0.9;
+}
+
 #queueMessage {
     color: green;
 }
