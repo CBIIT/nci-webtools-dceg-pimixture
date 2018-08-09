@@ -131,7 +131,7 @@ appMixture.FormView = Backbone.View.extend({
     },
     resetModel: function(e) {
         this.model.clear();
-        this.updateOptions();
+        this.render();
     },
     openInteractiveEffects: function (e) {
         e.preventDefault();
