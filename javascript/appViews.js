@@ -80,6 +80,7 @@ appMixture.FormView = Backbone.View.extend({
         delete params.csvFile;
         formData.append('jsonData', JSON.stringify(params));
         this.startSpinner();
+        $that.$('#error-message').html('');
         appMixture.models.results.fetch({
             data: formData,
             cache: false,
@@ -94,7 +95,7 @@ appMixture.FormView = Backbone.View.extend({
                 console.log(res.responseText);
                 $that.$('#run').prop("disabled", false);
                 $that.stopSpinner();
-                $that.$('#error-message').html(res.responseText)
+                $that.$('#error-message').html(res.responseText);
             }
         });
     },
@@ -222,8 +223,33 @@ appMixture.FormView = Backbone.View.extend({
                 if (!Number.isNaN(parseInt(val))) val = parseInt(val);
                 break;
         }
+
         this.model.set(name, val);
         this.updateOptions();
+
+        if (appMixture.variables.indexOf(name) != -1) {
+            this.checkMutuallyExclusive();
+        }
+    },
+    checkMutuallyExclusive: function() {
+        for (var name of appMixture.variables) {
+            this.$('#' + name).removeClass('has-error');
+        }
+
+        for (var i = 0; i < appMixture.variables.length; ++i) {
+            var name1 = appMixture.variables[i];
+            var val1 = this.model.get(name1);
+            if (val1) {
+                for (var j = i + 1; j < appMixture.variables.length; ++j) {
+                    var name2 = appMixture.variables[j];
+                    var val2 = this.model.get(name2);
+                    if (val2 && val1 === val2) {
+                        this.$('#' + name1).addClass('has-error');
+                        this.$('#' + name2).addClass('has-error');
+                    }
+                }
+            }
+        }
     },
     changeQueueStatus: function(e) {
         if ($(e.target).prop('checked')) {
