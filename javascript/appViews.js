@@ -636,12 +636,8 @@ appMixture.PredictionView = Backbone.View.extend({
     events: {
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
-        'input [name="rdsFile"]': 'uploadModelFile',
         'click #timePointRange': 'changeTimePointType',
-        'click #timePointList': 'changeTimePointType',
-        'click #uploadTD': 'changeTestDataType',
-        'click #enterTD': 'changeTestDataType',
-        'click #enterTestData': 'showEnterTestDataView'
+        'click #timePointList': 'changeTimePointType'
     },
     initialize: function () {
         this.template = _.template(appMixture.templates.get('prediction'), {
@@ -650,9 +646,6 @@ appMixture.PredictionView = Backbone.View.extend({
 
         this.model.on({
             'change:results': this.render
-        }, this);
-        this.model.on({
-            'change:covariatesArr': this.covariatesUpdated
         }, this);
 
         appMixture.predictionResultModel = new appMixture.PredictionResultModel();
@@ -668,36 +661,6 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#timePointsListGroup').prop('hidden', true);
         this.$('#timePointsListGroup').val("");
     },
-    uploadModelFile: function(e) {
-        var $that = this;
-        var file = e.target.files[0];
-        if (file) {
-            var formData = new FormData();
-            formData.append('rdsFile', file);
-            this.model.fetch({
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                type: "POST",
-                success: function(model, res, options) {
-                    $that.$('#error-message').html('');
-                },
-                error: function(model, res, options) {
-                    console.log(res.responseText);
-                    $that.$('#error-message').html(res.responseText)
-                }
-            })
-
-        }
-    },
-    covariatesUpdated: function() {
-        if (this.model.get('covariatesArr').length > 0) {
-            this.$('#enterTestData').prop('disabled', false);
-        } else {
-            this.$('#enterTestData').prop('disabled', true);
-        }
-    },
     onSubmitPredict: function (e) {
         e.preventDefault();
         var $that = this;
@@ -707,22 +670,14 @@ appMixture.PredictionView = Backbone.View.extend({
         var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
+        } else if (this.$('[name="rdsFile"]')[0].files.length > 0) {
+            formData.append('rdsFile', this.$('[name="rdsFile"]')[0].files[0]);
         } else {
-            this.$('error-message').html('Please choose a valid model file!');
+            this.$('#error-message').html('Please choose a valid model file!');
             return;
         }
 
-        if (this.model.get('testDataType') === 'Upload') {
-            formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
-        } else {
-            var testData = this.model.get('testData');
-            if (testData.length > 0) {
-                jsonData.testData = testData;
-            } else {
-                this.$('#error-message').html('Test Data is required, please enter test data or upload a csv file!');
-                return;
-            }
-        }
+        formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
 
         if (this.model.get('timePointType') === 'List') {
             jsonData.timePoints = this.$('[name="timePoints"]').val().split(',');
@@ -770,30 +725,6 @@ appMixture.PredictionView = Backbone.View.extend({
             this.$('#timePointsRangeGroup input').prop('required', false);
         }
     },
-    changeTestDataType: function(e) {
-        if (e.target.id === "uploadTD") {
-            this.model.set('testDataType', 'Upload');
-            this.$('#testDataUpload').prop('hidden', false);
-            this.$('#testDataFile').prop('required', true);
-            this.$('#testDataEnter').prop('hidden', true);
-        } else if (e.target.id === "enterTD") {
-            this.model.set('testDataType', 'Enter');
-            this.$('#testDataEnter').prop('hidden', false);
-            this.$('#testDataUpload').prop('hidden', true);
-            this.$('#testDataFile').prop('required', false);
-            if (this.model.get('covariatesArr').length > 0 && this.model.get('testData').length === 0) {
-                this.showEnterTestDataView();
-            }
-        }
-    },
-    showEnterTestDataView: function(e) {
-        if (e) {
-            e.preventDefault();
-        }
-        new appMixture.TestDataView({
-            model: this.model
-        });
-    },
     startSpinner: function() {
         var target = this.$('#indicator')[0];
         if (this.spinner) {
@@ -824,89 +755,6 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     stopSpinner: function() {
         this.spinner.stop();
-    }
-});
-
-appMixture.TestDataView = Backbone.View.extend({
-    initialize: function () {
-        this.template = _.template(appMixture.templates.get('testData'));
-        this.showModal();
-        this.model.on('change:tempTestData', this.render, this);
-    },
-    events: {
-        'click #saveTestData': 'save',
-        'click #cancelTestData': 'cancel',
-        'click #addTestData': 'addTestDataRow',
-        'input input': 'updateAddButtonStatus',
-        'click .deleteTestDataButton': 'removeTestDataRow'
-    },
-    showModal: function() {
-        this.$modal = BootstrapDialog.show({
-            buttons: [{
-                id: 'saveTestData',
-                cssClass: 'btn-primary save',
-                label: 'Save'
-            }, {
-                id: 'cancelTestData',
-                cssClass: 'btn-primary',
-                label: 'Cancel'
-            }],
-            message: $(this.template(this.model.attributes)),
-            title: "Edit Test Data"
-        });
-        this.setElement(this.$modal.getModal());
-        this.updateSaveButtonStatus();
-    },
-    render: function() {
-        this.$('.bootstrap-dialog-message').html(this.template(this.model.attributes));
-        this.updateSaveButtonStatus();
-    },
-    addTestDataRow: function(e) {
-        e.preventDefault();
-        console.log("Update model");
-        var tempTestData = this.model.get('tempTestData');
-        var row = {};
-        for (var model of this.model.get('covariatesArr')) {
-            row[model.name] = parseFloat(this.$('#' + model.name + '_value').val());
-            this.$('#' + model.name + '_value').val("");
-        }
-        tempTestData.push(row);
-        this.model.trigger('change:tempTestData');
-    },
-    removeTestDataRow: function(e) {
-        e.preventDefault();
-        var index = parseInt(e.target.dataset.index);
-        this.model.get('tempTestData').splice(index, 1);
-        this.model.trigger('change:tempTestData');
-    },
-    updateSaveButtonStatus: function() {
-        var testData = this.model.get('testData');
-        var tempTestData = this.model.get('tempTestData');
-        var diff1 = _.difference(testData, tempTestData);
-        var diff2 = _.difference(tempTestData, testData);
-        if( diff1.length > 0 || diff2.length > 0) {
-            this.$('#saveTestData').prop('disabled', false);
-        } else {
-            this.$('#saveTestData').prop('disabled', true);
-        }
-    },
-    updateAddButtonStatus: function(e) {
-        if ($(e.target).val().length > 0) {
-            this.$('#addTestData').prop('disabled', false);
-        } else {
-            this.$('#addTestData').prop('disabled', true);
-        }
-    },
-    save: function(e) {
-        e.preventDefault();
-        console.log("Save test data");
-        this.model.set('testData', this.model.get('tempTestData').slice(0));
-        this.$modal.close();
-    },
-    cancel: function(e) {
-        e.preventDefault();
-        this.model.set('tempTestData', this.model.get('testData').slice(0));
-        this.$modal.close();
     }
 });
 
