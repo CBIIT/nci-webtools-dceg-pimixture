@@ -4,7 +4,9 @@
             <h4 class="panel-title">Prediction Results</h4>
         </div>
         <div id="prediction-results" class="panel-body">
-            <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+            <div class="download-buttons">
+                <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+            </div>
             <table>
                 <thead>
                 <tr>

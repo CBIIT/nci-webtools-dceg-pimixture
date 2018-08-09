@@ -133,13 +133,13 @@ input[disabled],
 [disabled] {
     cursor: not-allowed;
 }
-@media (max-width: 960px) {
+@media (max-width: 992px) {
     #input,
     #prediction-input {
         float: none;
-        margin-right: 15px;
         max-width: 100%;
     }
+    #results,
     #output {
         margin-top: 15px;
     }
@@ -149,6 +149,7 @@ input[disabled],
     #prediction-input{
         margin: 0px;
     }
+    #results,
     #output {
         margin: 15px 0px 0px;
     }
@@ -223,6 +224,17 @@ fieldset.well .form-group {
 
 #queueMessage {
     color: green;
+}
+
+#prediction-results td,
+#prediction-results th,
+#output td,
+#output th {
+    border: thin solid darkgray;
+}
+
+.download-buttons {
+    margin-bottom: 15px;
 }
 
 @media(min-width: 1440px){
