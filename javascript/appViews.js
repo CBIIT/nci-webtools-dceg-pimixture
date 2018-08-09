@@ -300,7 +300,8 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     changeEffectsList: function () {
-        var model = this.model
+        return; // Don't display current interactive effects in form
+        var model = this.model;
         var effects = appMixture.models.form.attributes.effects;
         var effects_String = "";
         counter = 1
