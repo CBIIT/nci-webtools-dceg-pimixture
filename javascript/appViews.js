@@ -65,6 +65,10 @@ appMixture.FormView = Backbone.View.extend({
         return this;
     },
     runCalculation: function (e) {
+        e.preventDefault();
+        if (!this.model.get('isMutuallyExclusive')) {
+            return;
+        }
         this.$('#run').prop("disabled", true);
         appMixture.models.results.clear();
         e.preventDefault();
@@ -232,6 +236,8 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     checkMutuallyExclusive: function() {
+        this.model.set('isMutuallyExclusive', true);
+        this.$('#mutex-error').html('');
         for (var name of appMixture.variables) {
             this.$('#' + name).removeClass('has-error');
         }
@@ -246,6 +252,8 @@ appMixture.FormView = Backbone.View.extend({
                     if (val2 && val1 === val2) {
                         this.$('#' + name1).addClass('has-error');
                         this.$('#' + name2).addClass('has-error');
+                        this.model.set('isMutuallyExclusive', false);
+                        this.$('#mutex-error').html('Please make sure C, L and R are mutually exclusive!');
                     }
                 }
             }

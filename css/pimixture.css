@@ -194,7 +194,8 @@ h2.stage-header {
     display: inline-block;
 }
 
-#error-message {
+#error-message,
+#mutex-error {
   color: red;
 }
 
