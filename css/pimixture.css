@@ -56,14 +56,14 @@ body {
 }
 
 #output p,
-#prediction-output p{
+#results p{
     overflow: auto;
-    min-height: 858px;
+    min-height: 872px;
     border: thin solid lightgray;
 }
 
-#prediction-output p{
-    min-height: 621px;
+#results p{
+    min-height: 515px;
 }
 
 #prediction-results {
@@ -72,7 +72,7 @@ body {
 }
 
 #output p,
-#prediction-output p {
+#results p {
     padding: 10px 10px;
 }
 

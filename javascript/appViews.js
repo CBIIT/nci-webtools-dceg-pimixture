@@ -687,7 +687,7 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
-        this.$('#results').html(appMixture.predictionResultView.render().el);
+        this.$el.append(appMixture.predictionResultView.render().el);
         return this;
     },
     resetForm: function(e) {
@@ -794,6 +794,8 @@ appMixture.PredictionView = Backbone.View.extend({
 
 appMixture.PredictionResultView = Backbone.View.extend({
     tagName: 'div',
+    id: 'results',
+    className: 'col-md-8',
     initialize: function() {
         this.template = _.template(appMixture.templates.get('predictionResults'), {
             'variable': 'data'
