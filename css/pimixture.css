@@ -100,31 +100,13 @@ body {
 .collapse {
     overflow: auto;
 }
-table {
-    width: 100%;
-}
-table th {
-    border-bottom: 1px solid #000;
-}
-table th,
-table td {
-    padding: 6px 12px;
-}
-table select {
-    width: 100%;
-    min-width: 172px;
-}
+
 table th:last-child,
 table td:last-child {
     text-align: center;
-    width: 3em;
+    width: 20%;
 }
-table tfoot tr:first-child {
-    border-top:1px solid #000;
-}
-table tfoot tr:nth-child(odd) {
-    background: #f9f9f9;
-}
+
 .glyphicon {
     top: 0px;
 }
@@ -225,13 +207,6 @@ fieldset.well .form-group {
 
 #queueMessage {
     color: green;
-}
-
-#prediction-results td,
-#prediction-results th,
-#output td,
-#output th {
-    border: thin solid darkgray;
 }
 
 .download-buttons {
