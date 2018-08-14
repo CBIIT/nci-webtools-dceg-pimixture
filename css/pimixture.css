@@ -213,6 +213,10 @@ fieldset.well .form-group {
     margin-bottom: 15px;
 }
 
+#page-number {
+    vertical-align: text-bottom;
+}
+
 @media(min-width: 1440px){
 .container {
     width: 1440px;
