@@ -737,10 +737,19 @@ appMixture.PredictionView = Backbone.View.extend({
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
-                console.log(res.responseJSON);
                 $that.$('#runPredict').prop('disabled', false);
-                $that.$('#error-message').html(res.responseText);
                 $that.stopSpinner();
+                if (res.status == 410) { // rds file on server doesn't exist anymore
+                    var redirect = confirm("Model file on server doesn't exist anymore!\nUpload a new model file?");
+                    if (redirect) {
+                        console.log("Redirect");
+                        appMixture.router.navigate('#prediction', true);
+                        return;
+                    } else {
+                        console.log("Stay");
+                    }
+                }
+                $that.$('#error-message').html(res.responseText);
             }
         });
     },
