@@ -65,6 +65,10 @@ appMixture.FormView = Backbone.View.extend({
         return this;
     },
     runCalculation: function (e) {
+        e.preventDefault();
+        if (!this.model.get('isMutuallyExclusive')) {
+            return;
+        }
         this.$('#run').prop("disabled", true);
         appMixture.models.results.clear();
         e.preventDefault();
@@ -232,6 +236,8 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     checkMutuallyExclusive: function() {
+        this.model.set('isMutuallyExclusive', true);
+        this.$('#mutex-error').html('');
         for (var name of appMixture.variables) {
             this.$('#' + name).removeClass('has-error');
         }
@@ -246,6 +252,8 @@ appMixture.FormView = Backbone.View.extend({
                     if (val2 && val1 === val2) {
                         this.$('#' + name1).addClass('has-error');
                         this.$('#' + name2).addClass('has-error');
+                        this.model.set('isMutuallyExclusive', false);
+                        this.$('#mutex-error').html('Please make sure C, L and R are mutually exclusive!');
                     }
                 }
             }
@@ -679,7 +687,7 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
-        this.$('#results').html(appMixture.predictionResultView.render().el);
+        this.$el.append(appMixture.predictionResultView.render().el);
         return this;
     },
     resetForm: function(e) {
@@ -729,10 +737,19 @@ appMixture.PredictionView = Backbone.View.extend({
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
-                console.log(res.responseJSON);
                 $that.$('#runPredict').prop('disabled', false);
-                $that.$('#error-message').html(res.responseText);
                 $that.stopSpinner();
+                if (res.status == 410) { // rds file on server doesn't exist anymore
+                    var redirect = confirm("Model file on server doesn't exist anymore!\nUpload a new model file?");
+                    if (redirect) {
+                        console.log("Redirect");
+                        appMixture.router.navigate('#prediction', true);
+                        return;
+                    } else {
+                        console.log("Stay");
+                    }
+                }
+                $that.$('#error-message').html(res.responseText);
             }
         });
     },
@@ -786,6 +803,11 @@ appMixture.PredictionView = Backbone.View.extend({
 
 appMixture.PredictionResultView = Backbone.View.extend({
     tagName: 'div',
+    id: 'results',
+    className: 'col-md-8',
+    events: {
+        'click .pageNav': 'changePage'
+    },
     initialize: function() {
         this.template = _.template(appMixture.templates.get('predictionResults'), {
             'variable': 'data'
@@ -793,6 +815,26 @@ appMixture.PredictionResultView = Backbone.View.extend({
         this.model.on({
             'change:results': this.render
         }, this);
+        this.model.on({
+            'change:end': this.render
+        }, this);
+    },
+    changePage: function(e) {
+        e.preventDefault();
+        var pageNum = parseInt(e.target.dataset.pageNum);
+        if (pageNum) {
+            var pageSize = this.model.get('pageSize');
+            var resultLength = 0;
+            if (this.model.get('results') && this.model.get('results').prediction) {
+                resultLength = this.model.get('results').prediction.length;
+            }
+            var start = (pageNum -1) * pageSize;
+            var end = pageNum * pageSize;
+            var end = end > resultLength ? resultLength : end;
+            this.model.set('pageNum', pageNum, {silent: true});
+            this.model.set('start', start, {silent: true});
+            this.model.set('end', end);
+        }
     },
     render: function() {
         this.$el.html(this.template(this.model.attributes));

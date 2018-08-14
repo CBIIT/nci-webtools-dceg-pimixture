@@ -138,9 +138,9 @@ def runPredict():
                 # Server file exists
                 parameters['rdsFile'] = rdsFile
             else:
-                message = "Server file '{}' doesn't exit on server anymore!\nPlease upload model file you downloaded previousely.".format(rdsFile)
+                message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
                 print(message)
-                return buildFailure(message, 400)
+                return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
             rdsFile = request.files['rdsFile']
             ext = os.path.splitext(rdsFile.filename)[1]

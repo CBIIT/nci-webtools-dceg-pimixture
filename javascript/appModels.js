@@ -11,6 +11,7 @@ appMixture.BaseModel = Backbone.Model.extend({
 
 appMixture.FormModel = Backbone.Model.extend({
     defaults: {
+        'isMutuallyExclusive': true,
         'csvFile': null,
         'design': "",
         'headers': [],
@@ -57,5 +58,22 @@ appMixture.PredictionModel = Backbone.Model.extend({
 });
 
 appMixture.PredictionResultModel = Backbone.Model.extend({
+    defaults: {
+        pageNum: 1,
+        pages: 0,
+        start: 0,
+        end: 12,
+        pageSize: 12
+    },
+    parse: function(res) {
+        res.pageNum = 1;
+        if (res.results && res.results.prediction) {
+            res.pages = Math.ceil(res.results.prediction.length / this.defaults.pageSize);
+        }
+        res.start = 0;
+        res.end = this.defaults.pageSize < res.results.prediction.length ? this.defaults.pageSize : res.results.prediction.length;
+        res.pageSize = this.defaults.pageSize;
+        return res;
+    },
     url: "predict"
 });

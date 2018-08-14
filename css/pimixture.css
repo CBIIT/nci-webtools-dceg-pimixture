@@ -56,14 +56,14 @@ body {
 }
 
 #output p,
-#prediction-output p{
+#results p{
     overflow: auto;
-    min-height: 858px;
+    min-height: 872px;
     border: thin solid lightgray;
 }
 
-#prediction-output p{
-    min-height: 621px;
+#results p{
+    min-height: 515px;
 }
 
 #prediction-results {
@@ -72,7 +72,7 @@ body {
 }
 
 #output p,
-#prediction-output p {
+#results p {
     padding: 10px 10px;
 }
 
@@ -100,31 +100,13 @@ body {
 .collapse {
     overflow: auto;
 }
-table {
-    width: 100%;
-}
-table th {
-    border-bottom: 1px solid #000;
-}
-table th,
-table td {
-    padding: 6px 12px;
-}
-table select {
-    width: 100%;
-    min-width: 172px;
-}
+
 table th:last-child,
 table td:last-child {
     text-align: center;
-    width: 3em;
+    width: 20%;
 }
-table tfoot tr:first-child {
-    border-top:1px solid #000;
-}
-table tfoot tr:nth-child(odd) {
-    background: #f9f9f9;
-}
+
 .glyphicon {
     top: 0px;
 }
@@ -194,7 +176,8 @@ h2.stage-header {
     display: inline-block;
 }
 
-#error-message {
+#error-message,
+#mutex-error {
   color: red;
 }
 
@@ -226,15 +209,19 @@ fieldset.well .form-group {
     color: green;
 }
 
-#prediction-results td,
-#prediction-results th,
-#output td,
-#output th {
-    border: thin solid darkgray;
-}
-
 .download-buttons {
     margin-bottom: 15px;
+}
+
+#page-number {
+    vertical-align: text-bottom;
+}
+
+input[type=file] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 @media(min-width: 1440px){
