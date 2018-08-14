@@ -217,6 +217,13 @@ fieldset.well .form-group {
     vertical-align: text-bottom;
 }
 
+input[type=file] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
 @media(min-width: 1440px){
 .container {
     width: 1440px;
