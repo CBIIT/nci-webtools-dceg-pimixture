@@ -71,7 +71,7 @@ appMixture.PredictionResultModel = Backbone.Model.extend({
             res.pages = Math.ceil(res.results.prediction.length / this.defaults.pageSize);
         }
         res.start = 0;
-        res.end = this.defaults.pageSize;
+        res.end = this.defaults.pageSize < res.results.prediction.length ? this.defaults.pageSize : res.results.prediction.length;
         res.pageSize = this.defaults.pageSize;
         return res;
     },
