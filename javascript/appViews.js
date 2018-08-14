@@ -796,6 +796,9 @@ appMixture.PredictionResultView = Backbone.View.extend({
     tagName: 'div',
     id: 'results',
     className: 'col-md-8',
+    events: {
+        'click .pageNav': 'changePage'
+    },
     initialize: function() {
         this.template = _.template(appMixture.templates.get('predictionResults'), {
             'variable': 'data'
@@ -803,6 +806,26 @@ appMixture.PredictionResultView = Backbone.View.extend({
         this.model.on({
             'change:results': this.render
         }, this);
+        this.model.on({
+            'change:end': this.render
+        }, this);
+    },
+    changePage: function(e) {
+        e.preventDefault();
+        var pageNum = parseInt(e.target.dataset.pageNum);
+        if (pageNum) {
+            var pageSize = this.model.get('pageSize');
+            var resultLength = 0;
+            if (this.model.get('results') && this.model.get('results').prediction) {
+                resultLength = this.model.get('results').prediction.length;
+            }
+            var start = (pageNum -1) * pageSize;
+            var end = pageNum * pageSize;
+            var end = end > resultLength ? resultLength : end;
+            this.model.set('pageNum', pageNum, {silent: true});
+            this.model.set('start', start, {silent: true});
+            this.model.set('end', end);
+        }
     },
     render: function() {
         this.$el.html(this.template(this.model.attributes));

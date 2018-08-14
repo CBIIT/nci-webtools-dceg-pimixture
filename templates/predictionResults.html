@@ -4,8 +4,22 @@
             <h4 class="panel-title">Prediction Results</h4>
         </div>
         <div id="prediction-results" class="panel-body">
-            <div class="download-buttons">
-                <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+            <div class="download-buttons row">
+                <div class="col-md-4">
+                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+                </div>
+                <div class="col-md-8 text-right">
+                    <% if (data.pageNum > 1) { %>
+                    <a class="pageNav"><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
+                    <a class="pageNav"><span data-page-num="<%= data.pageNum -1 %>" class="glyphicon glyphicon-chevron-left"></span></a>
+                    <% } %>
+                    <%= data.pageNum %>
+                    <% if (data.pageNum < data.pages) { %>
+                    <a class="pageNav"><span data-page-num="<%= data.pageNum +1 %>" class="glyphicon glyphicon-chevron-right"></span></a>
+                    <a class="pageNav"><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
+                    <% } %>
+                    <div> of <%= data.pages %> pages</div>
+                </div>
             </div>
             <table class="table table-striped table-bordered table-condensed">
                 <thead>
@@ -17,21 +31,15 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% for (var res of data.results.prediction) { %>
-                <tr>
-                    <td>
-                        <%= res.time %><br/>
-                    </td>
-                    <td>
-                        <%= res['cox.predictor'] %><br/>
-                    </td>
-                    <td>
-                        <%= res['logit.predictor']%><br/>
-                    </td>
-                    <td>
-                        <%= res.CR %><br/>
-                    </td>
-                </tr>
+                <% for (var i = data.start; i < data.end; ++i) {
+                     var res = data.results.prediction[i];
+                %>
+                    <tr>
+                        <td><%= res.time %><br/></td>
+                        <td><%= res['cox.predictor'] %><br/></td>
+                        <td><%= res['logit.predictor']%><br/></td>
+                        <td><%= res.CR %><br/></td>
+                    </tr>
                 <% } %>
                 </tbody>
             </table>
