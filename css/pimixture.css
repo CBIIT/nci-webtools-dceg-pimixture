@@ -107,6 +107,20 @@ table td:last-child {
     width: 20%;
 }
 
+.interactive-select {
+    width: 45%;
+}
+
+.interactive-select select{
+    width: 100%;
+}
+
+#interactive-table td,
+#interactive-table th
+{
+    border: none;
+}
+
 .glyphicon {
     top: 0px;
 }
