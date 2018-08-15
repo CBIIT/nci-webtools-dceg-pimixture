@@ -260,11 +260,7 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     changeQueueStatus: function(e) {
-        if ($(e.target).prop('checked')) {
-            this.$('#queueMessage').prop('hidden', false);
-        } else {
-            this.$('#queueMessage').prop('hidden', true);
-        }
+        //TODO: change queue status
     },
     changeCovariateList: function () {
         var model = this.model,

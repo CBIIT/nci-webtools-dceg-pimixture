@@ -206,7 +206,9 @@ fieldset.well .form-group {
 }
 
 #queueMessage {
-    color: green;
+    color: darkgray;
+    font-style: italic;
+    font-size: 0.6rem;
 }
 
 .download-buttons {
