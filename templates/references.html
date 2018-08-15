@@ -1,41 +1,36 @@
-<table>
-    <thead>
-        <tr>
-            <th>Covariate</th>
-            <th>Variable Type</th>
-            <th>Reference Level</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="container-fluid">
+    <form class="form-horizontal text-center">
+        <div class="form-group">
+            <div class="col-md-4">Covariate</div>
+            <div class="col-md-4">Variable Type</div>
+            <div class="col-md-4">Reference Level</div>
+        </div>
 
-        <%  _.each(covariatesArr, function(entry) { 
-            var values = uniqueValues[entry.text].values();
+        <%  _.each(covariatesArr, function(entry) {
+        var values = uniqueValues[entry.text].values();
         %>
-            <tr>
-                <td style="width:1%">
-                    <%= entry.text %>
-                </td>
-                <td>
-                    <select name="<%=entry.text%>_type">
-                        <option value="">----Select Type----</option>
-                        <option value="continuous" <%=entry.type=='continuous'?' selected="selected"':''%>>Continuous</option>
-                        <option value="nominal" <%=entry.type=='nominal'?' selected="selected"':''%>>Nominal</option>
-                    </select>
-                </td>
-                <td>
-                        <input type="number" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category" value="<%= entry.category %>"
-                            <%= entry.type == 'nominal' ? 'hidden' : '' %> disabled/>
-                        <select id="<%=entry.text%>_category_select" name="<%=entry.text%>_category"
-                            <%= entry.type != 'nominal' ? 'hidden' : '' %>>
-                                <option value="">----Select----</option>
-                            <% for (let value of values) { %>
-                                <option value="<%= value %>" <%= value === entry.category ? 'selected' : '' %>><%= value %></option>
-                            <% } %>
-                        </select>
-                </td>
-            </tr>
-            <%  }); %>
-    </tbody>
-    <tfoot>
-    </tfoot>
-</table>
+        <div class="form-group">
+            <div class="col-md-4"><%= entry.text %></div>
+            <div class="col-md-4">
+                <select name="<%=entry.text%>_type" class="form-control">
+                    <option value="">----Select Type----</option>
+                    <option value="continuous" <%=entry.type=='continuous'?' selected="selected"':''%>>Continuous</option>
+                    <option value="nominal" <%=entry.type=='nominal'?' selected="selected"':''%>>Nominal</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="number" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category"
+                       value="<%= entry.category %>" <%= entry.type == 'nominal' ? 'hidden' : 'class="form-control"' %>
+                     disabled/>
+                <select id="<%=entry.text%>_category_select" name="<%=entry.text%>_category"
+                         <%= entry.type != 'nominal' ? 'hidden' : 'class="form-control"' %>>
+                    <option value="">----Select----</option>
+                    <% for (let value of values) { %>
+                    <option value="<%= value %>" <%= value === entry.category ? 'selected' : '' %>><%= value %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <%  }); %>
+    </form>
+</div>

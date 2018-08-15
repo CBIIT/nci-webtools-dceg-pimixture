@@ -615,15 +615,21 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             }
             if (type === 'continuous') {
                 eCatText.prop('hidden', false);
+                eCatText.addClass('form-control');
                 eCatSelect.prop('hidden', true);
+                eCatSelect.removeClass('form-control');
             } else if (type === 'nominal') {
                 eCatText.prop('hidden', true);
+                eCatText.removeClass('form-control');
                 eCatSelect.prop('hidden', false);
+                eCatSelect.addClass('form-control');
             } else {
                 eCatText.val('');
                 eCatSelect.val('');
                 eCatText.prop('hidden', false);
+                eCatText.addClass('form-control');
                 eCatSelect.prop('hidden', true);
+                eCatSelect.removeClass('form-control');
             }
         });
     },
