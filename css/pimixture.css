@@ -77,8 +77,22 @@ body {
 }
 
 #output h4 {
-    margin: 0px;
+    margin: 0;
+    font-weight: bold;
 }
+
+#output .panel-body table tr:first-child {
+    background-color: #dae3da;
+}
+
+#output .panel-body  {
+    padding: 0;
+}
+
+#output .panel {
+    border: none;
+}
+
 .nav {
     /*margin: 0px 15px;*/
 }
