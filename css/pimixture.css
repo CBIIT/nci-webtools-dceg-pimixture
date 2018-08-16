@@ -240,6 +240,7 @@ input[type=file] {
     width: 100%;
 }
 
+#modelFileName,
 #csvFileName {
     white-space: nowrap;
     overflow: hidden;
@@ -249,13 +250,17 @@ input[type=file] {
 
 .sampleDownload {
     font-size: 0.5rem;
-    padding-top: auto;
 }
 
+#predictionForm label,
 #calculationForm label {
     text-align: left;
     padding-left: 5px;
     padding-right: 0;
+}
+
+#timePointsWell {
+    min-height: 230px;
 }
 
 @media(min-width: 1440px){

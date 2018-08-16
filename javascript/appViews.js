@@ -673,6 +673,8 @@ appMixture.ResultsView = Backbone.View.extend({
 appMixture.PredictionView = Backbone.View.extend({
     el: '#prediction-tool',
     events: {
+        'input #rdsFile': 'selectModelFile',
+        'input #testDataFile': 'selectTestDataFile',
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
@@ -694,6 +696,18 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$el.html(this.template(this.model.attributes));
         this.$el.append(appMixture.predictionResultView.render().el);
         return this;
+    },
+    selectModelFile: function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            this.$('#modelFileName').html(file.name);
+        }
+    },
+    selectTestDataFile: function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            this.$('#testDataFileName').html(file.name);
+        }
     },
     resetForm: function(e) {
         this.$('#timePointsRangeGroup').prop('hidden', false);
