@@ -210,8 +210,9 @@ appMixture.FormView = Backbone.View.extend({
     },
     enableInputs: function() {
         this.$('[name="design"], [name="model"], [name="outcomeC"], [name="outcomeL"], '
-            + '[name="outcomeR"], [name="covariatesSelection"], [name="email"], [name="sendToQueue"]'
+            + '[name="outcomeR"], [name="covariatesSelection"], [name="sendToQueue"]'
         ).prop('disabled', false);
+        this.$('#csvFileBtn').prop('disabled', true);
     },
     updateModel: function (e) {
         e.preventDefault();
@@ -261,6 +262,7 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     changeQueueStatus: function(e) {
+        this.$('[name="email"]').prop('disabled', !$(e.target).prop('checked'));
         //TODO: change queue status
     },
     changeCovariateList: function () {
