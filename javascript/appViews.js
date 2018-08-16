@@ -715,7 +715,10 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     tryEnableInputs: function() {
-        var modelFileSelected = this.$('#rdsFile')[0].files[0];
+        var modelFileSelected = this.model.get('serverFile');
+        if (!modelFileSelected) {
+            modelFileSelected = this.$('#rdsFile')[0].files[0];
+        }
         var testDataFileSelected = this.$('#testDataFile')[0].files[0];
         if (modelFileSelected || testDataFileSelected) {
             this.$('#reset').prop('disabled', false);
