@@ -75,7 +75,7 @@
                 <button id="runPredict" type="submit" class="btn btn-primary" disabled style="position: relative;">Submit<span id="indicator"></span></button>
             </div>
             <div class="col-md-3">
-                <button type="reset" id="reset" class="btn btn-default" disabled>Reset</button>
+                <button type="reset" id="reset" class="btn btn-default" <%= data['serverFile'] ? '' : 'disabled'%> >Reset</button>
             </div>
         </div>
         <div id="error-message">

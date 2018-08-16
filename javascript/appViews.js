@@ -726,6 +726,10 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     resetForm: function(e) {
+        if (this.model.get('serverFile')) {
+            this.model.unset('serverFile');
+            return appMixture.router.navigate('#prediction', true);
+        }
         this.$('#modelFileBtn').prop('disabled', false);
         this.$('#testDataFileBtn').prop('disabled', false);
         this.$('#timePointsRangeGroup').prop('hidden', false);
