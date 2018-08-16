@@ -21,11 +21,11 @@ body {
     margin-bottom: 10px;
     padding-left: 15px;
 }
-#input {
-    /*max-width: 500px;*/
+#calculationForm {
+    min-height: 956px;
 }
-#prediction-input {
-    /*max-width: 560px;*/
+#predictionForm {
+    min-height: 548px;
 }
 
 .well {
@@ -58,16 +58,20 @@ body {
 #output p,
 #results p{
     overflow: auto;
-    min-height: 872px;
+    height: 956px;
     border: thin solid lightgray;
 }
 
 #results p{
-    min-height: 515px;
+    height: 548px;
 }
 
 #prediction-results {
-    max-height: 580px;
+    height: 546px;
+}
+
+#predictionResultTable {
+    height: 87%;
     overflow-y: auto;
 }
 
@@ -81,6 +85,7 @@ body {
     font-weight: bold;
 }
 
+#results .panel-body table thead tr:first-child,
 #output .panel-body table tr:first-child {
     background-color: #dae3da;
 }
