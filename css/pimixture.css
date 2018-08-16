@@ -240,6 +240,18 @@ input[type=file] {
     width: 100%;
 }
 
+#csvFileName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.sampleDownload {
+    font-size: 0.5rem;
+    padding-top: auto;
+}
+
 #calculationForm label {
     text-align: left;
     padding-left: 5px;

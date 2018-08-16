@@ -199,6 +199,7 @@ appMixture.FormView = Backbone.View.extend({
 
             if (file) {
                 reader.readAsText(file.slice());
+                this.$('#csvFileName').html(file.name);
             } else {
                 $that.model.set({
                     'csvFile': null,
