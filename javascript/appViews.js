@@ -702,18 +702,42 @@ appMixture.PredictionView = Backbone.View.extend({
         var file = e.target.files[0];
         if (file) {
             this.$('#modelFileName').html(file.name);
+            this.$('#modelFileBtn').prop('disabled', true);
+            this.tryEnableInputs();
         }
     },
     selectTestDataFile: function(e) {
         var file = e.target.files[0];
         if (file) {
             this.$('#testDataFileName').html(file.name);
+            this.$('#testDataFileBtn').prop('disabled', true);
+            this.tryEnableInputs();
+        }
+    },
+    tryEnableInputs: function() {
+        var modelFileSelected = this.$('#rdsFile')[0].files[0];
+        var testDataFileSelected = this.$('#testDataFile')[0].files[0];
+        if (modelFileSelected || testDataFileSelected) {
+            this.$('#reset').prop('disabled', false);
+        }
+        if (modelFileSelected && testDataFileSelected) {
+            this.$('#timePointsWell').prop('disabled', false);
+            this.$('#runPredict').prop('disabled', false);
         }
     },
     resetForm: function(e) {
+        this.$('#modelFileBtn').prop('disabled', false);
+        this.$('#testDataFileBtn').prop('disabled', false);
         this.$('#timePointsRangeGroup').prop('hidden', false);
         this.$('#timePointsListGroup').prop('hidden', true);
         this.$('#timePointsListGroup').val("");
+        this.$('#rdsFile').val('');
+        this.$('#testDataFile').val('');
+        this.$('#modelFileName').html("");
+        this.$('#testDataFileName').html("");
+        this.$('#timePointsWell').prop('disabled', true);
+        this.$('#runPredict').prop('disabled', true);
+        this.$('#reset').prop('disabled', true);
     },
     onSubmitPredict: function (e) {
         e.preventDefault();

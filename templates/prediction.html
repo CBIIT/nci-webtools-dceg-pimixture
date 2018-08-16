@@ -21,7 +21,7 @@
                     <div class="row">
                         <div class="col-md-5">
                             <input id="testDataFile" name="testDataFile" type="file" accept=".csv" required style="display: none;">
-                            <button id="testDataBtn" type="button" class="btn btn-default" onclick="document.getElementById('testDataFile').click();">Choose File</button>
+                            <button id="testDataFileBtn" type="button" class="btn btn-default" onclick="document.getElementById('testDataFile').click();">Choose File</button>
                         </div>
                         <div class="col-md-7">
                             <a class="sampleDownload" href="testData.csv" download="PIMixtureSampleTestData.csv">Download Sample</a>
@@ -33,7 +33,7 @@
                 </div>
             </div>
         </fieldset>
-        <fieldset id="timePointsWell" class="well">
+        <fieldset id="timePointsWell" class="well" disabled>
             <div class="form-group">
                 <label class="control-label col-md-4">Time points:</label>
                 <div class="col-md-4">
@@ -72,10 +72,10 @@
         </fieldset>
         <div class="form-group submitButtons">
             <div class="col-md-3 col-md-offset-6">
-                <button id="runPredict" type="submit" class="btn btn-primary" style="position: relative;">Submit<span id="indicator"></span></button>
+                <button id="runPredict" type="submit" class="btn btn-primary" disabled style="position: relative;">Submit<span id="indicator"></span></button>
             </div>
             <div class="col-md-3">
-                <button type="reset" id="reset" class="btn btn-default">Reset</button>
+                <button type="reset" id="reset" class="btn btn-default" disabled>Reset</button>
             </div>
         </div>
         <div id="error-message">
