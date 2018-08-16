@@ -730,9 +730,14 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#testDataFileBtn').prop('disabled', false);
         this.$('#timePointsRangeGroup').prop('hidden', false);
         this.$('#timePointsListGroup').prop('hidden', true);
-        this.$('#timePointsListGroup').val("");
+        this.$('#timePointList').prop('checked', false);
+        this.$('#timePointRange').prop('checked', true);
         this.$('#rdsFile').val('');
         this.$('#testDataFile').val('');
+        this.$('#begin').val('');
+        this.$('#end').val('');
+        this.$('#stepSize').val('');
+        this.$('#timePoints').val('');
         this.$('#modelFileName').html("");
         this.$('#testDataFileName').html("");
         this.$('#timePointsWell').prop('disabled', true);
