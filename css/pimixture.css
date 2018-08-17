@@ -25,7 +25,7 @@ body {
     min-height: 956px;
 }
 #predictionForm {
-    min-height: 548px;
+    min-height: 956px;
 }
 
 .well {
@@ -62,16 +62,17 @@ body {
     border: thin solid lightgray;
 }
 
-#results p{
-    height: 548px;
+#fittingResults,
+#prediction-results {
+    height: 954px;
 }
 
-#prediction-results {
-    height: 546px;
+#fittingResults {
+    border: thin solid lightgray;
 }
 
 #predictionResultTable {
-    height: 87%;
+    height: 95%;
     overflow-y: auto;
 }
 
