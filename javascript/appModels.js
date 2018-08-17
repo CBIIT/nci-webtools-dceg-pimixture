@@ -59,11 +59,12 @@ appMixture.PredictionModel = Backbone.Model.extend({
 
 appMixture.PredictionResultModel = Backbone.Model.extend({
     defaults: {
+        pageSizeChoices: [ 10, 15, 20, 25, 50, 100, 150, 200, 250],
         pageNum: 1,
         pages: 0,
         start: 0,
-        end: 12,
-        pageSize: 12
+        end: 25,
+        pageSize: 25
     },
     parse: function(res) {
         res.pageNum = 1;
@@ -73,6 +74,7 @@ appMixture.PredictionResultModel = Backbone.Model.extend({
         res.start = 0;
         res.end = this.defaults.pageSize < res.results.prediction.length ? this.defaults.pageSize : res.results.prediction.length;
         res.pageSize = this.defaults.pageSize;
+        res.pageSizeChoices = this.defaults.pageSizeChoices;
         return res;
     },
     url: "predict"

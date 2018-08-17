@@ -248,8 +248,18 @@ fieldset.well .form-group {
     margin-bottom: 15px;
 }
 
-#page-number {
-    vertical-align: text-bottom;
+#currentPageNum {
+    background-color: #218eb7;
+    color: white;
+}
+
+.pageNav {
+    padding: 2px 2px 2px 5px;
+}
+
+.disabledPageNav:hover,
+.disabledPageNav {
+    color: darkgray;
 }
 
 input[type=file] {

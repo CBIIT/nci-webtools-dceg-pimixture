@@ -2,19 +2,28 @@
     <div class="panel panel-default">
         <div id="prediction-results" class="panel-body">
             <div class="download-buttons row">
-                <div class="col-md-4">
-                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+                <div class="col-md-8">
+                    Show
+                    <select id="pageSize" name="pageSize">
+                        <% for(var pageSize of data.pageSizeChoices) { %>
+                            <option value="<%= pageSize %>" <%= pageSize == data.pageSize ? 'selected' : '' %> ><%= pageSize %></option>
+                        <% } %>
+                    </select>
+                    entries of <%= data.results.prediction.length %>
+                    <a class="pageNav <%= data.pageNum <= 1 ? 'disabledPageNav' : '' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
+                    <a class="pageNav <%= data.pageNum <= 1 ? 'disabledPageNav' : '' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= data.pageNum -1 %>" class="glyphicon glyphicon-chevron-left"></span></a>
+                    <% for (var page of data.neighborPages) { %>
+                        <% if (page === data.pageNum) { %>
+                            <span class="pageNav" id="currentPageNum" > <%= page %> </span>
+                        <% } else {%>
+                            <a class="pageNav" data-page-num="<%= page %>"> <%= page %> </a>
+                        <% } %>
+                    <% } %>
+                    <a class="pageNav <%= data.pageNum >= data.pages ? 'disabledPageNav' : '' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pageNum +1 %>" class="glyphicon glyphicon-chevron-right"></span></a>
+                    <a class="pageNav <%= data.pageNum >= data.pages ? 'disabledPageNav' : '' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
                 </div>
-                <div class="col-md-8 text-right">
-                    <% if (data.pageNum > 1) { %>
-                    <a class="pageNav"><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
-                    <a class="pageNav"><span data-page-num="<%= data.pageNum -1 %>" class="glyphicon glyphicon-chevron-left"></span></a>
-                    <% } %>
-                    <span id="page-number">page <%= data.pageNum %> of <%= data.pages %></span>
-                    <% if (data.pageNum < data.pages) { %>
-                    <a class="pageNav"><span data-page-num="<%= data.pageNum +1 %>" class="glyphicon glyphicon-chevron-right"></span></a>
-                    <a class="pageNav"><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
-                    <% } %>
+                <div class="col-md-4 text-right">
+                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
                 </div>
             </div>
             <div id="predictionResultTable">
