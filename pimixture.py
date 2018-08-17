@@ -67,6 +67,13 @@ def runModel():
         parameters['filename'] = inputFileName
         parameters['outputRdsFilename'] = outputRdsFileName
         parameters['outputFilename'] = outputFileName
+        if parameters['covariatesSelection']:
+            covariates = ' + '.join(parameters['covariatesSelection'])
+            effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
+            if effects:
+                covariates += ' + ' + ' + '.join(effects)
+            parameters['covariates'] = covariates
+            print(covariates)
 
         r = pr.R();
         r('source("./pimixtureWrapper.R")')

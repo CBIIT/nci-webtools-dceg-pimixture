@@ -16,6 +16,7 @@ var appMixture = {
         'outcomeL',
         'outcomeR'
     ],
+    MAX_PAGES: 5,
     currentView: null,
     showView: function(view) {
         if (this.currentView !== null && this.currentView.cid !== view.cid) {
@@ -77,6 +78,13 @@ appMixture.FormView = Backbone.View.extend({
         var formData = new FormData();
         if (params.covariatesSelection) {
             params.covariatesSelection = params.covariatesSelection.split(',');
+            if (params.effects && params.effects.length > 0) {
+                var effects = [];
+                for (var effect of this.model.get('effects')) {
+                    effects.push([effect.first, effect.second])
+                }
+                params.effects = effects;
+            }
         } else {
             params.covariatesSelection = [];
         }
@@ -199,6 +207,7 @@ appMixture.FormView = Backbone.View.extend({
 
             if (file) {
                 reader.readAsText(file.slice());
+                this.$('#csvFileName').html(file.name);
             } else {
                 $that.model.set({
                     'csvFile': null,
@@ -209,8 +218,10 @@ appMixture.FormView = Backbone.View.extend({
     },
     enableInputs: function() {
         this.$('[name="design"], [name="model"], [name="outcomeC"], [name="outcomeL"], '
-            + '[name="outcomeR"], [name="covariatesSelection"], [name="email"], [name="sendToQueue"]'
+            + '[name="outcomeR"], [name="covariatesSelection"], [name="sendToQueue"], '
+            + '#run, #reset'
         ).prop('disabled', false);
+        this.$('#csvFileBtn').prop('disabled', true);
     },
     updateModel: function (e) {
         e.preventDefault();
@@ -260,11 +271,8 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     changeQueueStatus: function(e) {
-        if ($(e.target).prop('checked')) {
-            this.$('#queueMessage').prop('hidden', false);
-        } else {
-            this.$('#queueMessage').prop('hidden', true);
-        }
+        this.$('[name="email"]').prop('disabled', !$(e.target).prop('checked'));
+        //TODO: change queue status
     },
     changeCovariateList: function () {
         var model = this.model,
@@ -338,7 +346,7 @@ appMixture.FormView = Backbone.View.extend({
         var model = this.model;
         var effects = appMixture.models.form.attributes.effects;
         var effects_String = "";
-        counter = 1
+        counter = 1;
         _.each(effects, function (val, attribute) {
             if (counter <= 5)
                 effects_String += "<p>" + val.first + " &nbsp " + val.second + "</p>";
@@ -619,15 +627,21 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             }
             if (type === 'continuous') {
                 eCatText.prop('hidden', false);
+                eCatText.addClass('form-control');
                 eCatSelect.prop('hidden', true);
+                eCatSelect.removeClass('form-control');
             } else if (type === 'nominal') {
                 eCatText.prop('hidden', true);
+                eCatText.removeClass('form-control');
                 eCatSelect.prop('hidden', false);
+                eCatSelect.addClass('form-control');
             } else {
                 eCatText.val('');
                 eCatSelect.val('');
                 eCatText.prop('hidden', false);
+                eCatText.addClass('form-control');
                 eCatSelect.prop('hidden', true);
+                eCatSelect.removeClass('form-control');
             }
         });
     },
@@ -668,6 +682,8 @@ appMixture.ResultsView = Backbone.View.extend({
 appMixture.PredictionView = Backbone.View.extend({
     el: '#prediction-tool',
     events: {
+        'input #rdsFile': 'selectModelFile',
+        'input #testDataFile': 'selectTestDataFile',
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
@@ -683,17 +699,65 @@ appMixture.PredictionView = Backbone.View.extend({
         }, this);
 
         appMixture.predictionResultModel = new appMixture.PredictionResultModel();
-        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
+        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
         return this;
     },
+    selectModelFile: function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            this.$('#modelFileName').html(file.name);
+            this.$('#modelFileBtn').prop('disabled', true);
+            this.tryEnableInputs();
+        }
+    },
+    selectTestDataFile: function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            this.$('#testDataFileName').html(file.name);
+            this.$('#testDataFileBtn').prop('disabled', true);
+            this.tryEnableInputs();
+        }
+    },
+    tryEnableInputs: function() {
+        var modelFileSelected = this.model.get('serverFile');
+        if (!modelFileSelected) {
+            modelFileSelected = this.$('#rdsFile')[0].files[0];
+        }
+        var testDataFileSelected = this.$('#testDataFile')[0].files[0];
+        if (modelFileSelected || testDataFileSelected) {
+            this.$('#reset').prop('disabled', false);
+        }
+        if (modelFileSelected && testDataFileSelected) {
+            this.$('#timePointsWell').prop('disabled', false);
+            this.$('#runPredict').prop('disabled', false);
+        }
+    },
     resetForm: function(e) {
+        if (this.model.get('serverFile')) {
+            this.model.unset('serverFile');
+            return appMixture.router.navigate('#prediction', true);
+        }
+        this.$('#modelFileBtn').prop('disabled', false);
+        this.$('#testDataFileBtn').prop('disabled', false);
         this.$('#timePointsRangeGroup').prop('hidden', false);
         this.$('#timePointsListGroup').prop('hidden', true);
-        this.$('#timePointsListGroup').val("");
+        this.$('#timePointList').prop('checked', false);
+        this.$('#timePointRange').prop('checked', true);
+        this.$('#rdsFile').val('');
+        this.$('#testDataFile').val('');
+        this.$('#begin').val('');
+        this.$('#end').val('');
+        this.$('#stepSize').val('');
+        this.$('#timePoints').val('');
+        this.$('#modelFileName').html("");
+        this.$('#testDataFileName').html("");
+        this.$('#timePointsWell').prop('disabled', true);
+        this.$('#runPredict').prop('disabled', true);
+        this.$('#reset').prop('disabled', true);
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
@@ -806,6 +870,7 @@ appMixture.PredictionResultView = Backbone.View.extend({
     id: 'results',
     className: 'col-md-8',
     events: {
+        'input #pageSize': 'changePageSize',
         'click .pageNav': 'changePage'
     },
     initialize: function() {
@@ -813,30 +878,67 @@ appMixture.PredictionResultView = Backbone.View.extend({
             'variable': 'data'
         });
         this.model.on({
-            'change:results': this.render
+            'change:results change:end change:start': this.render
         }, this);
-        this.model.on({
-            'change:end': this.render
-        }, this);
+    },
+    changePageSize: function(e) {
+        var pageSize = parseInt(e.target.value);
+        var resultLength = 0;
+        if (this.model.get('results') && this.model.get('results').prediction) {
+            resultLength = this.model.get('results').prediction.length;
+        }
+        var pages = Math.ceil(resultLength / pageSize);
+        var pageNum = Math.floor(this.model.get('start') / pageSize) + 1;
+        this.model.set('pageSize', pageSize, {silent: true});
+        this.model.set('pages', pages, {silent: true});
+        this.model.set('pageNum', pageNum, {silent: true});
+        this.calculatePageBoundaries();
     },
     changePage: function(e) {
         e.preventDefault();
         var pageNum = parseInt(e.target.dataset.pageNum);
         if (pageNum) {
-            var pageSize = this.model.get('pageSize');
-            var resultLength = 0;
-            if (this.model.get('results') && this.model.get('results').prediction) {
-                resultLength = this.model.get('results').prediction.length;
-            }
-            var start = (pageNum -1) * pageSize;
-            var end = pageNum * pageSize;
-            var end = end > resultLength ? resultLength : end;
             this.model.set('pageNum', pageNum, {silent: true});
-            this.model.set('start', start, {silent: true});
-            this.model.set('end', end);
+            this.calculatePageBoundaries();
         }
     },
+    calculatePageBoundaries: function() {
+        var pageNum = this.model.get('pageNum');
+        var pageSize = this.model.get('pageSize');
+        var resultLength = 0;
+        if (this.model.get('results') && this.model.get('results').prediction) {
+            resultLength = this.model.get('results').prediction.length;
+        }
+        var start = (pageNum -1) * pageSize;
+        var end = pageNum * pageSize;
+        var end = end > resultLength ? resultLength : end;
+        this.model.set('start', start, {silent: true});
+        this.model.set('end', end, {silent: true});
+        this.model.trigger('change:end', this.model);
+    },
+    calculateNeighborPages: function() {
+        var currentPage = this.model.get('pageNum');
+        var start = currentPage - Math.floor(appMixture.MAX_PAGES / 2);
+        if (start < 1) {
+            start = 1;
+        }
+        var end = start + appMixture.MAX_PAGES -1;
+        if (end > this.model.get('pages')) {
+            var emptySpace = end - this.model.get('pages');
+            end = this.model.get('pages');
+            start -= emptySpace;
+            if (start < 1) {
+                start = 1;
+            }
+        }
+        var pages = [];
+        for (var i = start; i <= end; ++i) {
+            pages.push(i);
+        }
+        this.model.set('neighborPages', pages, {silent: true});
+    },
     render: function() {
+        this.calculateNeighborPages();
         this.$el.html(this.template(this.model.attributes));
         return this;
     }

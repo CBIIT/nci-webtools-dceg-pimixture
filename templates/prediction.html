@@ -2,67 +2,84 @@
     <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
         <fieldset class="well">
             <div class="form-group">
-                <label for="rdsFile" class="col-md-4 text-right">Model file:</label>
-                <div class="col-md-8">
+                <label for="rdsFile" class="col-md-3 control-label">Model file <span class="text-danger">*</span></label>
+                <div class="col-md-9">
                     <% if (data['serverFile']) { %>
-                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>">
+                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
+                    <div id="serverFileName"><%= data['serverFile'].split('/')[data['serverFile'].split('/').length -1] %></div>
                     <% } else { %>
-                    <input name="rdsFile" type="file" accept=".rds" required>
+                    <input id="rdsFile" name="rdsFile" type="file" accept=".rds" required style="display: none;">
+                    <button id="modelFileBtn" type="button" class="btn btn-default" onclick="document.getElementById('rdsFile').click();">Choose File</button>
                     <% } %>
+                </div>
+                <div class="col-md-9 col-md-offset-3">
+                    <div id="modelFileName"></div>
                 </div>
             </div>
             <div class="form-group">
-                <label for="testDataFile" class="col-md-4 text-right">Test Data:</label>
-                <div class="col-md-8">
-                    <input id="testDataFile" name="testDataFile" type="file" accept=".csv" required>
+                <label for="testDataFile" class="col-md-3 control-label">Test Data <span class="text-danger">*</span></label>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <input id="testDataFile" name="testDataFile" type="file" accept=".csv" required style="display: none;">
+                            <button id="testDataFileBtn" type="button" class="btn btn-default" onclick="document.getElementById('testDataFile').click();">Choose File</button>
+                        </div>
+                        <div class="col-md-7">
+                            <a class="sampleDownload" href="testData.csv" download="PIMixtureSampleTestData.csv">Download Sample</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 col-md-offset-3">
+                    <div id="testDataFileName"></div>
                 </div>
             </div>
         </fieldset>
-        <fieldset class="well">
-            <h4 class="">Time points:</h4>
+        <fieldset id="timePointsWell" class="well" disabled>
             <div class="form-group">
-                <div class="pull-left">
-                    <label class="radio-inline"><input type="radio" name="timePointType" id="timePointRange" checked> Enter a range</label>
-                    <label class="radio-inline"><input type="radio" name="timePointType" id="timePointList"> Enter individual time points</label>
+                <label class="control-label col-md-4">Time points:</label>
+                <div class="col-md-4">
+                    <label class="radio-inline"><input type="radio" name="timePointType" id="timePointRange" checked>Range</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="radio-inline"><input type="radio" name="timePointType" id="timePointList">Individual</label>
                 </div>
             </div>
             <div id="timePointsRangeGroup">
                 <div class="form-group">
-                    <label for="begin" class="control-label col-md-4">Begin:</label>
-                    <div class="col-md-8">
+                    <label for="begin" class="control-label col-md-3">Begin <span class="text-danger">*</span></label>
+                    <div class="col-md-9">
                         <input type="number" name="begin" id="begin" class="form-control" required/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="end" class="control-label col-md-4">End:</label>
-                    <div class="col-md-8">
+                    <label for="end" class="control-label col-md-3">End <span class="text-danger">*</span></label>
+                    <div class="col-md-9">
                         <input type="number" name="end" id="end" class="form-control" required/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="setSize" class="control-label col-md-4">Step size:</label>
-                    <div class="col-md-8">
+                    <label for="setSize" class="control-label col-md-3">Step size <span class="text-danger">*</span></label>
+                    <div class="col-md-9">
                         <input type="number" name="stepSize" id="setSize" class="form-control" value="1" required/>
                     </div>
                 </div>
             </div>
             <div class="form-group" id="timePointsListGroup" hidden>
-                <label for="timePoints" class="control-label col-md-4">Time Points:</label>
-                <div class="col-md-8">
+                <label for="timePoints" class="control-label col-md-2">Points <span class="text-danger">*</span></label>
+                <div class="col-md-10">
                     <input type="text" name="timePoints" id="timePoints" placeholder="1,2,3..." class="form-control"/>
                 </div>
             </div>
         </fieldset>
         <div class="form-group submitButtons">
             <div class="col-md-3 col-md-offset-6">
-                <button id="runPredict" type="submit" class="btn btn-primary" style="position: relative;">Submit<span id="indicator"></span></button>
+                <button id="runPredict" type="submit" class="btn btn-primary" disabled style="position: relative;">Submit<span id="indicator"></span></button>
             </div>
             <div class="col-md-3">
-                <button type="reset" id="reset" class="btn btn-default">Reset</button>
+                <button type="reset" id="reset" class="btn btn-default" <%= data['serverFile'] ? '' : 'disabled'%> >Reset</button>
             </div>
         </div>
         <div id="error-message">
         </div>
     </form>
 </div>
-<div id="results" class="col-md-8"></div>

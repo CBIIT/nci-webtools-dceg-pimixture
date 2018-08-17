@@ -8,7 +8,7 @@ runCalculation <- function(jsonData) {
     if (length(input$covariatesSelection) == 0) {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")
     } else {
-        p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "),paste(input$covariatesSelection,collapse=" + "),sep=" ~ ")
+        p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), input$covariates, sep=" ~ ")
     }
     time.interval = 1e-2
     result <-PIMixture(p.model=p.model,data=csvFile, model=model)
