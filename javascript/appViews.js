@@ -78,6 +78,13 @@ appMixture.FormView = Backbone.View.extend({
         var formData = new FormData();
         if (params.covariatesSelection) {
             params.covariatesSelection = params.covariatesSelection.split(',');
+            if (params.effects && params.effects.length > 0) {
+                var effects = [];
+                for (var effect of this.model.get('effects')) {
+                    effects.push([effect.first, effect.second])
+                }
+                params.effects = effects;
+            }
         } else {
             params.covariatesSelection = [];
         }
@@ -339,7 +346,7 @@ appMixture.FormView = Backbone.View.extend({
         var model = this.model;
         var effects = appMixture.models.form.attributes.effects;
         var effects_String = "";
-        counter = 1
+        counter = 1;
         _.each(effects, function (val, attribute) {
             if (counter <= 5)
                 effects_String += "<p>" + val.first + " &nbsp " + val.second + "</p>";
