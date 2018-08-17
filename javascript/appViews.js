@@ -692,10 +692,10 @@ appMixture.PredictionView = Backbone.View.extend({
         }, this);
 
         appMixture.predictionResultModel = new appMixture.PredictionResultModel();
-        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
+        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
         return this;
     },
