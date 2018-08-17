@@ -68,6 +68,7 @@ body {
 }
 
 #fittingResults {
+    overflow-y: auto;
     border: thin solid lightgray;
 }
 
