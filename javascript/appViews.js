@@ -75,8 +75,7 @@ appMixture.FormView = Backbone.View.extend({
             return;
         }
         this.$('#run').prop("disabled", true);
-        appMixture.models.results.clear();
-        e.preventDefault();
+        appMixture.models.results.clear().set(appMixture.models.results.defaults);
         var $that = this,
             params = _.extend({}, this.model.attributes);
         var formData = new FormData();
@@ -147,7 +146,8 @@ appMixture.FormView = Backbone.View.extend({
         this.spinner.stop();
     },
     resetModel: function(e) {
-        this.model.clear();
+        this.model.clear().set(this.model.defaults);
+        appMixture.models.results.clear().set(appMixture.models.results.defaults);
         this.render();
     },
     openInteractiveEffects: function (e) {
@@ -727,6 +727,7 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     resetForm: function(e) {
+        appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
         if (this.model.get('serverFile')) {
             this.model.unset('serverFile');
             return appMixture.router.navigate('#prediction', true);
@@ -777,7 +778,7 @@ appMixture.PredictionView = Backbone.View.extend({
         formData.append('jsonData', JSON.stringify(jsonData));
 
         this.$('#error-message').html('');
-        appMixture.predictionResultModel.clear();
+        appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
         this.$('#runPredict').prop('disabled', true);
         this.startSpinner();
         appMixture.predictionResultModel.fetch({
