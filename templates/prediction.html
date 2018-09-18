@@ -1,35 +1,35 @@
 <div id="prediction-input" class="col-md-4">
     <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
         <fieldset class="well">
-            <div class="form-group">
-                <label for="rdsFile" class="col-md-3 control-label">Model file <span class="text-danger">*</span></label>
-                <div class="col-md-9">
-                    <% if (data['serverFile']) { %>
-                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
-                    <div id="serverFileName"><%= data['serverFile'].split('/')[data['serverFile'].split('/').length -1] %></div>
-                    <% } else { %>
-                    <input id="rdsFile" name="rdsFile" type="file" accept=".rds" required style="display: none;">
-                    <button id="modelFileBtn" type="button" class="btn btn-default" onclick="document.getElementById('rdsFile').click();">Choose File</button>
-                    <% } %>
-                </div>
-                <div class="col-md-9 col-md-offset-3">
-                    <div id="modelFileName"></div>
-                </div>
+            <div class="form-group" style="margin-bottom: 5px">
+                <label for="rdsFile" class="control-label">Model file <span class="text-danger">*</span></label>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 5px">
+                <% if (data['serverFile']) { %>
+                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
+                    <div id="serverFileName" style="margin-left: 5px"><%= data['serverFile'].split('/')[data['serverFile'].split('/').length -1] %></div>
+                <% } else { %>
+                    <div class="col-md-3" style="padding-left: 0;">
+                        <input id="rdsFile" name="rdsFile" type="file" accept=".rds" required style="display: none;">
+                        <button id="modelFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('rdsFile').click();">Choose File</button>
+                    </div>
+                    <div class="col-md-9">
+                        <div id="modelFileName"></div>
+                    </div>
+                <% } %>
+            </div>
+            <div class="form-group" style="margin-bottom: 5px">
                 <label for="testDataFile" class="col-md-3 control-label">Test Data <span class="text-danger">*</span></label>
                 <div class="col-md-9">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <input id="testDataFile" name="testDataFile" type="file" accept=".csv" required style="display: none;">
-                            <button id="testDataFileBtn" type="button" class="btn btn-default" onclick="document.getElementById('testDataFile').click();">Choose File</button>
-                        </div>
-                        <div class="col-md-7">
-                            <a class="sampleDownload" href="testData.csv" download="PIMixtureSampleTestData.csv">Download Sample</a>
-                        </div>
-                    </div>
+                    <a class="sampleDownload" href="testData.csv" download="PIMixtureSampleTestData.csv">Download Sample</a>
                 </div>
-                <div class="col-md-9 col-md-offset-3">
+            </div>
+            <div class="form-group" style="margin-bottom: 5px">
+                <div class="col-md-3" style="padding-left: 0;">
+                    <input id="testDataFile" name="testDataFile" type="file" accept=".csv" required style="display: none;">
+                    <button id="testDataFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('testDataFile').click();">Choose File</button>
+                </div>
+                <div class="col-md-9">
                     <div id="testDataFileName"></div>
                 </div>
             </div>
