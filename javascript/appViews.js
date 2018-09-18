@@ -70,6 +70,10 @@ appMixture.FormView = Backbone.View.extend({
         if (!this.model.get('isMutuallyExclusive')) {
             return;
         }
+        if (!this.model.get('covariatesArrValid')) {
+            this.$('#error-message').html('Please set covariate reference levels before submitting');
+            return;
+        }
         this.$('#run').prop("disabled", true);
         appMixture.models.results.clear();
         e.preventDefault();
@@ -327,8 +331,10 @@ appMixture.FormView = Backbone.View.extend({
                 }
             });
             model.set('covariatesArr', covariatesArrNew);
+            model.set('covariatesArrValid', false);
         } else {
             model.set('covariatesArr', []);
+            model.set('covariatesArrValid', true);
         }
 
         if (covariatesSelectionSplit.length > 1) {
@@ -585,6 +591,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
     save: function(e) {
         e.preventDefault(e);
         this.model.get('formModel').set('covariatesArr', this.model.get('covariatesArr'));
+        this.model.get('formModel').set('covariatesArrValid', true);
         this.close.call(this, e);
     },
     updateModel: function(e) {
