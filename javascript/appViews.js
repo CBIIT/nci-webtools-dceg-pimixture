@@ -160,7 +160,7 @@ appMixture.FormView = Backbone.View.extend({
         e.preventDefault();
         new appMixture.ReferenceGroupsView({
             model: new appMixture.ReferencesModel({
-                'covariatesArr': this.model.get('covariatesArr').slice().map(function(cov) {
+                'covariatesArr': this.model.get('covariatesArr').map(function(cov) {
                     return _.extend({}, cov);
                 }),
                 'uniqueValues': this.model.get('uniqueValues'),
