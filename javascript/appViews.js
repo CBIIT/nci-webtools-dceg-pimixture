@@ -44,6 +44,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeL': this.changeCovariates,
             'change:outcomeR': this.changeCovariates,
             'change:covariatesSelection': this.changeCovariateList,
+            'change:covariatesArrValid': this.changeCovariatesArr,
             'change:effects': this.changeEffectsList,
             'change:email': this.changeEmail
         }, this);
@@ -71,7 +72,7 @@ appMixture.FormView = Backbone.View.extend({
             return;
         }
         if (!this.model.get('covariatesArrValid')) {
-            this.$('#error-message').html('Please set covariate reference levels before submitting');
+            this.$('#covariates-error').html('Please set covariate reference levels before submitting');
             return;
         }
         this.$('#run').prop("disabled", true);
@@ -335,6 +336,7 @@ appMixture.FormView = Backbone.View.extend({
         } else {
             model.set('covariatesArr', []);
             model.set('covariatesArrValid', true);
+            this.$('#covariates-error').html('');
         }
 
         if (covariatesSelectionSplit.length > 1) {
@@ -348,6 +350,9 @@ appMixture.FormView = Backbone.View.extend({
                 this.$el.find('#referencesButton').prop("disabled", false);
             }
         }
+    },
+    changeCovariatesArr: function() {
+        this.$('#covariates-error').html('');
     },
     changeEffectsList: function () {
         return; // Don't display current interactive effects in form

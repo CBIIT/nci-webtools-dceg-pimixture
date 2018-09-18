@@ -216,6 +216,7 @@ h2.stage-header {
     display: inline-block;
 }
 
+#covariates-error,
 #error-message,
 #mutex-error {
   color: red;
