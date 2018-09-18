@@ -40,6 +40,7 @@ appMixture.EffectsModel = Backbone.Model.extend({
 
 appMixture.ReferencesModel = Backbone.Model.extend({
     defaults: {
+        'valid': false,
         'covariates': [],
         'uniqueValues': {},
         'formModel': {},

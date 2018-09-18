@@ -565,9 +565,9 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
     initialize: function () {
         this.template = _.template(appMixture.templates.get('references'));
         this.model.on({
-            'change:covariatesArr': this.updateView
+            'change:covariatesArr': this.render
         }, this);
-        this.render();
+        this.showModal();
     },
     events: {
         'hidden.bs.modal': 'remove',
@@ -601,53 +601,33 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
         if (type === 'type') {
             if (value === 'continuous') {
                 covariateObj.category = '0';
-            } else if (value === 'nominal') {
             } else {
                 covariateObj.category = '';
             }
         }
+        this.validate();
         model.trigger('change:covariatesArr', model);
     },
-    updateView: function() {
-        var model = this.model,
-            covariatesArr = model.get('covariatesArr'),
-            $that = this;
-        covariatesArr.forEach(function(entry) {
-            var name = entry.text,
-                type = entry.type,
-                category = entry.category;
-                eType = $that.$el.find('[name="'+name+'_type"]'),
-                eCatText = $that.$el.find('[id="'+name+'_category_text"]');
-                eCatSelect = $that.$el.find('[id="'+name+'_category_select"]');
-            if (type != eType.val()) {
-                eType.find('option[value="'+type+'"]').prop('selected',true);
+    validate: function() {
+        var properties = ['text', 'type', 'category'];
+        this.model.set('valid', true);
+        for (var cov of this.model.get('covariatesArr')) {
+            for (var prop of properties) {
+                if (!cov[prop]) {
+                    this.model.set('valid', false);
+                    break;
+                }
             }
-            if (category != eCatText.val()) {
-                eCatText.val(category);
-            }
-            if (type === 'continuous') {
-                eCatText.prop('hidden', false);
-                eCatText.addClass('form-control');
-                eCatSelect.prop('hidden', true);
-                eCatSelect.removeClass('form-control');
-            } else if (type === 'nominal') {
-                eCatText.prop('hidden', true);
-                eCatText.removeClass('form-control');
-                eCatSelect.prop('hidden', false);
-                eCatSelect.addClass('form-control');
-            } else {
-                eCatText.val('');
-                eCatSelect.val('');
-                eCatText.prop('hidden', false);
-                eCatText.addClass('form-control');
-                eCatSelect.prop('hidden', true);
-                eCatSelect.removeClass('form-control');
-            }
-        });
+        }
+        this.$('#saveCovariatesBtn').prop('disabled', !this.model.get('valid'));
     },
     render: function() {
+        this.$('.bootstrap-dialog-message').html($(this.template(this.model.attributes)));
+    },
+    showModal: function() {
         this.$modal = BootstrapDialog.show({
             buttons: [{
+                id: 'saveCovariatesBtn',
                 cssClass: 'btn-primary save',
                 label: 'Save'
             }, {
@@ -658,6 +638,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             title: "Configure Covariates"
         });
         this.setElement(this.$modal.getModal());
+        this.validate();
     }
 });
 
