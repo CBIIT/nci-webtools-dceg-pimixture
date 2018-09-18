@@ -212,6 +212,7 @@ def runPredict():
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters))
         rOutput = r('predictionResult = runPredict(parameters)')
+        print(rOutput)
         rResults = r.get('predictionResult')
         if not rResults:
             message = "Got an error when trying to run PIMixture.predict() function"
