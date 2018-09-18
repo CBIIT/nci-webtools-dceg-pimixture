@@ -7,7 +7,8 @@
             <div class="form-group">
                 <% if (data['serverFile']) { %>
                     <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
-                    <div id="serverFileName" style="margin-left: 5px"><%= data['serverFile'].split('/')[data['serverFile'].split('/').length -1] %></div>
+                    <!--<div id="serverFileName" style="margin-left: 5px"><%= data['serverFile'].split('/')[data['serverFile'].split('/').length -1] %></div>-->
+                <div id="serverFileName" style="margin-left: 5px">PIMixtureFittingResults.rds</div>
                 <% } else { %>
                     <div class="col-md-3" style="padding-left: 0">
                         <input id="rdsFile" name="rdsFile" type="file" accept=".rds" required style="display: none;">
