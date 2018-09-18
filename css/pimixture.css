@@ -21,12 +21,6 @@ body {
     margin-bottom: 10px;
     padding-left: 15px;
 }
-#calculationForm {
-    min-height: 956px;
-}
-#predictionForm {
-    min-height: 956px;
-}
 
 .well {
     margin: 0px;
@@ -55,36 +49,49 @@ body {
     /*display: none;*/
 }
 
-#output p,
-#results p{
-    overflow: auto;
-    height: 956px;
-    border: thin solid lightgray;
+#calculationForm {
+    min-height: 857px;
+}
+
+#predictionForm {
+    height: 920px;
 }
 
 #fittingResultPanel,
-#prediction-results {
-    height: 954px;
+#output p,
+#results p{
+    border: thin solid lightgray;
+}
+#output p,
+#results p{
+    overflow: auto;
 }
 
-#fittingResultPanel {
-    border: thin solid lightgray;
+#fittingResultPanel,
+#output p {
+    height: 855px;
+    padding: 10px 10px;
+}
 
+#prediction-results,
+#results p {
+    height: 918px;
+    padding: 10px 10px;
+}
+
+#prediction-results .table,
+#fittingResultPanel .table {
+    margin-bottom: 10px;
 }
 
 #fittingResults {
-    height: 880px;
+    height: 790px;
     overflow-y: auto;
 }
 
 #predictionResultTable {
     height: 95%;
     overflow-y: auto;
-}
-
-#output p,
-#results p {
-    padding: 10px 10px;
 }
 
 #output h4 {
@@ -190,11 +197,6 @@ h2.stage-header {
   padding:0px;
   margin-top:-15px;
   font-size: 14px;
-}
-
-#result-buttons a,
-#dropdown-button button{
-    margin-top: 10px;
 }
 
 #navigation-bar {
