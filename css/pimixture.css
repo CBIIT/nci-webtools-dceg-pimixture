@@ -70,13 +70,13 @@ body {
 #fittingResultPanel,
 #output p {
     height: 855px;
-    padding: 10px 10px;
+    padding: 15px 15px;
 }
 
 #prediction-results,
 #results p {
     height: 918px;
-    padding: 10px 10px;
+    padding: 15px 15px;
 }
 
 #prediction-results .table,
