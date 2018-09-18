@@ -737,6 +737,7 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
+        this.$("[data-toggle=popover]").popover();
         this.tryEnableInputs();
         appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
