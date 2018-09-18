@@ -407,7 +407,7 @@ appMixture.FormView = Backbone.View.extend({
         var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
         for (var i = 0; i < appMixture.variables.length; ++i) {
             var value = this.model.get(appMixture.variables[i]);
-            var optionsList = this.getOptionTags(headers, [], value);
+            var optionsList = this.getOptionTags(headers, [], value, appMixture.variables[i]);
             this.$el.find('[name="' + appMixture.variables[i] + '"]').html(optionsList);
             if (value) {
                 selected.push(value);
@@ -419,8 +419,8 @@ appMixture.FormView = Backbone.View.extend({
             covariatesSelection.addOption({'text': opt, 'value': opt});
         }
     },
-    getOptionTags: function(options, selected, current) {
-        var optionsList = "<option value=\"\">----Select Outcome----</option>";
+    getOptionTags: function(options, selected, current, name) {
+        var optionsList = '<option value="">----Select ' + name + '----</option>';
         for (var index = 0; index < options.length; index++) {
             if (selected.indexOf(options[index]) === -1) {
                 optionsList += '<option value="' + options[index] + '"';
