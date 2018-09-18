@@ -34,13 +34,39 @@
                     <option value="">----Select Model----</option>
                     <option <%= data.model === 'Semi-parametric' ? 'selected' : '' %>>Semi-parametric</option>
                     <option <%= data.model === 'Weakly-parametric' ? 'selected' : '' %>>Weakly-parametric</option>
-                    <option <%= data.model === 'Parametric' ? 'selected' : '' %>>Parametric</option>
+                    <option <%= data.model === 'Parametric' ? 'selected' : '' %> <%= data.design === 1 ? 'disabled' : '' %>>Parametric</option>
                 </select>
             </div>
         </div>
     </fieldset>
     <fieldset id="covariatesSet" class="well">
         <div id="mutex-error" class=""></div>
+        <div id="Strata" class="form-group" <%= data.design !== 1 ? 'hidden' : '' %>>
+            <label class="control-label col-md-4">Strata <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Strata" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
+                <select name="strata" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                    <% if (data.headers.length > 0) { %>
+                        <option value="">----Select Strata----</option>
+                    <% } %>
+                    <% for (var field of data.headers) { %>
+                        <option <%= data.strata === field ? 'selected' : ''%>><%= field %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <div id="Weight" class="form-group" <%= data.design !== 1 ? 'hidden' : '' %>>
+            <label class="control-label col-md-4">Weight <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Weight" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
+                <select name="weight" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                <% if (data.headers.length > 0) { %>
+                <option value="">----Select Weight----</option>
+                <% } %>
+                <% for (var field of data.headers) { %>
+                <option <%= data.strata === field ? 'selected' : ''%>><%= field %></option>
+                <% } %>
+                </select>
+            </div>
+        </div>
         <div id="outcomeC" class="form-group">
             <label class="control-label col-md-4">C <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="C" data-content="Tips: ..." ></a></label>
             <div class="col-md-8">

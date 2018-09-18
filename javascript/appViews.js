@@ -14,7 +14,9 @@ var appMixture = {
     variables: [
         'outcomeC',
         'outcomeL',
-        'outcomeR'
+        'outcomeR',
+        'strata',
+        'weight'
     ],
     MAX_PAGES: 5,
     currentView: null,
@@ -95,6 +97,7 @@ appMixture.FormView = Backbone.View.extend({
     runCalculation: function (e) {
         e.preventDefault();
         if (!this.model.get('isMutuallyExclusive')) {
+            this.$('#mutex-error').html('Please make sure variables are mutually exclusive!');
             return;
         }
         if (!this.model.get('covariatesArrValid')) {
@@ -253,7 +256,7 @@ appMixture.FormView = Backbone.View.extend({
     enableInputs: function() {
         this.$('[name="design"], [name="model"], [name="outcomeC"], [name="outcomeL"], '
             + '[name="outcomeR"], [name="covariatesSelection"], [name="sendToQueue"], '
-            + '#run, #reset'
+            + '[name="jobName"], [name="weight"], [name="strata"], #run, #reset'
         ).prop('disabled', false);
         this.$('#csvFileBtn').prop('disabled', true);
     },
@@ -298,7 +301,7 @@ appMixture.FormView = Backbone.View.extend({
                         this.$('#' + name1).addClass('has-error');
                         this.$('#' + name2).addClass('has-error');
                         this.model.set('isMutuallyExclusive', false);
-                        this.$('#mutex-error').html('Please make sure C, L and R are mutually exclusive!');
+                        this.$('#mutex-error').html('Please make sure variables are mutually exclusive!');
                     }
                 }
             }
@@ -398,14 +401,19 @@ appMixture.FormView = Backbone.View.extend({
     },
     changeDesign: function () {
         this.$el.find('[name="model"] option:last-child').prop('disabled',(this.model.get('design') === 1));
-        if (this.model.get('design') === "") {
+        var design = this.model.get('design');
+        if (design === "") {
         } else {
             var modelSelect = this.$el.find('[name="model"]')[0];
             if ($(modelSelect.options[modelSelect.selectedIndex]).attr('disabled') !== undefined) {
                 modelSelect.selectedIndex = 0;
                 this.model.set('model','');
             }
+            this.displayExtraMappings(design === 1);
         }
+    },
+    displayExtraMappings: function(status) {
+        this.$('#Strata, #Weight').prop('hidden', !status);
     },
     changeEmail: function () {
         if (this.model.get('email') === "") {
