@@ -1,8 +1,8 @@
 <form id="calculationForm" class="well form-horizontal" method="POST">
     <fieldset id="fileSet" class="well">
         <div class="form-group">
-            <label id="csvFileLabel" for="csvFile" class="col-md-3 control-label">Input File <span class="text-danger">*</span></label>
-            <div class="col-md-9 sampleDownloadContainer">
+            <label id="csvFileLabel" class="col-md-4 control-label">Input File <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Input File" data-content="Input file tips: ..." ></a></label>
+            <div class="col-md-8 sampleDownloadContainer">
                 <a href="bd.mock.data.csv" download="PIMixtureSample.csv" class="sampleDownload">Download Sample</a>
             </div>
         </div>
@@ -18,18 +18,18 @@
     </fieldset>
     <fieldset id="designAndModelSet" class="well form-group">
         <div class="form-group">
-            <label id="designLabel" for="design" class="control-label col-md-5">Sample Design <span class="text-danger">*</span></label>
-            <div class="col-md-7">
+            <label id="designLabel" class="control-label col-md-6">Sample Design <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Sample Design" data-content="Tips: ..." ></a></label>
+            <div class="col-md-6">
                 <select name="design" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Design---</option>
-                    <option value="null" <%= data.design === null ? 'selected' : '' %>>Cohort Sample</option>
-                    <option value="1" <%= data.design === 1 ? 'selected' : '' %>>Stratified Probability Sample</option>
+                    <option value="null" <%= data.design === null ? 'selected' : '' %>>Cohort (Unweighted)</option>
+                    <option value="1" <%= data.design === 1 ? 'selected' : '' %>>Cohort (Weighted)</option>
                 </select>
             </div>
         </div>
         <div class="form-group">
-            <label id="modelLabel" for="model" class="control-label col-md-5">Regression Model <span class="text-danger">*</span></label>
-            <div class="col-md-7">
+            <label id="modelLabel" class="control-label col-md-6">Regression Model <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Regression Model" data-content="Tips: ..." ></a></label>
+            <div class="col-md-6">
                 <select name="model" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Model----</option>
                     <option <%= data.model === 'Semi-parametric' ? 'selected' : '' %>>Semi-parametric</option>
@@ -42,8 +42,8 @@
     <fieldset id="covariatesSet" class="well">
         <div id="mutex-error" class=""></div>
         <div id="outcomeC" class="form-group">
-            <label for="outcomeC" class="control-label col-md-3">C <span class="text-danger">*</span></label>
-            <div class="col-md-9">
+            <label class="control-label col-md-4">C <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="C" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
                 <select name="outcomeC" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
                         <option value="">----Select outcomeC----</option>
@@ -55,8 +55,8 @@
             </div>
         </div>
         <div id="outcomeL" class="form-group">
-            <label for="outcomeL" class="control-label col-md-3">L <span class="text-danger">*</span></label>
-            <div class="col-md-9">
+            <label class="control-label col-md-4">L <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="L" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
                 <select name="outcomeL" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
                         <option value="">----Select outcomeL----</option>
@@ -68,8 +68,8 @@
             </div>
         </div>
         <div id="outcomeR" class="form-group">
-            <label for="outcomeR" class="control-label col-md-3">R <span class="text-danger">*</span></label>
-            <div class="col-md-9">
+            <label class="control-label col-md-4">R <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="R" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
                 <select name="outcomeR" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
                         <option value="">----Select outcomeR----</option>
@@ -81,19 +81,19 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="covariatesSelection" class="control-label col-md-3">Covariates</label>
-            <div class="col-md-9">
+            <label class="control-label col-md-4">Covariates <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Covariates" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
                 <input type="text" name="covariatesSelection" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
             </div>
         </div>
         <div id="covariates-error" class=""></div>
         <div id="categoricalGroups" class="form-group">
-            <div class="col-md-9 col-md-offset-3">
+            <div class="col-md-8 col-md-offset-4">
                 <button id="referencesButton" class="btn btn-default form-control" disabled>Configure Covariates</button>
             </div>
         </div>
         <div id="effectsSet" class="form-group">
-            <div class="col-md-9 col-md-offset-3">
+            <div class="col-md-8 col-md-offset-4">
                 <button id="effectsButton" class="btn btn-default form-control" disabled>Edit Interactive Effects</button>
             </div>
         </div>
@@ -101,12 +101,12 @@
     <fieldSet id="emailSet" class="well">
         <div class="form-group">
             <div class="checkbox col-md-8">
-                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue</label>
+                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus"  title="Queue" data-content="Tips: ..." ></a></label>
             </div>
         </div>
         <div class="form-group">
-            <label for="email" class="control-label col-md-2">Email</label>
-            <div class="col-md-10">
+            <label for="email" class="control-label col-md-3">Email <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Email" data-content="Tips: ..." ></a></label>
+            <div class="col-md-9">
                 <input type="text" name="email" class="form-control" disabled>
             </div>
         </div>

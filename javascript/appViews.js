@@ -68,6 +68,7 @@ appMixture.FormView = Backbone.View.extend({
             plugins: ['remove_button'],
             sortField: 'order'
         });
+        this.$("[data-toggle=popover]").popover();
         this.updateOptions();
         this.updateCovariates();
         return this;

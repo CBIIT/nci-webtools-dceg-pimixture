@@ -309,6 +309,14 @@ input[type=file] {
     min-height: 192px;
 }
 
+.popover {
+    min-width: 100px;
+}
+
+label .glyphicon-question-sign {
+    color: #2A71A5;
+}
+
 @media(min-width: 1440px){
 .container {
     width: 1440px;
