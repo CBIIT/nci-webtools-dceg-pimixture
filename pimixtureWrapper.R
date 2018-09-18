@@ -1,17 +1,26 @@
 library(jsonlite)
 library(PIMixture)
 
+source('R/converting_functions.R')
+
 runCalculation <- function(jsonData) {
     input = fromJSON(jsonData)
     csvFile = read.csv(input$filename)
+    csvData = csvFile[, input$columns]
     model=tolower(input$model)
     if (length(input$covariatesSelection) == 0) {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")
     } else {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), input$covariates, sep=" ~ ")
     }
+    print(p.model)
     time.interval = 1e-2
-    result <-PIMixture(p.model=p.model,data=csvFile, model=model)
+    if (length(input$covariatesArr) > 0) {
+        data <- data.conversion(input$covariatesArr, csvData)
+    } else {
+        data <- csvData
+    }
+    result <-PIMixture(p.model=p.model, data=data, model=model)
     result$covariatesSelection <- input$covariatesSelection
     outputFileName = input$outputRdsFilename
     cat(outputFileName)
