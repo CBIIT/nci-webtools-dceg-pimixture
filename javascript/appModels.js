@@ -59,7 +59,7 @@ appMixture.PredictionModel = Backbone.Model.extend({
 
 appMixture.PredictionResultModel = Backbone.Model.extend({
     defaults: {
-        pageSizeChoices: [ 10, 15, 20, 25, 50, 100, 150, 200, 250],
+        pageSizeChoices: [ 15, 25, 50, 100, 150, 200, 250],
         pageNum: 1,
         pages: 0,
         start: 0,
