@@ -101,7 +101,7 @@ appMixture.FormView = Backbone.View.extend({
             return;
         }
         if (!this.model.get('covariatesArrValid')) {
-            this.$('#covariates-error').html('Please set covariate reference levels before submitting');
+            this.$('#covariates-error').html('Some of the Covariates are not properly configured.');
             return;
         }
         this.disableInputs(true);
