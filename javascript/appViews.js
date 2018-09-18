@@ -64,7 +64,24 @@ appMixture.FormView = Backbone.View.extend({
     },
     render: function() {
         this.$el.html(this.template(this.model.attributes));
+        this.$('[name="covariatesSelection"]').selectize({
+            plugins: ['remove_button'],
+            sortField: 'order'
+        });
+        this.updateOptions();
+        this.updateCovariates();
         return this;
+    },
+    updateCovariates: function(){
+        covariatesSelection = this.$('[name="covariatesSelection"]')[0].selectize;
+        var covariates = this.model.get('covariatesSelection');
+        if (covariates) {
+            var covList = covariates.split(',');
+            for (var cov of covList) {
+                covariatesSelection.addItem(cov, true);
+            }
+            this.updateCovariateBtnsStatus(covList);
+        }
     },
     runCalculation: function (e) {
         e.preventDefault();
@@ -147,7 +164,7 @@ appMixture.FormView = Backbone.View.extend({
         this.spinner.stop();
     },
     resetModel: function(e) {
-        this.model.clear().set(this.model.defaults);
+        this.model.clear().set(this.model.defaults, {silent: true});
         appMixture.models.results.clear().set(appMixture.models.results.defaults);
         this.render();
     },
@@ -199,6 +216,7 @@ appMixture.FormView = Backbone.View.extend({
                         }
                     }
                     $that.enableInputs();
+                    $that.$('[name="covariatesSelection"]')[0].selectize.destroy();
                     $that.$('[name="covariatesSelection"]').selectize({
                         plugins: ['remove_button'],
                         sortField: 'order'
@@ -338,13 +356,15 @@ appMixture.FormView = Backbone.View.extend({
             model.set('covariatesArrValid', true);
             this.$('#covariates-error').html('');
         }
-
-        if (covariatesSelectionSplit.length > 1) {
+        this.updateCovariateBtnsStatus(covariatesSelectionSplit);
+    },
+    updateCovariateBtnsStatus: function(covList) {
+      if (covList.length > 1) {
             this.$el.find('#effectsButton').prop("disabled", false);
             this.$el.find('#referencesButton').prop("disabled", false);
         } else {
             this.$el.find('#effectsButton').prop("disabled", true);
-            if (covariatesSelectionSplit.length === 0) {
+            if (covList.length === 0) {
                 this.$el.find('#referencesButton').prop("disabled", true);
             } else {
                 this.$el.find('#referencesButton').prop("disabled", false);

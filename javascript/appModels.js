@@ -12,7 +12,7 @@ appMixture.BaseModel = Backbone.Model.extend({
 appMixture.FormModel = Backbone.Model.extend({
     defaults: {
         'isMutuallyExclusive': true,
-        'csvFile': null,
+        'csvFile': {},
         'design': "",
         'headers': [],
         'uniqueValues': {},
