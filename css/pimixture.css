@@ -62,14 +62,19 @@ body {
     border: thin solid lightgray;
 }
 
-#fittingResults,
+#fittingResultPanel,
 #prediction-results {
     height: 954px;
 }
 
-#fittingResults {
-    overflow-y: auto;
+#fittingResultPanel {
     border: thin solid lightgray;
+
+}
+
+#fittingResults {
+    height: 880px;
+    overflow-y: auto;
 }
 
 #predictionResultTable {
