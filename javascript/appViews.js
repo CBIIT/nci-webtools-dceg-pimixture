@@ -636,7 +636,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
         this.$('#saveCovariatesBtn').prop('disabled', !this.model.get('valid'));
     },
     render: function() {
-        this.$('.bootstrap-dialog-message').html($(this.template(this.model.attributes)));
+        this.$modal.setMessage($(this.template(this.model.attributes)));
     },
     showModal: function() {
         this.$modal = BootstrapDialog.show({
