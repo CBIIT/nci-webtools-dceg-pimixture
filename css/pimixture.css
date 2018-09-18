@@ -32,7 +32,7 @@ body {
     margin: 0px;
 }
 .well ~ .well {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 #input label ~ button {
@@ -224,12 +224,11 @@ h2.stage-header {
 fieldset.well {
     margin-left: -15px;
     margin-right: -15px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 10px 15px 10px 15px;
 }
 
 fieldset.well .form-group {
-    margin: 0 0 15px 0;
+    margin: 0 0 10px 0;
 }
 
 .modal-header {
@@ -300,7 +299,7 @@ input[type=file] {
 }
 
 #timePointsWell {
-    min-height: 230px;
+    min-height: 192px;
 }
 
 @media(min-width: 1440px){
