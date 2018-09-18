@@ -704,6 +704,7 @@ appMixture.ResultsView = Backbone.View.extend({
         e.preventDefault();
         appMixture.models.prediction.clear().set(appMixture.models.prediction.defaults);
         appMixture.models.prediction.set('serverFile', this.model.get('Rfile'));
+        appMixture.models.prediction.set('jobName', this.model.get('jobName'));
         appMixture.router.navigate('#prediction', true);
     },
     initialize: function () {

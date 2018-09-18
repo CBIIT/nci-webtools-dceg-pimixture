@@ -7,7 +7,7 @@
         <div class="form-group">
             <% if (data['serverFile']) { %>
                 <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
-                <div id="serverFileName" style="margin-left: 5px">PIMixtureFittingResults.rds</div>
+                <div id="serverFileName" style="margin-left: 5px"><%= data.jobName ? data.jobName : 'PIMixture' %>-FittingResults.rds</div>
             <% } else { %>
                 <div class="col-md-3" style="padding-left: 0">
                     <input id="rdsFile" name="rdsFile" type="file" accept=".rds" style="display: none;">
