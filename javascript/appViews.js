@@ -997,7 +997,6 @@ appMixture.HomeView = Backbone.View.extend({
         this.template = _.template(appMixture.templates.get('home'), {
             'variable': 'data'
         });
-        this.render();
     },
     render: function() {
         this.$el.html(this.template())
@@ -1010,7 +1009,6 @@ appMixture.HelpView = Backbone.View.extend({
         this.template = _.template(appMixture.templates.get('help'), {
             'variable': 'data'
         });
-        this.render();
     },
     render: function() {
         this.$el.html(this.template())
