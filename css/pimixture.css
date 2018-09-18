@@ -314,7 +314,8 @@ input[type=file] {
 }
 
 label .glyphicon-question-sign {
-    color: #2A71A5;
+    color: #909090;
+    font-size: 80%;
 }
 
 @media(min-width: 1440px){
