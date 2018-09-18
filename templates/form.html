@@ -1,6 +1,12 @@
 <form id="calculationForm" class="well form-horizontal" method="POST">
     <fieldset id="fileSet" class="well">
         <div class="form-group">
+            <label class="control-label col-md-4">Job Name <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Job Name" data-content="Tips: ..." ></a></label>
+            <div class="col-md-8">
+                <input type="text" name="jobName" placeholder="Enter a name for this job" class="form-control" value="<%= data.jobName %>">
+            </div>
+        </div>
+        <div class="form-group">
             <label id="csvFileLabel" class="col-md-4 control-label">Input File <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Input File" data-content="Input file tips: ..." ></a></label>
             <div class="col-md-8 sampleDownloadContainer">
                 <a href="bd.mock.data.csv" download="PIMixtureSample.csv" class="sampleDownload">Download Sample</a>
@@ -125,12 +131,6 @@
         </div>
     </fieldset>
     <fieldSet id="emailSet" class="well">
-        <div class="form-group">
-            <label class="control-label col-md-4">Job Name <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Job Name" data-content="Tips: ..." ></a></label>
-            <div class="col-md-8">
-                <input type="text" name="jobName" placeholder="Enter a name for this job" class="form-control" value="<%= data.jobName %>" <%= data.csvFile.name ? '' : 'disabled' %>>
-            </div>
-        </div>
         <div class="form-group">
             <div class="checkbox col-md-8">
                 <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus"  title="Queue" data-content="Tips: ..." ></a></label>
