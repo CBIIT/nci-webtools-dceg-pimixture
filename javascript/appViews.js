@@ -991,20 +991,67 @@ appMixture.BaseView = Backbone.View.extend({
     }
 });
 
+appMixture.HomeView = Backbone.View.extend({
+    el: '#home-page',
+    initialize: function() {
+        this.template = _.template(appMixture.templates.get('home'), {
+            'variable': 'data'
+        });
+        this.render();
+    },
+    render: function() {
+        this.$el.html(this.template())
+    }
+});
+
+appMixture.HelpView = Backbone.View.extend({
+    el: '#help-page',
+    initialize: function() {
+        this.template = _.template(appMixture.templates.get('help'), {
+            'variable': 'data'
+        });
+        this.render();
+    },
+    render: function() {
+        this.$el.html(this.template())
+    }
+});
+
 appMixture.Router = Backbone.Router.extend({
     routes: {
-        '': 'fitting',
-        'prediction(/*rdsFile)': 'prediction'
+        '': 'home',
+        'help': 'help',
+        'fitting': 'fitting',
+        'prediction': 'prediction'
+    },
+    menus: ['home', 'help', 'fitting', 'prediction'],
+    home: function() {
+        this.activeMenu('home');
+        appMixture.showView(appMixture.views.home);
+        console.log('Home page!');
+    },
+    help: function() {
+        this.activeMenu('help');
+        appMixture.showView(appMixture.views.help);
+        console.log('Help page!');
     },
     prediction: function(rdsFile) {
-        $('#prediction-li').addClass('active');
-        $('#fitting-li').removeClass('active');
+        this.activeMenu('prediction');
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {
-        $('#fitting-li').addClass('active');
-        $('#prediction-li').removeClass('active');
+        this.activeMenu('fitting');
         appMixture.showView(appMixture.views.base);
+    },
+    activeMenu: function(target) {
+        for (var menu of this.menus) {
+            var id = '#' + menu + '-li';
+            if (menu === target) {
+                $(id).addClass('active');
+            } else {
+                $(id).removeClass('active');
+            }
+        }
     }
 });
 
@@ -1029,6 +1076,8 @@ $(function () {
         appMixture.views.prediction = new appMixture.PredictionView({
             model: appMixture.models.prediction
         });
+        appMixture.views.home = new appMixture.HomeView();
+        appMixture.views.help = new appMixture.HelpView();
         Backbone.history.start();
     });
 });
