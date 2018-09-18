@@ -55,6 +55,8 @@ appMixture.ResultsModel = Backbone.Model.extend({
 
 appMixture.PredictionModel = Backbone.Model.extend({
     defaults: {
+        'rdsFile': {},
+        'testDataFile': {},
         'timePointType': 'Range'
     }
 });

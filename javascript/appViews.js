@@ -680,6 +680,15 @@ appMixture.ResultsView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-md-8',
     id: 'output',
+    events: {
+        'click #runPredictionBtn': 'navigateToPrediction'
+    },
+    navigateToPrediction: function(e) {
+        e.preventDefault();
+        appMixture.models.prediction.clear().set(appMixture.models.prediction.defaults);
+        appMixture.models.prediction.set('serverFile', this.model.get('Rfile'));
+        appMixture.router.navigate('#prediction', true);
+    },
     initialize: function () {
         this.model.on({
             'change': this.render
@@ -699,6 +708,8 @@ appMixture.PredictionView = Backbone.View.extend({
     events: {
         'input #rdsFile': 'selectModelFile',
         'input #testDataFile': 'selectTestDataFile',
+        'input [type="number"]': 'updateModel',
+        'input [type="text"]': 'updateModel',
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
@@ -717,6 +728,7 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
+        this.tryEnableInputs();
         appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
         return this;
@@ -724,6 +736,7 @@ appMixture.PredictionView = Backbone.View.extend({
     selectModelFile: function(e) {
         var file = e.target.files[0];
         if (file) {
+            this.model.set('rdsFile', file);
             this.$('#modelFileName').html(file.name);
             this.$('#modelFileBtn').prop('disabled', true);
             this.tryEnableInputs();
@@ -732,17 +745,23 @@ appMixture.PredictionView = Backbone.View.extend({
     selectTestDataFile: function(e) {
         var file = e.target.files[0];
         if (file) {
+            this.model.set('testDataFile', file);
             this.$('#testDataFileName').html(file.name);
             this.$('#testDataFileBtn').prop('disabled', true);
             this.tryEnableInputs();
         }
     },
+    updateModel: function(e) {
+        var val = $(e.target).val();
+        var name = $(e.target).attr('name');
+        this.model.set(name, val);
+    },
     tryEnableInputs: function() {
         var modelFileSelected = this.model.get('serverFile');
         if (!modelFileSelected) {
-            modelFileSelected = this.$('#rdsFile')[0].files[0];
+            modelFileSelected = this.model.get('rdsFile').name;
         }
-        var testDataFileSelected = this.$('#testDataFile')[0].files[0];
+        var testDataFileSelected = this.model.get('testDataFile').name;
         if (modelFileSelected || testDataFileSelected) {
             this.$('#reset').prop('disabled', false);
         }
@@ -753,27 +772,8 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     resetForm: function(e) {
         appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
-        if (this.model.get('serverFile')) {
-            this.model.unset('serverFile');
-            return appMixture.router.navigate('#prediction', true);
-        }
-        this.$('#modelFileBtn').prop('disabled', false);
-        this.$('#testDataFileBtn').prop('disabled', false);
-        this.$('#timePointsRangeGroup').prop('hidden', false);
-        this.$('#timePointsListGroup').prop('hidden', true);
-        this.$('#timePointList').prop('checked', false);
-        this.$('#timePointRange').prop('checked', true);
-        this.$('#rdsFile').val('');
-        this.$('#testDataFile').val('');
-        this.$('#begin').val('');
-        this.$('#end').val('');
-        this.$('#stepSize').val('');
-        this.$('#timePoints').val('');
-        this.$('#modelFileName').html("");
-        this.$('#testDataFileName').html("");
-        this.$('#timePointsWell').prop('disabled', true);
-        this.$('#runPredict').prop('disabled', true);
-        this.$('#reset').prop('disabled', true);
+        this.model.clear().set(this.model.defaults);
+        this.render();
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
@@ -784,21 +784,26 @@ appMixture.PredictionView = Backbone.View.extend({
         var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
-        } else if (this.$('[name="rdsFile"]')[0].files.length > 0) {
-            formData.append('rdsFile', this.$('[name="rdsFile"]')[0].files[0]);
+        } else if (this.model.get('rdsFile')) {
+            formData.append('rdsFile', this.model.get('rdsFile'));
         } else {
             this.$('#error-message').html('Please choose a valid model file!');
             return;
         }
 
-        formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
+        if (this.model.get('testDataFile')) {
+            formData.append('testDataFile', this.model.get('testDataFile'));
+        } else {
+            this.$('#error-message').html('Please choose a valid test data file!');
+            return;
+        }
 
         if (this.model.get('timePointType') === 'List') {
-            jsonData.timePoints = this.$('[name="timePoints"]').val().split(',');
+            jsonData.timePoints = this.model.get('timePoints').split(',');
         } else {
-            jsonData["begin"] = this.$('[name="begin"]').val();
-            jsonData["end"] = this.$('[name="end"]').val();
-            jsonData["stepSize"] = this.$('[name="stepSize"]').val();
+            jsonData["begin"] = this.model.get('begin');
+            jsonData["end"] = this.model.get('end');
+            jsonData["stepSize"] = this.model.get('stepSize');
         }
         formData.append('jsonData', JSON.stringify(jsonData));
 
@@ -983,11 +988,6 @@ appMixture.Router = Backbone.Router.extend({
     prediction: function(rdsFile) {
         $('#prediction-li').addClass('active');
         $('#fitting-li').removeClass('active');
-        if (rdsFile) {
-            appMixture.models.prediction.set('serverFile', rdsFile);
-        } else {
-            appMixture.models.prediction.unset('serverFile');
-        }
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {
