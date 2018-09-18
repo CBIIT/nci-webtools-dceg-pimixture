@@ -1,6 +1,6 @@
 <div id="prediction-input" class="col-md-4">
     <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
-        <fieldset class="well">
+        <fieldset id="fileSet" class="well">
             <div class="form-group">
                 <label for="rdsFile" class="control-label">Model file <span class="text-danger">*</span></label>
             </div>
@@ -71,14 +71,14 @@
                 </div>
             </div>
         </fieldset>
-        <div class="form-group submitButtons">
+        <fieldset id="buttonSet" class="form-group submitButtons">
             <div class="col-md-3 col-md-offset-6">
                 <button id="runPredict" type="submit" class="btn btn-primary" disabled style="position: relative;">Submit<span id="indicator"></span></button>
             </div>
             <div class="col-md-3">
                 <button type="reset" id="reset" class="btn btn-default" <%= data['serverFile'] ? '' : 'disabled'%> >Reset</button>
             </div>
-        </div>
+        </fieldset>
         <div id="error-message">
         </div>
     </form>
