@@ -140,6 +140,13 @@ table td:last-child {
     width: 20%;
 }
 
+#fittingResultPanel .fitting-result-table th,
+#fittingResultPanel .fitting-result-table td {
+    width: 16.7%;
+    vertical-align: middle;
+    text-align: center;
+}
+
 .interactive-select {
     width: 45%;
 }
