@@ -128,7 +128,7 @@
         <div class="form-group">
             <label class="control-label col-md-4">Job Name <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Job Name" data-content="Tips: ..." ></a></label>
             <div class="col-md-8">
-                <input type="text" name="jobName" placeholder="Enter a name for this job" class="form-control" value="<%= data.jobName %>"  required <%= data.csvFile.name ? '' : 'disabled' %>>
+                <input type="text" name="jobName" placeholder="Enter a name for this job" class="form-control" value="<%= data.jobName %>" <%= data.csvFile.name ? '' : 'disabled' %>>
             </div>
         </div>
         <div class="form-group">

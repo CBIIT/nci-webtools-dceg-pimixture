@@ -94,7 +94,8 @@ def runModel():
         os.remove(parameters['filename'])
         results['prediction.results'] = None
         results['csvFile'] = outputCSVFileName
-        results['jobName'] = parameters['jobName']
+        if 'jobName' in parameters:
+            results['jobName'] = parameters['jobName']
         with open(outputCSVFileName, 'w') as outputCSVFile:
             writer = csv.writer(outputCSVFile, dialect='excel')
             writer.writerow(['Data Summary'])
