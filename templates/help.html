@@ -1,20 +1,19 @@
 <div id="help-page">
-    <h1 class="text-center">PIMixture</h1>
     <div>
-        <h3>1. Parametric, weakly-parametric, semiparametric</h3>
+        <h3>Parametric, weakly-parametric, semiparametric</h3>
         <p>In PIMixture, logistic regression is used to model disease prevalence and proportional hazards models are used for disease incidence subject to interval-censoring; model parameters are then jointly estimated to account for disease where it is uncertain whether it is prevalent or incident.
             The PIMixture web tool provides multiple options for defining the baseline hazard of the proportional hazard model -- a fully parametric model that assumes a Weibull baseline hazard; a weakly-parametric model that uses integrated B-splines to model the baseline hazard; and a semi-parametric model.  Both the weakly-parametric model and the semiparametric model also supports stratified random sample.
         </p>
     </div>
     <div>
-        <h3>2. Weighted and Unweighted Data</h3>
+        <h3>Weighted and Unweighted Data</h3>
         <p>PIMixture provides two options for unweighted and weighted data. Specifically, unweighted data represents a simple random sample or an entire cohort; everyone of a simple random sample has an equal selection probability, so we don’t have to add sampling weight. Weighted data in PIMixture represents a stratified random sample, of which selection probabilities vary across strata and are the same within a stratum, and the selection probabilities are known. For weighted data analysis, users additionally specify two variables for strata and sampling weights (>=1). </p>
 
+        <p class="table-title">Available options of PIMixture</p>
         <table class="table table-bordered">
             <thead>
-            <legend>Table 1: Available options of PIMixture</legend>
             <tr>
-                <th></th>
+                <th>Sample Design</th>
                 <th>Parametric models</th>
                 <th>Weakly-parametric models</th>
                 <th>Semiparametric models</th>
@@ -22,13 +21,13 @@
             </thead>
             <tbody>
             <tr>
-                <th>Unweighted data (a simple random sample or a cohort)</th>
+                <td>Unweighted data (a simple random sample or a cohort)</td>
                 <td>Available</td>
                 <td>Available</td>
                 <td>Available (standard error and confidence interval are not available)</td>
             </tr>
             <tr>
-                <th>Weighted data (stratified random sample with known sample weights)</th>
+                <td>Weighted data (stratified random sample with known sample weights)</td>
                 <td>Not available</td>
                 <td>Available</td>
                 <td>Available (standard error and confidence interval are not available)</td>
@@ -37,7 +36,7 @@
         </table>
     </div>
     <div>
-        <h3>3. Outcome variables: C, L and R</h3>
+        <h3>Outcome variables: C, L and R</h3>
         <p>The outcome of interest is the time of clinically-detectable disease onset, and three variables for the outcome should be included in the input data: for simplicity, we define C=prevalence indicator, L=left time point, i.e. the latest time at which a subject is disease-free, R=right time point, i.e., the earliest time at which a subject is diagnosed with a disease. These variable names can be changed. In the webtool, users can choose which variables correspond to “C”, “L” and “R”. General coding rules are as following: </p>
         <ol>
             <li>
@@ -59,11 +58,11 @@
         <p>Note that examples and explanations are provided in the manual.</p>
     </div>
     <div>
-        <h3>4. Predictors</h3>
+        <h3>Predictors</h3>
         <p>In PIMixture, it is optional to include predictors in logistic and proportional hazards models. When included, relative risks are given in terms of odd ratios for prevalent disease and hazard ratios for incident disease. There are two options for predictors, continuous or categorical variables. Examples and explanations are provided in the manual.</p>
     </div>
     <div>
-        <h3>5. Prediction</h3>
+        <h3>Prediction</h3>
         <p>Based on the regression parameters and/or cumulative hazard function, we can predict prevalence and incidence using an independent data (called test data) including the predictors used for estimating the parameters and cumulative hazard function. For prediction, users need to upload fitted model, test data and input time points. When time point=0, predicted probabilities mean the prevalence of subgroups characterized by specific predictors; when time point=t>0, predicted cumulative risk up to time t includes prevalence too. Test data should include the same variables used for fitting the model.</p>
     </div>
 

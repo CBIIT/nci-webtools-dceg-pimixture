@@ -331,8 +331,22 @@ label .glyphicon-question-sign {
     width: 25%;
 }
 
+#help-page table thead th {
+    background-color: #f0f0f0;
+}
+
+#help-page .table-title {
+    font-size: 17px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
 #help-page div {
     margin-top: 40px;
+}
+
+#help-page h3 {
+    color: #4A6E9B;
 }
 
 @media(min-width: 1440px){
