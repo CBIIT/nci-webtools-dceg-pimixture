@@ -325,6 +325,16 @@ label .glyphicon-question-sign {
     font-size: 80%;
 }
 
+#help-page table th,
+#help-page table td
+{
+    width: 25%;
+}
+
+#help-page div {
+    margin-top: 40px;
+}
+
 @media(min-width: 1440px){
 .container {
     width: 1440px;
