@@ -68,6 +68,10 @@ def runModel():
         parameters['outputRdsFilename'] = outputRdsFileName
         parameters['outputFilename'] = outputFileName
         columns = [parameters['outcomeC'], parameters['outcomeL'],  parameters['outcomeR']]
+        if 'design' in parameters and parameters['design'] == 1:
+            columns += [parameters['strata'], parameters['weight']]
+            parameters['weightInfo'] = [{'samp.weight': parameters['weight'],
+                                        'strata': parameters['strata']}]
         if parameters['covariatesSelection']:
             columns += parameters['covariatesSelection']
             covariates = ' + '.join(parameters['covariatesSelection'])
@@ -78,7 +82,7 @@ def runModel():
             parameters['covariates'] = covariates
         parameters['columns'] = columns
 
-        r = pr.R();
+        r = pr.R()
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters))
         print(r('returnFile = runCalculation(parameters)'))
@@ -188,7 +192,7 @@ def runPredict():
                             for row in reader:
                                 obj = {}
                                 for idx, val in enumerate(row):
-                                    obj[variableNames[idx]] = float(val)
+                                    obj[variableNames[idx]] = val
                                 testData.append(obj)
                             if testData:
                                 parameters['testData'] = testData

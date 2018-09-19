@@ -2,12 +2,14 @@ library(jsonlite)
 library(PIMixture)
 
 source('R/converting_functions.R')
+source('R/TestData.Check.R')
 
 runCalculation <- function(jsonData) {
     input = fromJSON(jsonData)
     csvFile = read.csv(input$filename)
     csvData = csvFile[, input$columns]
     model=tolower(input$model)
+    design = input$design
     if (length(input$covariatesSelection) == 0) {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")
     } else {
@@ -15,13 +17,14 @@ runCalculation <- function(jsonData) {
     }
     print(p.model)
     time.interval = 1e-2
-    if (length(input$covariatesArr) > 0) {
-        data <- data.conversion(input$covariatesArr, csvData)
+    if (length(input$covariatesArr) > 0 || !is.null(input$weightInfo)) {
+        data <- data.conversion(data.type=input$covariatesArr, DATA=csvData, wght.info=input$weightInfo)
     } else {
         data <- csvData
     }
-    result <-PIMixture(p.model=p.model, data=data, model=model)
+    result <-PIMixture(p.model=p.model, data=data, model=model, sample.design=design)
     result$covariatesSelection <- input$covariatesSelection
+    result$covariatesArr <- input$covariatesArr
     outputFileName = input$outputRdsFilename
     cat(outputFileName)
     saveRDS(result, outputFileName)
@@ -52,9 +55,15 @@ runPredict <- function(jsonData) {
     # Read fitted model from .rds file
     filename <- input$rdsFile
     model <- readRDS(filename)
+    data.type <- model$covariatesArr
 
     # read test.data from input
-    test.data <- input$testData
+    test.data0 <- input$testData
+    test.data <- testdata.check(model, test.data0, data.type)
+    if (is.null(test.data)) {
+        return ("Test Data is not compatible with model!")
+    }
+
     # read time.points from input
     time.points <- input$timePoints
     print(time.points)
