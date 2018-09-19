@@ -622,7 +622,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
     events: {
         'hidden.bs.modal': 'remove',
         'change select': 'updateModel',
-        'change input[type="text"]': 'updateModel',
+        'change input[type="number"]': 'updateModel',
         'click .modal-footer button.save': 'save',
         'click .modal-footer button:not(.save)': 'close'
     },

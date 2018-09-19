@@ -20,8 +20,7 @@
             </div>
             <div class="col-md-4">
                 <input type="number" id="<%=entry.text%>_category_text" name="<%=entry.text%>_category"
-                       value="<%= entry.category %>" <%= entry.type == 'nominal' ? 'hidden' : 'class="form-control"' %>
-                     disabled/>
+                       value="<%= entry.category %>" <%= entry.type == 'nominal' ? 'hidden' : 'class="form-control"' %> />
                 <select id="<%=entry.text%>_category_select" name="<%=entry.text%>_category"
                          <%= entry.type != 'nominal' ? 'hidden' : 'class="form-control"' %>>
                     <option value="">----Select----</option>
