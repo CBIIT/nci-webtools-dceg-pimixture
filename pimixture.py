@@ -22,6 +22,8 @@ if not os.path.isdir(OUTPUT_DATA_PATH):
 INPUT_FILE_PREFIX = 'pimixtureInput_'
 OUTPUT_FILE_PREFIX = 'pimixtureOutput_'
 
+IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
+
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
     response.status_code = statusCode
@@ -83,7 +85,7 @@ def runModel():
         parameters['columns'] = columns
 
         r = pr.R()
-        r('source("./pimixtureWrapper.R")')
+        r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
         print(r('returnFile = runCalculation(parameters)'))
         returnFile = r.get('returnFile')
@@ -200,7 +202,7 @@ def runPredict():
                 parameters['timePoints'] = list(range(start, end + 1, step))
 
         r = pr.R()
-        r('source("./pimixtureWrapper.R")')
+        r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
         rOutput = r('predictionResult = runPredict(parameters)')
         print(rOutput)
@@ -255,7 +257,7 @@ def uploadModelFile():
             modelFile.save(inputModelFileName)
             if os.path.isfile(inputModelFileName):
                 r = pr.R()
-                r('source("./pimixtureWrapper.R")')
+                r(IMPORT_R_WRAPPER)
                 r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
                 params = r.get('params')
                 print(params)
