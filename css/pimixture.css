@@ -54,7 +54,7 @@ body {
 }
 
 #predictionForm {
-    height: 920px;
+    height: 967px;
 }
 
 #fittingResultPanel,
@@ -75,7 +75,7 @@ body {
 
 #prediction-results,
 #results p {
-    height: 918px;
+    height: 965px;
     padding: 15px 15px;
 }
 
@@ -138,6 +138,13 @@ table th:last-child,
 table td:last-child {
     text-align: center;
     width: 20%;
+}
+
+#predictionResultTable table th,
+#predictionResultTable table td {
+    width: 14.28%;
+    vertical-align: middle;
+    text-align: center;
 }
 
 #fittingResultPanel .fitting-result-table th,

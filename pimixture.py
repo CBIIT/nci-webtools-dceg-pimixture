@@ -212,7 +212,7 @@ def runPredict():
         del r
         results = json.loads(rResults)
 
-        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR']
+        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR.se', 'LL95', 'UL95', 'CR']
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:
