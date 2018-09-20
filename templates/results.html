@@ -39,19 +39,19 @@
                                 <tr>
                                     <th>Model</th>
                                     <th>Covariate</th>
-                                    <th>Standard Error</th>
-                                    <th>Lower Confidence Limit</th>
-                                    <th>Upper Confidence Limit</th>
                                     <th>Coefficient</th>
+                                    <th>Standard Error</th>
+                                    <th>Lower Confidence Limit (95%)</th>
+                                    <th>Upper Confidence Limit (95%)</th>
                                 </tr>
                                 <%    _.each(data["regression.coefficient"],function(entry) { %>
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td><%= entry.Label %></td>
+                                    <td><%= entry["Coef."] %></td>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
                                     <td><%= entry["95%UL"] || '' %></td>
-                                    <td><%= entry["Coef."] %></td>
                                 </tr>
                                 <%    }); %>
                             </table>
@@ -70,19 +70,19 @@
                                 <tr>
                                     <th>Model</th>
                                     <th>Covariate</th>
-                                    <th>Standard Error</th>
-                                    <th>Lower Confidence Limit</th>
-                                    <th>Upper Confidence Limit</th>
                                     <th>OR</th>
+                                    <th>Standard Error</th>
+                                    <th>Lower Confidence Limit (95%)</th>
+                                    <th>Upper Confidence Limit (95%)</th>
                                 </tr>
                                 <%    _.each(data["odds.ratio"],function(entry) { %>
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td><%= entry.Label %></td>
+                                    <td><%= entry["exp(Coef.)"] %></td>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
                                     <td><%= entry["95%UL"] || '' %></td>
-                                    <td><%= entry["exp(Coef.)"] %></td>
                                 </tr>
                                 <%    }); %>
                             </table>
@@ -101,19 +101,19 @@
                                 <tr>
                                     <th>Model</th>
                                     <th>Covariate</th>
-                                    <th>Standard Error</th>
-                                    <th>Lower Confidence Limit</th>
-                                    <th>Upper Confidence Limit</th>
                                     <th>HR</th>
+                                    <th>Standard Error</th>
+                                    <th>Lower Confidence Limit (95%)</th>
+                                    <th>Upper Confidence Limit (95%)</th>
                                 </tr>
                                 <%    _.each(data["hazard.ratio"],function(entry) { %>
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td><%= entry.Label %></td>
+                                    <td><%= entry["exp(Coef.)"] %></td>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
                                     <td><%= entry["95%UL"] || '' %></td>
-                                    <td><%= entry["exp(Coef.)"] %></td>
                                 </tr>
                                 <%    }); %>
                             </table>
