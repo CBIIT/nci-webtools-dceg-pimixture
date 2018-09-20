@@ -183,24 +183,9 @@ def runPredict():
             testDataFile.save(inputTestDataFileName)
             if os.path.isfile(inputTestDataFileName):
                 filesToRemoveWhenDone.append(inputTestDataFileName)
-                try:
-                    with codecs.open(inputTestDataFileName, encoding='utf-8-sig', mode='r') as testDataCsvFile:
-                        reader = csv.reader(testDataCsvFile, dialect='excel')
-                        variableNames = reader.next()
-                        if variableNames:
-                            testData = []
-                            for row in reader:
-                                obj = {}
-                                for idx, val in enumerate(row):
-                                    obj[variableNames[idx]] = val
-                                testData.append(obj)
-                            if testData:
-                                parameters['testData'] = testData
-                except Exception as e:
-                    print(e)
-                    return buildFailure(str(e), 400)
+                parameters['testDataFile'] = inputTestDataFileName
             else:
-                message = "Upload CSV file failed!"
+                message = "Upload test data file failed!"
                 print(message)
                 return buildFailure(message, 500)
 

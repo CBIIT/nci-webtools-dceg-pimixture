@@ -58,7 +58,7 @@ runPredict <- function(jsonData) {
     data.type <- model$covariatesArr
 
     # read test.data from input
-    test.data0 <- input$testData
+    test.data0 <- read.csv(input$testDataFile)
     test.data <- testdata.check(model, test.data0, data.type)
     if (is.null(test.data)) {
         return ("Test Data is not compatible with model!")
