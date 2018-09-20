@@ -14,7 +14,9 @@ var appMixture = {
     variables: [
         'outcomeC',
         'outcomeL',
-        'outcomeR'
+        'outcomeR',
+        'strata',
+        'weight'
     ],
     MAX_PAGES: 5,
     currentView: null,
@@ -44,6 +46,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeL': this.changeCovariates,
             'change:outcomeR': this.changeCovariates,
             'change:covariatesSelection': this.changeCovariateList,
+            'change:covariatesArrValid': this.changeCovariatesArr,
             'change:effects': this.changeEffectsList,
             'change:email': this.changeEmail
         }, this);
@@ -63,16 +66,46 @@ appMixture.FormView = Backbone.View.extend({
     },
     render: function() {
         this.$el.html(this.template(this.model.attributes));
+        this.$('[name="covariatesSelection"]').selectize({
+            plugins: ['remove_button'],
+            sortField: 'order'
+        });
+        this.$("[data-toggle=popover]").popover();
+        this.updateOptions();
+        this.updateCovariates();
         return this;
+    },
+    updateCovariates: function(){
+        covariatesSelection = this.$('[name="covariatesSelection"]')[0].selectize;
+        var covariates = this.model.get('covariatesSelection');
+        if (covariates) {
+            var covList = covariates.split(',');
+            for (var cov of covList) {
+                covariatesSelection.addItem(cov, true);
+            }
+            this.updateCovariateBtnsStatus(covList);
+        }
+    },
+    disableInputs: function (status) {
+        this.$('#fileSet, #designAndModelSet, #covariatesSet, #emailSet, #submitSet').prop('disabled', status);
+        if (status) {
+            this.$('[name="covariatesSelection"]')[0].selectize.disable();
+        } else {
+            this.$('[name="covariatesSelection"]')[0].selectize.enable();
+        }
     },
     runCalculation: function (e) {
         e.preventDefault();
         if (!this.model.get('isMutuallyExclusive')) {
+            this.$('#mutex-error').html('Please make sure variables are mutually exclusive!');
             return;
         }
-        this.$('#run').prop("disabled", true);
-        appMixture.models.results.clear();
-        e.preventDefault();
+        if (!this.model.get('covariatesArrValid')) {
+            this.$('#covariates-error').html('Some of the Covariates are not properly configured.');
+            return;
+        }
+        this.disableInputs(true);
+        appMixture.models.results.clear().set(appMixture.models.results.defaults);
         var $that = this,
             params = _.extend({}, this.model.attributes);
         var formData = new FormData();
@@ -100,12 +133,12 @@ appMixture.FormView = Backbone.View.extend({
             processData: false,
             type: "POST",
             success: function(model, res, options) {
-                $that.$('#run').prop("disabled", false);
+                $that.disableInputs(false);
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
                 console.log(res.responseText);
-                $that.$('#run').prop("disabled", false);
+                $that.disableInputs(false);
                 $that.stopSpinner();
                 $that.$('#error-message').html(res.responseText);
             }
@@ -143,7 +176,8 @@ appMixture.FormView = Backbone.View.extend({
         this.spinner.stop();
     },
     resetModel: function(e) {
-        this.model.clear();
+        this.model.clear().set(this.model.defaults, {silent: true});
+        appMixture.models.results.clear().set(appMixture.models.results.defaults);
         this.render();
     },
     openInteractiveEffects: function (e) {
@@ -160,7 +194,9 @@ appMixture.FormView = Backbone.View.extend({
         e.preventDefault();
         new appMixture.ReferenceGroupsView({
             model: new appMixture.ReferencesModel({
-                'covariatesArr': this.model.get('covariatesArr'),
+                'covariatesArr': this.model.get('covariatesArr').map(function(cov) {
+                    return _.extend({}, cov);
+                }),
                 'uniqueValues': this.model.get('uniqueValues'),
                 'formModel': this.model,
                 'references': _.extend({}, this.model.get('references'))
@@ -192,6 +228,7 @@ appMixture.FormView = Backbone.View.extend({
                         }
                     }
                     $that.enableInputs();
+                    $that.$('[name="covariatesSelection"]')[0].selectize.destroy();
                     $that.$('[name="covariatesSelection"]').selectize({
                         plugins: ['remove_button'],
                         sortField: 'order'
@@ -219,7 +256,7 @@ appMixture.FormView = Backbone.View.extend({
     enableInputs: function() {
         this.$('[name="design"], [name="model"], [name="outcomeC"], [name="outcomeL"], '
             + '[name="outcomeR"], [name="covariatesSelection"], [name="sendToQueue"], '
-            + '#run, #reset'
+            + '[name="jobName"], [name="weight"], [name="strata"], #run, #reset'
         ).prop('disabled', false);
         this.$('#csvFileBtn').prop('disabled', true);
     },
@@ -264,7 +301,7 @@ appMixture.FormView = Backbone.View.extend({
                         this.$('#' + name1).addClass('has-error');
                         this.$('#' + name2).addClass('has-error');
                         this.model.set('isMutuallyExclusive', false);
-                        this.$('#mutex-error').html('Please make sure C, L and R are mutually exclusive!');
+                        this.$('#mutex-error').html('Please make sure variables are mutually exclusive!');
                     }
                 }
             }
@@ -325,21 +362,29 @@ appMixture.FormView = Backbone.View.extend({
                 }
             });
             model.set('covariatesArr', covariatesArrNew);
+            model.set('covariatesArrValid', false);
         } else {
             model.set('covariatesArr', []);
+            model.set('covariatesArrValid', true);
+            this.$('#covariates-error').html('');
         }
-
-        if (covariatesSelectionSplit.length > 1) {
+        this.updateCovariateBtnsStatus(covariatesSelectionSplit);
+    },
+    updateCovariateBtnsStatus: function(covList) {
+      if (covList.length > 1) {
             this.$el.find('#effectsButton').prop("disabled", false);
             this.$el.find('#referencesButton').prop("disabled", false);
         } else {
             this.$el.find('#effectsButton').prop("disabled", true);
-            if (covariatesSelectionSplit.length === 0) {
+            if (covList.length === 0) {
                 this.$el.find('#referencesButton').prop("disabled", true);
             } else {
                 this.$el.find('#referencesButton').prop("disabled", false);
             }
         }
+    },
+    changeCovariatesArr: function() {
+        this.$('#covariates-error').html('');
     },
     changeEffectsList: function () {
         return; // Don't display current interactive effects in form
@@ -356,14 +401,19 @@ appMixture.FormView = Backbone.View.extend({
     },
     changeDesign: function () {
         this.$el.find('[name="model"] option:last-child').prop('disabled',(this.model.get('design') === 1));
-        if (this.model.get('design') === "") {
+        var design = this.model.get('design');
+        if (design === "") {
         } else {
             var modelSelect = this.$el.find('[name="model"]')[0];
             if ($(modelSelect.options[modelSelect.selectedIndex]).attr('disabled') !== undefined) {
                 modelSelect.selectedIndex = 0;
                 this.model.set('model','');
             }
+            this.displayExtraMappings(design === 1);
         }
+    },
+    displayExtraMappings: function(status) {
+        this.$('#Strata, #Weight').prop('hidden', !status);
     },
     changeEmail: function () {
         if (this.model.get('email') === "") {
@@ -394,7 +444,7 @@ appMixture.FormView = Backbone.View.extend({
         var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
         for (var i = 0; i < appMixture.variables.length; ++i) {
             var value = this.model.get(appMixture.variables[i]);
-            var optionsList = this.getOptionTags(headers, [], value);
+            var optionsList = this.getOptionTags(headers, [], value, appMixture.variables[i]);
             this.$el.find('[name="' + appMixture.variables[i] + '"]').html(optionsList);
             if (value) {
                 selected.push(value);
@@ -406,8 +456,8 @@ appMixture.FormView = Backbone.View.extend({
             covariatesSelection.addOption({'text': opt, 'value': opt});
         }
     },
-    getOptionTags: function(options, selected, current) {
-        var optionsList = "<option value=\"\">----Select Outcome----</option>";
+    getOptionTags: function(options, selected, current, name) {
+        var optionsList = '<option value="">----Select ' + name + '----</option>';
         for (var index = 0; index < options.length; index++) {
             if (selected.indexOf(options[index]) === -1) {
                 optionsList += '<option value="' + options[index] + '"';
@@ -565,14 +615,14 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
     initialize: function () {
         this.template = _.template(appMixture.templates.get('references'));
         this.model.on({
-            'change:covariatesArr': this.updateView
+            'change:covariatesArr': this.render
         }, this);
-        this.render();
+        this.showModal();
     },
     events: {
         'hidden.bs.modal': 'remove',
         'change select': 'updateModel',
-        'change input[type="text"]': 'updateModel',
+        'change input[type="number"]': 'updateModel',
         'click .modal-footer button.save': 'save',
         'click .modal-footer button:not(.save)': 'close'
     },
@@ -583,6 +633,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
     save: function(e) {
         e.preventDefault(e);
         this.model.get('formModel').set('covariatesArr', this.model.get('covariatesArr'));
+        this.model.get('formModel').set('covariatesArrValid', true);
         this.close.call(this, e);
     },
     updateModel: function(e) {
@@ -601,53 +652,33 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
         if (type === 'type') {
             if (value === 'continuous') {
                 covariateObj.category = '0';
-            } else if (value === 'nominal') {
             } else {
                 covariateObj.category = '';
             }
         }
+        this.validate();
         model.trigger('change:covariatesArr', model);
     },
-    updateView: function() {
-        var model = this.model,
-            covariatesArr = model.get('covariatesArr'),
-            $that = this;
-        covariatesArr.forEach(function(entry) {
-            var name = entry.text,
-                type = entry.type,
-                category = entry.category;
-                eType = $that.$el.find('[name="'+name+'_type"]'),
-                eCatText = $that.$el.find('[id="'+name+'_category_text"]');
-                eCatSelect = $that.$el.find('[id="'+name+'_category_select"]');
-            if (type != eType.val()) {
-                eType.find('option[value="'+type+'"]').prop('selected',true);
+    validate: function() {
+        var properties = ['text', 'type', 'category'];
+        this.model.set('valid', true);
+        for (var cov of this.model.get('covariatesArr')) {
+            for (var prop of properties) {
+                if (!cov[prop]) {
+                    this.model.set('valid', false);
+                    break;
+                }
             }
-            if (category != eCatText.val()) {
-                eCatText.val(category);
-            }
-            if (type === 'continuous') {
-                eCatText.prop('hidden', false);
-                eCatText.addClass('form-control');
-                eCatSelect.prop('hidden', true);
-                eCatSelect.removeClass('form-control');
-            } else if (type === 'nominal') {
-                eCatText.prop('hidden', true);
-                eCatText.removeClass('form-control');
-                eCatSelect.prop('hidden', false);
-                eCatSelect.addClass('form-control');
-            } else {
-                eCatText.val('');
-                eCatSelect.val('');
-                eCatText.prop('hidden', false);
-                eCatText.addClass('form-control');
-                eCatSelect.prop('hidden', true);
-                eCatSelect.removeClass('form-control');
-            }
-        });
+        }
+        this.$('#saveCovariatesBtn').prop('disabled', !this.model.get('valid'));
     },
     render: function() {
+        this.$modal.setMessage($(this.template(this.model.attributes)));
+    },
+    showModal: function() {
         this.$modal = BootstrapDialog.show({
             buttons: [{
+                id: 'saveCovariatesBtn',
                 cssClass: 'btn-primary save',
                 label: 'Save'
             }, {
@@ -658,6 +689,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
             title: "Configure Covariates"
         });
         this.setElement(this.$modal.getModal());
+        this.validate();
     }
 });
 
@@ -665,6 +697,16 @@ appMixture.ResultsView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-md-8',
     id: 'output',
+    events: {
+        'click #runPredictionBtn': 'navigateToPrediction'
+    },
+    navigateToPrediction: function(e) {
+        e.preventDefault();
+        appMixture.models.prediction.clear().set(appMixture.models.prediction.defaults);
+        appMixture.models.prediction.set('serverFile', this.model.get('Rfile'));
+        appMixture.models.prediction.set('jobName', this.model.get('jobName'));
+        appMixture.router.navigate('#prediction', true);
+    },
     initialize: function () {
         this.model.on({
             'change': this.render
@@ -684,6 +726,8 @@ appMixture.PredictionView = Backbone.View.extend({
     events: {
         'input #rdsFile': 'selectModelFile',
         'input #testDataFile': 'selectTestDataFile',
+        'input [type="number"]': 'updateModel',
+        'input [type="text"]': 'updateModel',
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
@@ -702,6 +746,8 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
+        this.$("[data-toggle=popover]").popover();
+        this.tryEnableInputs();
         appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
         return this;
@@ -709,6 +755,7 @@ appMixture.PredictionView = Backbone.View.extend({
     selectModelFile: function(e) {
         var file = e.target.files[0];
         if (file) {
+            this.model.set('rdsFile', file);
             this.$('#modelFileName').html(file.name);
             this.$('#modelFileBtn').prop('disabled', true);
             this.tryEnableInputs();
@@ -717,17 +764,23 @@ appMixture.PredictionView = Backbone.View.extend({
     selectTestDataFile: function(e) {
         var file = e.target.files[0];
         if (file) {
+            this.model.set('testDataFile', file);
             this.$('#testDataFileName').html(file.name);
             this.$('#testDataFileBtn').prop('disabled', true);
             this.tryEnableInputs();
         }
     },
+    updateModel: function(e) {
+        var val = $(e.target).val();
+        var name = $(e.target).attr('name');
+        this.model.set(name, val);
+    },
     tryEnableInputs: function() {
         var modelFileSelected = this.model.get('serverFile');
         if (!modelFileSelected) {
-            modelFileSelected = this.$('#rdsFile')[0].files[0];
+            modelFileSelected = this.model.get('rdsFile').name;
         }
-        var testDataFileSelected = this.$('#testDataFile')[0].files[0];
+        var testDataFileSelected = this.model.get('testDataFile').name;
         if (modelFileSelected || testDataFileSelected) {
             this.$('#reset').prop('disabled', false);
         }
@@ -737,27 +790,12 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     resetForm: function(e) {
-        if (this.model.get('serverFile')) {
-            this.model.unset('serverFile');
-            return appMixture.router.navigate('#prediction', true);
-        }
-        this.$('#modelFileBtn').prop('disabled', false);
-        this.$('#testDataFileBtn').prop('disabled', false);
-        this.$('#timePointsRangeGroup').prop('hidden', false);
-        this.$('#timePointsListGroup').prop('hidden', true);
-        this.$('#timePointList').prop('checked', false);
-        this.$('#timePointRange').prop('checked', true);
-        this.$('#rdsFile').val('');
-        this.$('#testDataFile').val('');
-        this.$('#begin').val('');
-        this.$('#end').val('');
-        this.$('#stepSize').val('');
-        this.$('#timePoints').val('');
-        this.$('#modelFileName').html("");
-        this.$('#testDataFileName').html("");
-        this.$('#timePointsWell').prop('disabled', true);
-        this.$('#runPredict').prop('disabled', true);
-        this.$('#reset').prop('disabled', true);
+        appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
+        this.model.clear().set(this.model.defaults);
+        this.render();
+    },
+    disableInputs: function (status) {
+        this.$('#fileSet, #timePointsWell, #buttonSet').prop('disabled', status);
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
@@ -768,27 +806,32 @@ appMixture.PredictionView = Backbone.View.extend({
         var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
-        } else if (this.$('[name="rdsFile"]')[0].files.length > 0) {
-            formData.append('rdsFile', this.$('[name="rdsFile"]')[0].files[0]);
+        } else if (this.model.get('rdsFile')) {
+            formData.append('rdsFile', this.model.get('rdsFile'));
         } else {
             this.$('#error-message').html('Please choose a valid model file!');
             return;
         }
 
-        formData.append('testDataFile', this.$('[name="testDataFile"]')[0].files[0]);
+        if (this.model.get('testDataFile')) {
+            formData.append('testDataFile', this.model.get('testDataFile'));
+        } else {
+            this.$('#error-message').html('Please choose a valid test data file!');
+            return;
+        }
 
         if (this.model.get('timePointType') === 'List') {
-            jsonData.timePoints = this.$('[name="timePoints"]').val().split(',');
+            jsonData.timePoints = this.model.get('timePoints').split(',');
         } else {
-            jsonData["begin"] = this.$('[name="begin"]').val();
-            jsonData["end"] = this.$('[name="end"]').val();
-            jsonData["stepSize"] = this.$('[name="stepSize"]').val();
+            jsonData["begin"] = this.model.get('begin');
+            jsonData["end"] = this.model.get('end');
+            jsonData["stepSize"] = this.model.get('stepSize');
         }
         formData.append('jsonData', JSON.stringify(jsonData));
 
         this.$('#error-message').html('');
-        appMixture.predictionResultModel.clear();
-        this.$('#runPredict').prop('disabled', true);
+        appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
+        this.disableInputs(true);
         this.startSpinner();
         appMixture.predictionResultModel.fetch({
             data: formData,
@@ -797,11 +840,11 @@ appMixture.PredictionView = Backbone.View.extend({
             processData: false,
             type: "POST",
             success: function(model, res, options) {
-                $that.$('#runPredict').prop('disabled', false);
+                $that.disableInputs(false);
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
-                $that.$('#runPredict').prop('disabled', false);
+                $that.disableInputs(false);
                 $that.stopSpinner();
                 if (res.status == 410) { // rds file on server doesn't exist anymore
                     var redirect = confirm("Model file on server doesn't exist anymore!\nUpload a new model file?");
@@ -959,25 +1002,65 @@ appMixture.BaseView = Backbone.View.extend({
     }
 });
 
+appMixture.HomeView = Backbone.View.extend({
+    el: '#home-page',
+    initialize: function() {
+        this.template = _.template(appMixture.templates.get('home'), {
+            'variable': 'data'
+        });
+    },
+    render: function() {
+        this.$el.html(this.template())
+    }
+});
+
+appMixture.HelpView = Backbone.View.extend({
+    el: '#help-page',
+    initialize: function() {
+        this.template = _.template(appMixture.templates.get('help'), {
+            'variable': 'data'
+        });
+    },
+    render: function() {
+        this.$el.html(this.template())
+    }
+});
+
 appMixture.Router = Backbone.Router.extend({
     routes: {
-        '': 'fitting',
-        'prediction(/*rdsFile)': 'prediction'
+        '': 'home',
+        'help': 'help',
+        'fitting': 'fitting',
+        'prediction': 'prediction'
+    },
+    menus: ['home', 'help', 'fitting', 'prediction'],
+    home: function() {
+        this.activeMenu('home');
+        appMixture.showView(appMixture.views.home);
+        console.log('Home page!');
+    },
+    help: function() {
+        this.activeMenu('help');
+        appMixture.showView(appMixture.views.help);
+        console.log('Help page!');
     },
     prediction: function(rdsFile) {
-        $('#prediction-li').addClass('active');
-        $('#fitting-li').removeClass('active');
-        if (rdsFile) {
-            appMixture.models.prediction.set('serverFile', rdsFile);
-        } else {
-            appMixture.models.prediction.unset('serverFile');
-        }
+        this.activeMenu('prediction');
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {
-        $('#fitting-li').addClass('active');
-        $('#prediction-li').removeClass('active');
+        this.activeMenu('fitting');
         appMixture.showView(appMixture.views.base);
+    },
+    activeMenu: function(target) {
+        for (var menu of this.menus) {
+            var id = '#' + menu + '-li';
+            if (menu === target) {
+                $(id).addClass('active');
+            } else {
+                $(id).removeClass('active');
+            }
+        }
     }
 });
 
@@ -1002,6 +1085,8 @@ $(function () {
         appMixture.views.prediction = new appMixture.PredictionView({
             model: appMixture.models.prediction
         });
+        appMixture.views.home = new appMixture.HomeView();
+        appMixture.views.help = new appMixture.HelpView();
         Backbone.history.start();
     });
 });

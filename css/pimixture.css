@@ -21,18 +21,12 @@ body {
     margin-bottom: 10px;
     padding-left: 15px;
 }
-#calculationForm {
-    min-height: 956px;
-}
-#predictionForm {
-    min-height: 956px;
-}
 
 .well {
     margin: 0px;
 }
 .well ~ .well {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 #input label ~ button {
@@ -55,31 +49,49 @@ body {
     /*display: none;*/
 }
 
+#calculationForm {
+    min-height: 857px;
+}
+
+#predictionForm {
+    height: 967px;
+}
+
+#fittingResultPanel,
+#output p,
+#results p{
+    border: thin solid lightgray;
+}
 #output p,
 #results p{
     overflow: auto;
-    height: 956px;
-    border: thin solid lightgray;
 }
 
-#fittingResults,
-#prediction-results {
-    height: 954px;
+#fittingResultPanel,
+#output p {
+    height: 855px;
+    padding: 15px 15px;
+}
+
+#prediction-results,
+#results p {
+    height: 965px;
+    padding: 15px 15px;
+}
+
+#prediction-results .table,
+#fittingResultPanel .table {
+    margin-bottom: 10px;
 }
 
 #fittingResults {
+    height: 790px;
     overflow-y: auto;
-    border: thin solid lightgray;
 }
 
 #predictionResultTable {
     height: 95%;
     overflow-y: auto;
-}
-
-#output p,
-#results p {
-    padding: 10px 10px;
 }
 
 #output h4 {
@@ -126,6 +138,20 @@ table th:last-child,
 table td:last-child {
     text-align: center;
     width: 20%;
+}
+
+#predictionResultTable table th,
+#predictionResultTable table td {
+    width: 14.28%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#fittingResultPanel .fitting-result-table th,
+#fittingResultPanel .fitting-result-table td {
+    width: 16.7%;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .interactive-select {
@@ -187,11 +213,6 @@ h2.stage-header {
   font-size: 14px;
 }
 
-#result-buttons a,
-#dropdown-button button{
-    margin-top: 10px;
-}
-
 #navigation-bar {
     background-color: lightgray;
     margin-bottom: 20px;
@@ -211,6 +232,7 @@ h2.stage-header {
     display: inline-block;
 }
 
+#covariates-error,
 #error-message,
 #mutex-error {
   color: red;
@@ -219,12 +241,11 @@ h2.stage-header {
 fieldset.well {
     margin-left: -15px;
     margin-right: -15px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 10px 15px 10px 15px;
 }
 
 fieldset.well .form-group {
-    margin: 0 0 15px 0;
+    margin: 0 0 10px 0;
 }
 
 .modal-header {
@@ -243,7 +264,7 @@ fieldset.well .form-group {
 #queueMessage {
     color: darkgray;
     font-style: italic;
-    font-size: 0.6rem;
+    font-size: 0.8em;
 }
 
 .download-buttons {
@@ -283,8 +304,12 @@ input[type=file] {
     width: 100%;
 }
 
+.sampleDownloadContainer {
+    padding-top: 7px;
+}
+
 .sampleDownload {
-    font-size: 0.5rem;
+    font-size: 0.8em;
 }
 
 #predictionForm label,
@@ -295,7 +320,40 @@ input[type=file] {
 }
 
 #timePointsWell {
-    min-height: 230px;
+    min-height: 192px;
+}
+
+.popover {
+    min-width: 100px;
+}
+
+label .glyphicon-question-sign {
+    color: #909090;
+    font-size: 80%;
+}
+
+#help-page table th,
+#help-page table td
+{
+    width: 25%;
+}
+
+#help-page table thead th {
+    background-color: #f0f0f0;
+}
+
+#help-page .table-title {
+    font-size: 17px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+#help-page div {
+    margin-top: 40px;
+}
+
+#help-page h3 {
+    color: #4A6E9B;
 }
 
 @media(min-width: 1440px){

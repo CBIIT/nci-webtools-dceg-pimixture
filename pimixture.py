@@ -67,15 +67,22 @@ def runModel():
         parameters['filename'] = inputFileName
         parameters['outputRdsFilename'] = outputRdsFileName
         parameters['outputFilename'] = outputFileName
+        columns = [parameters['outcomeC'], parameters['outcomeL'],  parameters['outcomeR']]
+        if 'design' in parameters and parameters['design'] == 1:
+            columns += [parameters['strata'], parameters['weight']]
+            parameters['weightInfo'] = [{'samp.weight': parameters['weight'],
+                                        'strata': parameters['strata']}]
         if parameters['covariatesSelection']:
+            columns += parameters['covariatesSelection']
             covariates = ' + '.join(parameters['covariatesSelection'])
-            effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
-            if effects:
-                covariates += ' + ' + ' + '.join(effects)
+            if 'effects' in parameters:
+                effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
+                if effects:
+                    covariates += ' + ' + ' + '.join(effects)
             parameters['covariates'] = covariates
-            print(covariates)
+        parameters['columns'] = columns
 
-        r = pr.R();
+        r = pr.R()
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters))
         print(r('returnFile = runCalculation(parameters)'))
@@ -91,6 +98,8 @@ def runModel():
         os.remove(parameters['filename'])
         results['prediction.results'] = None
         results['csvFile'] = outputCSVFileName
+        if 'jobName' in parameters:
+            results['jobName'] = parameters['jobName']
         with open(outputCSVFileName, 'w') as outputCSVFile:
             writer = csv.writer(outputCSVFile, dialect='excel')
             writer.writerow(['Data Summary'])
@@ -174,24 +183,9 @@ def runPredict():
             testDataFile.save(inputTestDataFileName)
             if os.path.isfile(inputTestDataFileName):
                 filesToRemoveWhenDone.append(inputTestDataFileName)
-                try:
-                    with codecs.open(inputTestDataFileName, encoding='utf-8-sig', mode='r') as testDataCsvFile:
-                        reader = csv.reader(testDataCsvFile, dialect='excel')
-                        variableNames = reader.next()
-                        if variableNames:
-                            testData = []
-                            for row in reader:
-                                obj = {}
-                                for idx, val in enumerate(row):
-                                    obj[variableNames[idx]] = float(val)
-                                testData.append(obj)
-                            if testData:
-                                parameters['testData'] = testData
-                except Exception as e:
-                    print(e)
-                    return buildFailure(str(e), 400)
+                parameters['testDataFile'] = inputTestDataFileName
             else:
-                message = "Upload CSV file failed!"
+                message = "Upload test data file failed!"
                 print(message)
                 return buildFailure(message, 500)
 
@@ -209,6 +203,7 @@ def runPredict():
         r('source("./pimixtureWrapper.R")')
         r.assign('parameters',json.dumps(parameters))
         rOutput = r('predictionResult = runPredict(parameters)')
+        print(rOutput)
         rResults = r.get('predictionResult')
         if not rResults:
             message = "Got an error when trying to run PIMixture.predict() function"
@@ -217,7 +212,7 @@ def runPredict():
         del r
         results = json.loads(rResults)
 
-        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR']
+        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR.se', 'LL95', 'UL95', 'CR']
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:

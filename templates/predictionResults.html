@@ -33,6 +33,9 @@
                         <th>Time Point</th>
                         <th>cox.predictor</th>
                         <th>logit.predictor</th>
+                        <th>Standard Error</th>
+                        <th>Lower Confidence Limit</th>
+                        <th>Upper Confidence Limit</th>
                         <th>CR</th>
                     </tr>
                     </thead>
@@ -44,6 +47,9 @@
                         <td><%= res.time %><br/></td>
                         <td><%= res['cox.predictor'] %><br/></td>
                         <td><%= res['logit.predictor']%><br/></td>
+                        <td><%= res['CR.se'] %></td>
+                        <td><%= res.LL95 %></td>
+                        <td><%= res.UL95 %></td>
                         <td><%= res.CR %><br/></td>
                     </tr>
                     <% } %>

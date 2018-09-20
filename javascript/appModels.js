@@ -12,7 +12,7 @@ appMixture.BaseModel = Backbone.Model.extend({
 appMixture.FormModel = Backbone.Model.extend({
     defaults: {
         'isMutuallyExclusive': true,
-        'csvFile': null,
+        'csvFile': {},
         'design': "",
         'headers': [],
         'uniqueValues': {},
@@ -22,6 +22,7 @@ appMixture.FormModel = Backbone.Model.extend({
         'outcomeR': "",
         'covariatesSelection': "",
         'covariatesArr': [],
+        'covariatesArrValid': true,
         'effects': [],
         'references': [],
         'email': ""
@@ -40,6 +41,7 @@ appMixture.EffectsModel = Backbone.Model.extend({
 
 appMixture.ReferencesModel = Backbone.Model.extend({
     defaults: {
+        'valid': false,
         'covariates': [],
         'uniqueValues': {},
         'formModel': {},
@@ -53,13 +55,15 @@ appMixture.ResultsModel = Backbone.Model.extend({
 
 appMixture.PredictionModel = Backbone.Model.extend({
     defaults: {
+        'rdsFile': {},
+        'testDataFile': {},
         'timePointType': 'Range'
     }
 });
 
 appMixture.PredictionResultModel = Backbone.Model.extend({
     defaults: {
-        pageSizeChoices: [ 10, 15, 20, 25, 50, 100, 150, 200, 250],
+        pageSizeChoices: [ 15, 25, 50, 100, 150, 200, 250],
         pageNum: 1,
         pages: 0,
         start: 0,
