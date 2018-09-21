@@ -809,8 +809,10 @@ appMixture.PredictionView = Backbone.View.extend({
         var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
+            jsonData['jobName'] = this.model.get('jobName');
         } else if (this.model.get('rdsFile')) {
             formData.append('rdsFile', this.model.get('rdsFile'));
+            jsonData['jobName'] = this.model.get('rdsFile').name.replace(/\.rds$/, '');
         } else {
             this.$('#error-message').html('Please choose a valid model file!');
             return;

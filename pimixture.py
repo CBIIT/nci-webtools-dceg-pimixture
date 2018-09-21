@@ -229,6 +229,9 @@ def runPredict():
                 'csvFile': csvFileName
             }
         }
+        if 'jobName' in parameters:
+            data['jobName'] = parameters['jobName']
+
         return buildSuccess(data)
 
     except Exception as e:
