@@ -77,10 +77,12 @@ def runModel():
         if parameters['covariatesSelection']:
             columns += parameters['covariatesSelection']
             covariates = ' + '.join(parameters['covariatesSelection'])
+
             if 'effects' in parameters:
                 effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
                 if effects:
                     covariates += ' + ' + ' + '.join(effects)
+                    parameters['effects'] = ' + '.join(effects)
             parameters['covariates'] = covariates
         parameters['columns'] = columns
 
@@ -103,6 +105,45 @@ def runModel():
             results['jobName'] = parameters['jobName']
         with open(outputCSVFileName, 'w') as outputCSVFile:
             writer = csv.writer(outputCSVFile, dialect='excel')
+
+            writer.writerow(['Parameters'])
+            writer.writerow(['Name', 'Value'])
+            savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
+                                {'field': 'inputCSVFile', 'name': 'Input File'},
+                                {'field': 'design', 'name': 'Sample Design'},
+                                {'field': 'model', 'name': 'Regression Model'},
+                                {'field': 'outcomeC', 'name': 'C'},
+                                {'field': 'outcomeL', 'name': 'L'},
+                                {'field': 'outcomeR', 'name': 'R'},
+                                {'field': 'covariatesSelection', 'name': 'Covariates'},
+                                {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
+                                {'field': 'effects', 'name': 'Interactive Effects'},
+                                {'field': 'email', 'name': 'Email'}
+                             ]
+            for param in savedParameters:
+                key = param['field']
+                name = param['name']
+                if key in parameters:
+                    val = parameters[key]
+                    if hasattr(val, 'filename'):
+                        writer.writerow([name, val.filename])
+                    elif key == 'covariatesArr':
+                        writer.writerow(['Covariate Configuaration'])
+                        writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
+                        for cov in val:
+                            writer.writerow(['', cov['text'], cov['type'], cov['category']])
+                    elif key == 'covariatesSelection':
+                        writer.writerow([name, ' + '.join(val)])
+                    elif key == 'design':
+                        val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
+                        writer.writerow([name, val])
+                    elif key == 'model':
+                        val = 'Parametric' if val == 'logistic-Weibull' else val
+                        writer.writerow([name, val])
+                    elif val:
+                        writer.writerow([name, val])
+            writer.writerow([])
+
             writer.writerow(['Data Summary'])
             writer.writerow(['Label', 'Number of the cases'])
             for key, val in results['data.summary'].items():
