@@ -87,13 +87,12 @@ def runModel():
         r = pr.R()
         r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
-        print(r('returnFile = runCalculation(parameters)'))
+        rOutput = r('returnFile = runCalculation(parameters)')
+        print(rOutput)
         returnFile = r.get('returnFile')
         del r
         if not returnFile:
-            message = "Got an error when trying to run PIMixture() function!"
-            print(message)
-            return buildFailure(message, 500)
+            return buildFailure(rOutput, 500)
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)
@@ -129,14 +128,18 @@ def runModel():
 
         return buildSuccess(results)
     except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        inputFileName = f.f_code.co_filename
-        linecache.checkcache(inputFileName)
-        line = linecache.getline(inputFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            inputFileName = f.f_code.co_filename
+            linecache.checkcache(inputFileName)
+            line = linecache.getline(inputFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
+            return buildFailure(rOutput, 500)
 
 @app.route('/predict', methods=["POST"])
 def runPredict():
@@ -208,9 +211,7 @@ def runPredict():
         print(rOutput)
         rResults = r.get('predictionResult')
         if not rResults:
-            message = "Got an error when trying to run PIMixture.predict() function"
-            print message
-            return buildFailure(message, 500)
+            return buildFailure(rOutput, 500)
         del r
         results = json.loads(rResults)
 
@@ -231,14 +232,19 @@ def runPredict():
         return buildSuccess(data)
 
     except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        errFileName = f.f_code.co_filename
-        linecache.checkcache(errFileName)
-        line = linecache.getline(errFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            errFileName = f.f_code.co_filename
+            linecache.checkcache(errFileName)
+            line = linecache.getline(errFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
+            return buildFailure(rOutput, 500)
+
 
     finally:
         if filesToRemoveWhenDone:

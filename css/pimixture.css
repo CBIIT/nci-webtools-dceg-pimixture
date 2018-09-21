@@ -37,7 +37,6 @@ body {
 }
 #input fieldset:last-child {
     margin-top: 20px;
-    text-align: center;
 }
 #effectsSet [type="checkbox"]:not(:checked) ~ button,
 #referencesSet [type="checkbox"]:not(:checked) ~ button {

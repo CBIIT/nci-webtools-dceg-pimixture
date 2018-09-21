@@ -137,10 +137,13 @@ appMixture.FormView = Backbone.View.extend({
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
-                console.log(res.responseText);
                 $that.disableInputs(false);
                 $that.stopSpinner();
-                $that.$('#error-message').html(res.responseText);
+                var error = res.responseText.replace(/\\n/g, '<br>');
+                error = error.replace(/^"(.*)"\n$/, '$1');
+                error = error.replace(/\\"/g, '"');
+                error = 'Error message from R package:<br>' + error;
+                $that.$('#error-message').html(error);
             }
         });
     },
@@ -856,7 +859,11 @@ appMixture.PredictionView = Backbone.View.extend({
                         console.log("Stay");
                     }
                 }
-                $that.$('#error-message').html(res.responseText);
+                var error = res.responseText.replace(/\\n/g, '<br>');
+                error = error.replace(/^"(.*)"\n$/, '$1');
+                error = error.replace(/\\"/g, '"');
+                error = 'Error message from R package:<br>' + error;
+                $that.$('#error-message').html(error);
             }
         });
     },
