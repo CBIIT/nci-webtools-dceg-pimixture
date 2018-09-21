@@ -8,7 +8,7 @@ runCalculation <- function(jsonData) {
     input = fromJSON(jsonData)
     csvFile = read.csv(input$filename)
     csvData = csvFile[, input$columns]
-    model=tolower(input$model)
+    model <- input$model
     design = input$design
     if (length(input$covariatesSelection) == 0) {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")

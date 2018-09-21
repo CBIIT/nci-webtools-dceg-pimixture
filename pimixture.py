@@ -159,13 +159,19 @@ def runModel():
             writer.writerow(['Odds Ratio (OR) for the prevalence'])
             writer.writerow(['Model', 'Label', 'OR'])
             for val in results['odds.ratio']:
-                writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+                if parameters['model'] == 'logistic-Weibull':
+                    writer.writerow(val)
+                else:
+                    writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
 
             writer.writerow([])
             writer.writerow(['Hazard Ratio (HR) for the incidence'])
             writer.writerow(['Model', 'Label', 'HR'])
             for val in results['hazard.ratio']:
-                writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+                if parameters['model'] == 'logistic-Weibull':
+                    writer.writerow(val)
+                else:
+                    writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
 
         return buildSuccess(results)
     except Exception as e:
