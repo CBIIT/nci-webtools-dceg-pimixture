@@ -38,8 +38,8 @@
             <div class="col-md-6">
                 <select name="model" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Model----</option>
-                    <option <%= data.model === 'Semi-parametric' ? 'selected' : '' %>>Semi-parametric</option>
-                    <option <%= data.model === 'Weakly-parametric' ? 'selected' : '' %>>Weakly-parametric</option>
+                    <option <%= data.model === 'semi-parametric' ? 'selected' : '' %> value="semi-parametric">Semi-parametric</option>
+                    <option <%= data.model === 'weakly-parametric' ? 'selected' : '' %> value="weakly-parametric">Weakly-parametric</option>
                     <option <%= data.model === 'logistic-Weibull' ? 'selected' : '' %> <%= data.design === 1 ? 'disabled' : '' %> value="logistic-Weibull">Parametric</option>
                 </select>
             </div>
