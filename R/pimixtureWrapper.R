@@ -40,6 +40,7 @@ runCalculation <- function(jsonData) {
       hazard.ratio = result$HR,
       odds.ratio = result$OR,
       regression.coefficient = result$regression.coef,
+      model = result$model,
       Rfile=outputFileName
     ), auto_unbox = T)
     output = returnValue
