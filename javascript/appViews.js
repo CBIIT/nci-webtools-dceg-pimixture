@@ -73,7 +73,37 @@ appMixture.FormView = Backbone.View.extend({
         this.$("[data-toggle=popover]").popover();
         this.updateOptions();
         this.updateCovariates();
+        this.initializePopovers();
         return this;
+    },
+    initializePopovers: function() {
+        this.$('#jobNamePopover').popover({title: "Job Name", content:"Optional job name will be prepend to result file names, if not entered, default name will be 'PIMixture'", container:"body",trigger: "focus", container: "body", html: true});
+        this.$('#inputFilePopover').popover({title: "Input File", content: 'Input file should be in CSV (comma-separated values) format.',  trigger:"focus", container:"body", html: true});
+        this.$('#designPopover').popover({title: "Weighted and Unweighted Data",
+            content: '<p>PIMixture provides two options for unweighted and weighted data. Specifically, unweighted data represents a simple random sample or an entire cohort; everyone of a simple random sample has an equal selection probability, so we don’t have to add sampling weight. Weighted data in PIMixture represents a stratified random sample, of which selection probabilities vary across strata and are the same within a stratum, and the selection probabilities are known. For weighted data analysis, users additionally specify two variables for strata and sampling weights (>=1).</p>' +
+            '<p>1. Table 1 Available options of PIMixture</p>' +
+            '<table class="table table-condense table-bordered"><thead><tr><th></th><th>Parametric models</th><th>Weakly-parametric models</th><th>Semiparametric models</th></tr></thead>' +
+            '<tr><th>Unweighted data (a simple random sample or a cohort)</th><td>Available</td><td>Available</td><td>Available (standard error and confidence interval are not available)</td></tr>' +
+            '<tr><th>Weighted data (stratified random sample with known sample weights)</th><td>Not available</td><td>Available</td><td>Available (standard error and confidence interval are not available)</td></tr></table>',
+            trigger:"focus", container:"body", html: true});
+        this.$('#modelPopover').popover({title: "Parametric, weakly-parametric, semiparametric",
+            content: '<p>In PIMixture, logistic regression is used to model disease prevalence and proportional hazards models are used for disease incidence subject to interval-censoring; model parameters are then jointly estimated to account for disease where it is uncertain whether it is prevalent or incident.</p>' +
+            '<p>The PIMixture web tool provides multiple options for defining the baseline hazard of the proportional hazard model -- a fully parametric model that assumes a Weibull baseline hazard; a weakly-parametric model that uses integrated B-splines to model the baseline hazard; and a semi-parametric model.  Both the weakly-parametric model and the semiparametric model also supports stratified random sample.</p>',
+            trigger:"focus", container:"body", html: true});
+        this.$('#strataPopover').popover({title: "Strata", content: '',  trigger:"focus", container:"body", html: true});
+        this.$('#weightPopover').popover({title: "Weight", content: '',  trigger:"focus", container:"body", html: true});
+        this.$('.outcomePopover').popover({title: "Outcome variables: C, L and R",
+            content: 'The outcome of interest is the time of clinically-detectable disease onset, and three variables for the outcome should be included in the input data: for simplicity, we define C=prevalence indicator, L=left time point, i.e. the latest time at which a subject is disease-free, R=right time point, i.e., the earliest time at which a subject is diagnosed with a disease. These variable names can be changed. In the webtool, users can choose which variables correspond to “C”, “L” and “R”. General coding rules are as following: ' +
+            '<ol><li>C=1 if prevalent disease, C=0 if no prevalent disease, C=-999 if unknown status.  Note that even if disease status is not ascertained at the initial screen, a later screen that ascertains the absence of disease means we know there was no prevalent disease.</li>' +
+            '<li>L and R have values equal to or greater than 0 (any unit, such as day, month and year can be used); however, when C=1, L=R=-999.</li>' +
+            '<li>For right/interval censoring, L is smaller than R.</li>' +
+            '<li>For right censoring, R=Inf, where Inf means infinity, <img src="images/infinity.png"></li>' +
+            '<li>L should not be equal to R except when C=1 because PIMixture does not handle exact event time. However, if data includes exact event times, users can use a trick, adding a very small interval to the exact event times to define “L” and “R”.</li></ol>' +
+            'Note that examples and explanations are provided in the manual.',
+            trigger:"focus", container:"body", html: true});
+        this.$('#covariatePopover').popover({title: "Predictors", content: 'In PIMixture, it is optional to include predictors in logistic and proportional hazards models. When included, relative risks are given in terms of odd ratios for prevalent disease and hazard ratios for incident disease. There are two options for predictors, continuous or categorical variables. Examples and explanations are provided in the manual.',  trigger:"focus", container:"body", html: true});
+        this.$('#queuePopover').popover({title: "Queue", content: 'A job sent to queue will run in background, and send you an email when the computation finishes.',  trigger:"focus", container:"body", html: true});
+        this.$('#emailPopover').popover({title: "Email", content: 'A valid email is needed for a job sent to queue.',  trigger:"focus", container:"body", html: true});
     },
     updateCovariates: function(){
         covariatesSelection = this.$('[name="covariatesSelection"]')[0].selectize;
@@ -753,7 +783,17 @@ appMixture.PredictionView = Backbone.View.extend({
         this.tryEnableInputs();
         appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
+        this.initializePopovers();
         return this;
+    },
+    initializePopovers: function() {
+        this.$('#testDataPopover').popover({title: "Prediction", content: 'Based on the regression parameters and/or cumulative hazard function, we can predict prevalence and incidence using an independent data (called test data) including the predictors used for estimating the parameters and cumulative hazard function. For prediction, users need to upload fitted model, test data and input time points. When time point=0, predicted probabilities mean the prevalences of subgroups characterized by specific predictors; when time point=t>0, predicted cumulative risk up to time t includes prevalence too. Test data should include the same variables used for fitting the model.',  trigger:"focus", container:"body", html: true});
+        this.$('#modelFilePopover').popover({title: "Model File", content: 'Upload model (.RDS) file downloaded from "Fitting" page',  trigger:"focus", container:"body", html: true});
+        this.$('#timePointTypePopover').popover({title: "Time Point Type", content: 'You can enter time points as a range (default), or enter discreet time points manually.',  trigger:"focus", container:"body", html: true});
+        this.$('#beginPopover').popover({title: "Begin", content: 'First time point you\'d like to use as time points',  trigger:"focus", container:"body", html: true});
+        this.$('#endPopover').popover({title: "End", content: 'Last time point you\'d like to use as time points',  trigger:"focus", container:"body", html: true});
+        this.$('#stepSizePopover').popover({title: "Step Size", content: 'Step size between consecutive time points',  trigger:"focus", container:"body", html: true});
+        this.$('#timePointsPopover').popover({title: "Time Points", content: 'Enter discreet time points manually',  trigger:"focus", container:"body", html: true});
     },
     selectModelFile: function(e) {
         var file = e.target.files[0];
