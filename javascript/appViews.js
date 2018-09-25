@@ -963,6 +963,7 @@ appMixture.PredictionResultView = Backbone.View.extend({
     className: 'col-md-8',
     events: {
         'input #pageSize': 'changePageSize',
+        'click .sortByColumn': 'sort',
         'click .pageNav': 'changePage'
     },
     initialize: function() {
@@ -1029,9 +1030,32 @@ appMixture.PredictionResultView = Backbone.View.extend({
         }
         this.model.set('neighborPages', pages, {silent: true});
     },
+    sort: function(e){
+        var column = e.target.dataset['column'];
+        var order = e.target.dataset['order'];
+        if (column === this.model.get('column') && order === this.model.get('order')) {
+            return;
+        }
+        this.model.set('column', column);
+        this.model.set('order', order);
+        this.model.get('results').prediction.sort(function(a, b) {
+            if (a[column] < b[column]) {
+                return order === 'asc' ? -1 : 1;
+            } else if (a[column] > b[column]) {
+                return order === 'asc' ? 1 : -1;
+            } else {
+                return 0;
+            }
+        });
+        this.render();
+    },
     render: function() {
         this.calculateNeighborPages();
         this.$el.html(this.template(this.model.attributes));
+        if (this.model.get('column')) {
+            var selecter = '[data-column="' + this.model.get('column') + '"][data-order="'+ this.model.get('order') + '"]';
+            this.$(selecter).css('color', 'blue');
+        }
         return this;
     }
 });

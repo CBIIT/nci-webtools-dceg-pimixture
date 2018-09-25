@@ -30,13 +30,13 @@
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
                     <tr>
-                        <th>Time Point</th>
-                        <th>cox.predictor</th>
-                        <th>logit.predictor</th>
-                        <th>CR</th>
-                        <th>Standard Error</th>
-                        <th>Lower Confidence Limit (95%)</th>
-                        <th>Upper Confidence Limit (95%)</th>
+                        <th>Time Point <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'time' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'time' %>" data-order="desc"></span></th>
+                        <th>cox.predictor <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'cox.predictor' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'cox.predictor' %>" data-order="desc"></span></th>
+                        <th>logit.predictor <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'logit.predictor' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'logit.predictor' %>" data-order="desc"></span></th>
+                        <th>CR <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'CR' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'CR' %>" data-order="desc"></span></th>
+                        <th>Standard Error <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'CR.se' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'CR.se' %>" data-order="desc"></span></th>
+                        <th>Lower Confidence Limit (95%) <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'LL95' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'LL95' %>" data-order="desc"></span></th>
+                        <th>Upper Confidence Limit (95%) <span class="sortByColumn glyphicon glyphicon-triangle-top" data-column="<%= 'UL95' %>" data-order="asc"></span><span class="sortByColumn glyphicon glyphicon-triangle-bottom" data-column="<%= 'UL95' %>" data-order="desc"></span></th>
                     </tr>
                     </thead>
                     <tbody id="predictionResultTbody">
