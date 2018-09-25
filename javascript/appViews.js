@@ -178,22 +178,23 @@ appMixture.FormView = Backbone.View.extend({
         });
     },
     startSpinner: function() {
-        var target = this.$('#indicator')[0];
+        $('body').append('<div id="overlay"></div>');
+        var target = $('#overlay')[0];
         if (this.spinner) {
             this.spinner.spin(target);
         } else {
             var opts = {
                 lines: 13, // The number of lines to draw
-                length: 27, // The length of each line
-                width: 11, // The line thickness
-                radius: 20, // The radius of the inner circle
-                scale: 0.25, // Scales overall size of the spinner
+                length: 38, // The length of each line
+                width: 17, // The line thickness
+                radius: 45, // The radius of the inner circle
+                scale: 1, // Scales overall size of the spinner
                 corners: 1, // Corner roundness (0..1)
                 color: '#ffffff', // CSS color or array of colors
                 fadeColor: 'transparent', // CSS color or array of colors
-                speed: 0.8, // Rounds per second
+                speed: 1, // Rounds per second
                 rotate: 0, // The rotation offset
-                animation: 'spinner-line-fade-more', // The CSS animation name for the lines
+                animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
                 direction: 1, // 1: clockwise, -1: counterclockwise
                 zIndex: 2e9, // The z-index (defaults to 2000000000)
                 className: 'spinner', // The CSS class to assign to the spinner
@@ -207,6 +208,7 @@ appMixture.FormView = Backbone.View.extend({
     },
     stopSpinner: function() {
         this.spinner.stop();
+        $('#overlay').remove();
     },
     resetModel: function(e) {
         this.model.clear().set(this.model.defaults, {silent: true});
@@ -925,22 +927,23 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     startSpinner: function() {
-        var target = this.$('#indicator')[0];
+        $('body').append('<div id="overlay"></div>');
+        var target = $('#overlay')[0];
         if (this.spinner) {
             this.spinner.spin(target);
         } else {
             var opts = {
                 lines: 13, // The number of lines to draw
-                length: 27, // The length of each line
-                width: 11, // The line thickness
-                radius: 20, // The radius of the inner circle
-                scale: 0.25, // Scales overall size of the spinner
+                length: 38, // The length of each line
+                width: 17, // The line thickness
+                radius: 45, // The radius of the inner circle
+                scale: 1, // Scales overall size of the spinner
                 corners: 1, // Corner roundness (0..1)
                 color: '#ffffff', // CSS color or array of colors
                 fadeColor: 'transparent', // CSS color or array of colors
-                speed: 0.8, // Rounds per second
+                speed: 1, // Rounds per second
                 rotate: 0, // The rotation offset
-                animation: 'spinner-line-fade-more', // The CSS animation name for the lines
+                animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
                 direction: 1, // 1: clockwise, -1: counterclockwise
                 zIndex: 2e9, // The z-index (defaults to 2000000000)
                 className: 'spinner', // The CSS class to assign to the spinner
@@ -954,6 +957,7 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     stopSpinner: function() {
         this.spinner.stop();
+        $('#overlay').remove();
     }
 });
 
