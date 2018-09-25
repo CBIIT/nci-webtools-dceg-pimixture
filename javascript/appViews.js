@@ -97,7 +97,7 @@ appMixture.FormView = Backbone.View.extend({
             '<ol><li>C=1 if prevalent disease, C=0 if no prevalent disease, C=-999 if unknown status.  Note that even if disease status is not ascertained at the initial screen, a later screen that ascertains the absence of disease means we know there was no prevalent disease.</li>' +
             '<li>L and R have values equal to or greater than 0 (any unit, such as day, month and year can be used); however, when C=1, L=R=-999.</li>' +
             '<li>For right/interval censoring, L is smaller than R.</li>' +
-            '<li>For right censoring, R=Inf, where Inf means infinity, <img src="images/infinity.png"></li>' +
+            '<li>For right censoring, R=Inf, where Inf means infinity, <img src="images/image024.png"></li>' +
             '<li>L should not be equal to R except when C=1 because PIMixture does not handle exact event time. However, if data includes exact event times, users can use a trick, adding a very small interval to the exact event times to define “L” and “R”.</li></ol>' +
             'Note that examples and explanations are provided in the manual.',
             trigger:"focus", container:"body", html: true});
