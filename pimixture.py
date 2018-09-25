@@ -56,6 +56,7 @@ def runModel():
         id = str(uuid.uuid4())
         if (len(request.files) > 0):
             inputCSVFile = request.files['csvFile']
+            parameters['inputCSVFile'] = inputCSVFile.filename
             ext = os.path.splitext(inputCSVFile.filename)[1]
             inputFileName = getInputFilePath(id, ext)
             inputCSVFile.save(inputFileName)
@@ -106,12 +107,14 @@ def runModel():
         with open(outputCSVFileName, 'w') as outputCSVFile:
             writer = csv.writer(outputCSVFile, dialect='excel')
 
-            writer.writerow(['Parameters'])
+            writer.writerow(['Job Parameters'])
             writer.writerow(['Name', 'Value'])
             savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
                                 {'field': 'inputCSVFile', 'name': 'Input File'},
                                 {'field': 'design', 'name': 'Sample Design'},
                                 {'field': 'model', 'name': 'Regression Model'},
+                                {'field': 'strata', 'name': 'Strata'},
+                                {'field': 'weight', 'name': 'Weight'},
                                 {'field': 'outcomeC', 'name': 'C'},
                                 {'field': 'outcomeL', 'name': 'L'},
                                 {'field': 'outcomeR', 'name': 'R'},
