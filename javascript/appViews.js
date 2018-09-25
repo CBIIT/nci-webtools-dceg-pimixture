@@ -1031,11 +1031,16 @@ appMixture.PredictionResultView = Backbone.View.extend({
         this.model.set('neighborPages', pages, {silent: true});
     },
     sort: function(e){
-        var column = e.target.dataset['column'];
-        var order = e.target.dataset['order'];
-        if (column === this.model.get('column') && order === this.model.get('order')) {
-            return;
+        var column = e.currentTarget.dataset['column'];
+        var order = 'asc';
+        if (column === this.model.get('column')) {
+            if (this.model.get('order') === 'asc') {
+                order = 'desc';
+            } else {
+                order = 'asc';
+            }
         }
+
         this.model.set('column', column);
         this.model.set('order', order);
         this.model.get('results').prediction.sort(function(a, b) {
@@ -1053,7 +1058,9 @@ appMixture.PredictionResultView = Backbone.View.extend({
         this.calculateNeighborPages();
         this.$el.html(this.template(this.model.attributes));
         if (this.model.get('column')) {
-            var selecter = '[data-column="' + this.model.get('column') + '"][data-order="'+ this.model.get('order') + '"]';
+            var selecter = '[data-column="' + this.model.get('column') + '"] .glyphicon';
+            var icon = this.model.get('order') === 'asc' ? 'glyphicon-triangle-top' : 'glyphicon-triangle-bottom';
+            this.$(selecter).addClass(icon);
             this.$(selecter).css('color', 'blue');
         }
         return this;
