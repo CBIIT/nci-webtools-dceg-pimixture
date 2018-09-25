@@ -64,89 +64,39 @@ represent known diseased status). EHR=electronic health records.</span></p>
 
         <p > Logistic regression model:<span><img src="images/image003.png"></span></p>
 
-        <p >where <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image004.png"></span>=probability of disease presence at
-            baseline and 0&lt;<span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image005.png"></span> &lt;1; <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image006.png"></span> is the intercept, <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image007.png"></span> is the odds ratio for disease presence
+        <p >where <span><img src="images/image004.png"></span>=probability of disease presence at
+            baseline and 0&lt;<span><img src="images/image005.png"></span> &lt;1; <span><img src="images/image006.png"></span> is the intercept, <span><img src="images/image007.png"></span> is the odds ratio for disease presence
             when x=0 to when x=1.</p>
 
         <p >Proportional hazards model: <span><img src="images/image008.png"></span> </p>
 
-        <p >where <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image009.png"></span> is a baseline hazard function for
-            disease occurrence; <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image010.png"></span>is the hazards ratio for disease
-            incidence when x=0 to when x=1; The baseline hazard function <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image009.png"></span> is the instantaneous rate at which a
+        <p >where <span><img src="images/image009.png"></span> is a baseline hazard function for
+            disease occurrence; <span><img src="images/image010.png"></span>is the hazards ratio for disease
+            incidence when x=0 to when x=1; The baseline hazard function <span><img src="images/image009.png"></span> is the instantaneous rate at which a
             disease occurs to a subject, given that the subject has been disease-free up to
             time t. </p>
 
-        <p >For incidence estimation, we need to estimate <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image011.png"></span>as well as <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image009.png"></span> (or a cumulative baseline hazard
-            function <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:6.0pt'><img src="images/image012.png"></span>, and there are three options in
-            PIMixture to estimate <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image009.png"></span>, “parametric”, “weakly-parametric” and
-            ”semiparametric” methods. Once we estimate <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image009.png"></span> or <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image013.png"></span> and <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image011.png"></span>, we can estimate survival function, <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image014.png"></span>.</p>
+        <p >For incidence estimation, we need to estimate <span><img src="images/image011.png"></span>as well as <span><img src="images/image009.png"></span> (or a cumulative baseline hazard
+            function <span><img src="images/image012.png"></span>, and there are three options in
+            PIMixture to estimate <span><img src="images/image009.png"></span>, “parametric”, “weakly-parametric” and
+            ”semiparametric” methods. Once we estimate <span><img src="images/image009.png"></span> or <span><img src="images/image013.png"></span> and <span><img src="images/image011.png"></span>, we can estimate survival function, <span><img src="images/image014.png"></span>.</p>
 
         <p style="margin-left: 60px; text-indent: -25px">1. &nbsp; Parametric model: we assume the baseline hazard function is generated from a Weibull
-            distribution, and accordingly, <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:8.0pt'><img src="images/image015.png"></span><b> , </b>for <span style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;position:relative;
-top:3.0pt'><img src="images/image016.png"></span> and <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image017.png"></span> . Weibull distributions are determined
-            by two parameters <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image018.png"></span> and <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image019.png"></span>. Hence, if the distribution assumption
+            distribution, and accordingly, <span><img src="images/image015.png"></span><b> , </b>for <span style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;position:relative;
+top:3.0pt'><img src="images/image016.png"></span> and <span><img src="images/image017.png"></span> . Weibull distributions are determined
+            by two parameters <span><img src="images/image018.png"></span> and <span><img src="images/image019.png"></span>. Hence, if the distribution assumption
             is correct, parametric models are the most efficient.</p>
 
         <p style="margin-left: 60px; text-indent: -25px">2. &nbsp; Weakly-parametric
             model: Like piecewise constant hazard functions, we approximate the cumulative
-            hazard function <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:4.0pt'><img src="images/image020.png"></span>, using integrated cubic B-splines <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image021.png"></span>’s and the piecewise intervals are
+            hazard function <span><img src="images/image020.png"></span>, using integrated cubic B-splines <span><img src="images/image021.png"></span>’s and the piecewise intervals are
             determined by quantiles of observation times. The weakly-parametric method of
-            PIMixture needs to estimate total 7 parameters <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image022.png"></span>’s by default. </p>
+            PIMixture needs to estimate total 7 parameters <span><img src="images/image022.png"></span>’s by default. </p>
 
-        <p style="margin-left: 60px; text-indent: -25px">3. &nbsp; Semiparametric model: we assume  <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image023.png"></span> is a step function with jumps at unique
+        <p style="margin-left: 60px; text-indent: -25px">3. &nbsp; Semiparametric model: we assume  <span><img src="images/image023.png"></span> is a step function with jumps at unique
             observation times at most. Hence as the number of unique observation times
-            increases, the number of parameters for  <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image023.png"></span> increases. The iterative convex
-            algorithm is employed to nonparametrically estimate <span
-                    style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image023.png"></span>.</p>
+            increases, the number of parameters for  <span><img src="images/image023.png"></span> increases. The iterative convex
+            algorithm is employed to nonparametrically estimate <span><img src="images/image023.png"></span>.</p>
 
         <p style="margin-top: 20px">The assumptions are strong in the order of “Parametric” &gt;
             ”Weakly-parametric” &gt; ”Semiparametric”, whereas if data satisfies the
@@ -286,8 +236,7 @@ position:relative;top:3.0pt'><img src="images/image023.png"></span>.</p>
 
         <p  style='margin-left: 60px; text-indent: -30px'>(4)<span
                 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>For right censoring,
-            R=Inf, where Inf means infinity, <span style='font-size:11.0pt;line-height:
-107%;font-family:"Calibri",sans-serif;position:relative;top:3.0pt'><img src="images/image024.png"></span>.</p>
+            R=Inf, where Inf means infinity, <span><img src="images/image024.png"></span>.</p>
 
         <p  style='margin-left: 60px; text-indent: -30px'>(5)<span
                 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>L should not be equal
@@ -632,11 +581,7 @@ position:relative;top:3.0pt'><img src="images/image023.png"></span>.</p>
 
         <p >&nbsp;</p>
 
-        <p >The logistic and proportional hazards models are <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:8.0pt'><img src="images/image026.png"></span>, <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image027.png"></span> </p>
+        <p >The logistic and proportional hazards models are <span><img src="images/image026.png"></span>, <span><img src="images/image027.png"></span> </p>
 
         <p >A reference level (or group) for continuous predictors is 0
             by default; however, users can set the reference level to be another level
@@ -1117,11 +1062,7 @@ position:relative;top:3.0pt'><img src="images/image027.png"></span> </p>
             predictors. For example, when we set a reference level for BMI to be 2 (or
             “normal’), the logistic and proportional hazards models are</p>
 
-        <p ><span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:8.0pt'><img src="images/image028.png"></span>, <span
-                style='font-size:11.0pt;line-height:107%;font-family:"Calibri",sans-serif;
-position:relative;top:3.0pt'><img src="images/image029.png"></span> </p>
+        <p ><span><img src="images/image028.png"></span>, <span><img src="images/image029.png"></span> </p>
 
         <p >where I(BMI=a)=1 if BMI=a; 0 otherwise. </p>
 
