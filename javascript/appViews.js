@@ -333,6 +333,7 @@ appMixture.FormView = Backbone.View.extend({
     },
     changeQueueStatus: function(e) {
         this.$('[name="email"]').prop('disabled', !$(e.target).prop('checked'));
+        this.$('[name="email"]').prop('required', $(e.target).prop('checked'));
         //TODO: change queue status
     },
     changeCovariateList: function () {
