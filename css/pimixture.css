@@ -153,18 +153,26 @@ table td:last-child {
     text-align: center;
 }
 
+.bootstrap-dialog-body #interactive-table tbody td,
+.bootstrap-dialog-body #interactive-table tbody th,
+.bootstrap-dialog-body #covariatesTable tbody td,
+.bootstrap-dialog-body #covariatesTable tbody th {
+    border: none;
+    vertical-align: middle;
+}
+
+.bootstrap-dialog-body #interactive-table thead th,
+.bootstrap-dialog-body #covariatesTable thead th {
+    border-color: black;
+    border-width: 1px;
+}
+
 .interactive-select {
     width: 45%;
 }
 
 .interactive-select select{
     width: 100%;
-}
-
-#interactive-table td,
-#interactive-table th
-{
-    border: none;
 }
 
 .glyphicon {
@@ -355,16 +363,6 @@ input[type=file] {
 #help-page h4,
 #help-page h3 {
     color: #4A6E9B;
-}
-
-.bootstrap-dialog-body #covariatesTable tbody td,
-.bootstrap-dialog-body #covariatesTable tbody th {
-    border: none;
-}
-
-.bootstrap-dialog-body #covariatesTable thead th {
-    border-color: black;
-    border-width: 1px;
 }
 
 @media(min-width: 1440px){

@@ -632,7 +632,7 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
         }
     },
     rerenderFooter: function () {
-        this.$el.find('tfoot').empty().append(_.template(appMixture.templates.get('effectsFooter'))(this.model.attributes));
+        this.$el.find('tbody').empty().append(_.template(appMixture.templates.get('effectsFooter'))(this.model.attributes));
     }
 });
 
