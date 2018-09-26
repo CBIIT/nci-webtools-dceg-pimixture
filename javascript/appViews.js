@@ -979,7 +979,7 @@ appMixture.PredictionResultView = Backbone.View.extend({
     changePage: function(e) {
         e.preventDefault();
         var pageNum = parseInt(e.target.dataset.pageNum);
-        if (pageNum) {
+        if (pageNum && pageNum >= 1 && pageNum <= this.model.get('pages')) {
             this.model.set('pageNum', pageNum, {silent: true});
             this.calculatePageBoundaries();
         }
