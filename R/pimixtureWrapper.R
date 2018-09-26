@@ -71,7 +71,10 @@ runPredict <- function(jsonData) {
 
     # run prediction function
     predict<-PIMixture.predict(x=model, data=test.data, time.points=time.points)
-    exportJson <- toJSON(predict)
+    exportJson <- toJSON(list(
+        predict = predict,
+        model = model$model
+    ), auto_unbox = T)
     return (exportJson)
 }
 

@@ -34,9 +34,11 @@
                         <th class="sortByColumn" data-column="<%= 'cox.predictor' %>">cox.predictor <span class="glyphicon"></span></th>
                         <th class="sortByColumn" data-column="<%= 'logit.predictor' %>">logit.predictor <span class="glyphicon"></span></th>
                         <th class="sortByColumn" data-column="<%= 'CR' %>">CR <span class="glyphicon"></span></th>
+                        <% if (data.results.model !== 'semi-parametric') { %>
                         <th class="sortByColumn" data-column="<%= 'CR.se' %>">Standard Error <span class="glyphicon"></span></th>
                         <th class="sortByColumn" data-column="<%= 'LL95' %>">Lower Confidence Limit (95%) <span class="glyphicon"></span></th>
                         <th class="sortByColumn" data-column="<%= 'UL95' %>">Upper Confidence Limit (95%) <span class="glyphicon"></span></th>
+                        <% } %>
                     </tr>
                     </thead>
                     <tbody id="predictionResultTbody">
@@ -48,9 +50,11 @@
                         <td><%= res['cox.predictor'] %><br/></td>
                         <td><%= res['logit.predictor']%><br/></td>
                         <td><%= res.CR %><br/></td>
+                        <% if (data.results.model !== 'semi-parametric') { %>
                         <td><%= res['CR.se'] %></td>
                         <td><%= res.LL95 %></td>
                         <td><%= res.UL95 %></td>
+                        <% } %>
                     </tr>
                     <% } %>
                     </tbody>

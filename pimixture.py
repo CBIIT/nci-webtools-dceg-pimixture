@@ -263,7 +263,9 @@ def runPredict():
         if not rResults:
             return buildFailure(rOutput, 500)
         del r
-        results = json.loads(rResults)
+        predictionResult = json.loads(rResults)
+        results = predictionResult['predict']
+        model = predictionResult['model']
 
         fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR.se', 'LL95', 'UL95', 'CR']
         id = str(uuid.uuid4())
@@ -276,6 +278,7 @@ def runPredict():
         data = {
             'results': {
                 'prediction': results,
+                'model': model,
                 'csvFile': csvFileName
             }
         }
