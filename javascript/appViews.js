@@ -864,7 +864,7 @@ appMixture.PredictionView = Backbone.View.extend({
         formData.append('jsonData', JSON.stringify(jsonData));
 
         this.$('#error-message').html('');
-        appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
+        appMixture.predictionResultModel.clear({silent: true}).set(appMixture.predictionResultModel.defaults);
         this.startSpinner();
         appMixture.predictionResultModel.fetch({
             data: formData,
