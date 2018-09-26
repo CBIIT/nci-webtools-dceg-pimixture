@@ -133,8 +133,8 @@ body {
     overflow: auto;
 }
 
-table th:last-child,
-table td:last-child {
+#fittingResults table th:last-child,
+#fittingResults table td:last-child {
     text-align: center;
     width: 20%;
 }
@@ -153,26 +153,46 @@ table td:last-child {
     text-align: center;
 }
 
-.bootstrap-dialog-body #interactive-table tbody td,
-.bootstrap-dialog-body #interactive-table tbody th,
-.bootstrap-dialog-body #covariatesTable tbody td,
-.bootstrap-dialog-body #covariatesTable tbody th {
+#interactiveTable tbody td,
+#interactiveTable tbody th,
+#covariatesTable tbody td,
+#covariatesTable tbody th {
     border: none;
     vertical-align: middle;
 }
 
-.bootstrap-dialog-body #interactive-table thead th,
-.bootstrap-dialog-body #covariatesTable thead th {
+#interactiveTable .interactiveButton,
+#interactiveTable tbody td,
+#interactiveTable tbody th {
+    padding-left: 18px;
+}
+
+#interactiveTable thead th,
+#covariatesTable thead th {
     border-color: black;
     border-width: 1px;
 }
 
-.interactive-select {
+#interactiveTable select,
+#covariatesTable select {
+    text-indent: 4px;
+}
+
+.interactiveSelect {
     width: 45%;
 }
 
-.interactive-select select{
+.interactiveSelect select{
     width: 100%;
+}
+
+.covariateHeader {
+    width: 30%;
+}
+
+#covariatesTable .valueHeader {
+    width: 35%;
+    padding-left: 18px;
 }
 
 .glyphicon {
