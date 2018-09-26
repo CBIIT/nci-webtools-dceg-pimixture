@@ -116,14 +116,6 @@ appMixture.FormView = Backbone.View.extend({
             this.updateCovariateBtnsStatus(covList);
         }
     },
-    disableInputs: function (status) {
-        this.$('#fileSet, #designAndModelSet, #covariatesSet, #emailSet, #submitSet').prop('disabled', status);
-        if (status) {
-            this.$('[name="covariatesSelection"]')[0].selectize.disable();
-        } else {
-            this.$('[name="covariatesSelection"]')[0].selectize.enable();
-        }
-    },
     runCalculation: function (e) {
         e.preventDefault();
         if (!this.model.get('isMutuallyExclusive')) {
@@ -134,7 +126,6 @@ appMixture.FormView = Backbone.View.extend({
             this.$('#covariates-error').html('Some of the Covariates are not properly configured.');
             return;
         }
-        this.disableInputs(true);
         appMixture.models.results.clear().set(appMixture.models.results.defaults);
         var $that = this,
             params = _.extend({}, this.model.attributes);
@@ -163,11 +154,9 @@ appMixture.FormView = Backbone.View.extend({
             processData: false,
             type: "POST",
             success: function(model, res, options) {
-                $that.disableInputs(false);
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
-                $that.disableInputs(false);
                 $that.stopSpinner();
                 var error = res.responseText.replace(/\\n/g, '<br>');
                 error = error.replace(/^"(.*)"\n$/, '$1');
@@ -839,9 +828,6 @@ appMixture.PredictionView = Backbone.View.extend({
         this.model.clear().set(this.model.defaults);
         this.render();
     },
-    disableInputs: function (status) {
-        this.$('#fileSet, #timePointsWell, #buttonSet').prop('disabled', status);
-    },
     onSubmitPredict: function (e) {
         e.preventDefault();
         var $that = this;
@@ -878,7 +864,6 @@ appMixture.PredictionView = Backbone.View.extend({
 
         this.$('#error-message').html('');
         appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
-        this.disableInputs(true);
         this.startSpinner();
         appMixture.predictionResultModel.fetch({
             data: formData,
@@ -887,11 +872,9 @@ appMixture.PredictionView = Backbone.View.extend({
             processData: false,
             type: "POST",
             success: function(model, res, options) {
-                $that.disableInputs(false);
                 $that.stopSpinner();
             },
             error: function(model, res, options) {
-                $that.disableInputs(false);
                 $that.stopSpinner();
                 if (res.status == 410) { // rds file on server doesn't exist anymore
                     var redirect = confirm("Model file on server doesn't exist anymore!\nUpload a new model file?");
