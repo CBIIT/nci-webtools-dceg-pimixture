@@ -200,8 +200,8 @@ appMixture.FormView = Backbone.View.extend({
         $('#overlay').remove();
     },
     resetModel: function(e) {
-        this.model.clear().set(this.model.defaults, {silent: true});
-        appMixture.models.results.clear().set(appMixture.models.results.defaults);
+        this.model.clear({silent: true}).set(this.model.defaults, {silent: true});
+        appMixture.models.results.clear({silent: true}).set(appMixture.models.results.defaults, {silent: true});
         this.render();
     },
     openInteractiveEffects: function (e) {
@@ -825,8 +825,8 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     resetForm: function(e) {
-        appMixture.predictionResultModel.clear().set(appMixture.predictionResultModel.defaults);
-        this.model.clear().set(this.model.defaults);
+        appMixture.predictionResultModel.clear({silent: true}).set(appMixture.predictionResultModel.defaults, {silent: true});
+        this.model.clear({silent: true}).set(this.model.defaults, {silent: true});
         this.render();
     },
     onSubmitPredict: function (e) {
@@ -864,7 +864,8 @@ appMixture.PredictionView = Backbone.View.extend({
         formData.append('jsonData', JSON.stringify(jsonData));
 
         this.$('#error-message').html('');
-        appMixture.predictionResultModel.clear({silent: true}).set(appMixture.predictionResultModel.defaults);
+        appMixture.predictionResultModel.clear({silent: true}).set(appMixture.predictionResultModel.defaults, {silent: true});
+        appMixture.predictionResultView.render();
         this.startSpinner();
         appMixture.predictionResultModel.fetch({
             data: formData,
