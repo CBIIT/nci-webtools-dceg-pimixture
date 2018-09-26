@@ -133,11 +133,11 @@
     <fieldSet id="emailSet" class="well">
         <div class="form-group">
             <div class="checkbox col-md-8">
-                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a>
             </div>
         </div>
         <div class="form-group">
-            <label for="email" class="control-label col-md-3">Email <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <label class="control-label col-md-3">Email <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-9">
                 <input type="text" name="email" class="form-control"  value="<%= data.email %>" disabled>
             </div>
