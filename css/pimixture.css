@@ -303,6 +303,7 @@ fieldset.well .form-group {
     color: white;
 }
 
+.disabledPageNav,
 .pageNav {
     padding: 2px 2px 2px 5px;
 }

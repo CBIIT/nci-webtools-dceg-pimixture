@@ -10,8 +10,8 @@
                         <% } %>
                     </select>
                     entries of <%= data.results.prediction.length %>
-                    <a class="pageNav <%= data.pageNum <= 1 ? 'disabledPageNav' : '' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
-                    <a class="pageNav <%= data.pageNum <= 1 ? 'disabledPageNav' : '' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= data.pageNum -1 %>" class="glyphicon glyphicon-chevron-left"></span></a>
+                    <a class="<%= data.pageNum <= 1 ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
+                    <a class="<%= data.pageNum <= 1 ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= Math.max(data.pageNum -1, 1) %>" class="glyphicon glyphicon-chevron-left"></span></a>
                     <% for (var page of data.neighborPages) { %>
                         <% if (page === data.pageNum) { %>
                             <span class="pageNav" id="currentPageNum" > <%= page %> </span>
@@ -19,8 +19,8 @@
                             <a class="pageNav" data-page-num="<%= page %>"> <%= page %> </a>
                         <% } %>
                     <% } %>
-                    <a class="pageNav <%= data.pageNum >= data.pages ? 'disabledPageNav' : '' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pageNum +1 %>" class="glyphicon glyphicon-chevron-right"></span></a>
-                    <a class="pageNav <%= data.pageNum >= data.pages ? 'disabledPageNav' : '' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
+                    <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= Math.min(data.pageNum +1, data.pages) %>" class="glyphicon glyphicon-chevron-right"></span></a>
+                    <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
                 </div>
                 <div class="col-md-4 text-right">
                     <a href="<%= data.results.csvFile %>" class="btn btn-success" download="<%= data.jobName ? data.jobName : 'PIMixture' %>_Prediction">Download result (.csv) file</a>
