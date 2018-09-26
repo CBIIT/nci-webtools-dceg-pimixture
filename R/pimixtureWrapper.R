@@ -67,7 +67,6 @@ runPredict <- function(jsonData) {
 
     # read time.points from input
     time.points <- input$timePoints
-    print(time.points)
 
     # run prediction function
     predict<-PIMixture.predict(x=model, data=test.data, time.points=time.points)
