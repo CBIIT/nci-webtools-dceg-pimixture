@@ -22,6 +22,8 @@ if not os.path.isdir(OUTPUT_DATA_PATH):
 INPUT_FILE_PREFIX = 'pimixtureInput_'
 OUTPUT_FILE_PREFIX = 'pimixtureOutput_'
 
+IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
+
 def buildFailure(message,statusCode = 500):
     response = jsonify(message)
     response.status_code = statusCode
@@ -54,6 +56,7 @@ def runModel():
         id = str(uuid.uuid4())
         if (len(request.files) > 0):
             inputCSVFile = request.files['csvFile']
+            parameters['inputCSVFile'] = inputCSVFile.filename
             ext = os.path.splitext(inputCSVFile.filename)[1]
             inputFileName = getInputFilePath(id, ext)
             inputCSVFile.save(inputFileName)
@@ -75,23 +78,24 @@ def runModel():
         if parameters['covariatesSelection']:
             columns += parameters['covariatesSelection']
             covariates = ' + '.join(parameters['covariatesSelection'])
+
             if 'effects' in parameters:
                 effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
                 if effects:
                     covariates += ' + ' + ' + '.join(effects)
+                    parameters['effects'] = ' + '.join(effects)
             parameters['covariates'] = covariates
         parameters['columns'] = columns
 
         r = pr.R()
-        r('source("./pimixtureWrapper.R")')
+        r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
-        print(r('returnFile = runCalculation(parameters)'))
+        rOutput = r('returnFile = runCalculation(parameters)')
+        print(rOutput)
         returnFile = r.get('returnFile')
         del r
         if not returnFile:
-            message = "Got an error when trying to run PIMixture() function!"
-            print(message)
-            return buildFailure(message, 500)
+            return buildFailure(rOutput, 500)
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)
@@ -102,6 +106,47 @@ def runModel():
             results['jobName'] = parameters['jobName']
         with open(outputCSVFileName, 'w') as outputCSVFile:
             writer = csv.writer(outputCSVFile, dialect='excel')
+
+            writer.writerow(['Job Parameters'])
+            writer.writerow(['Name', 'Value'])
+            savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
+                                {'field': 'inputCSVFile', 'name': 'Input File'},
+                                {'field': 'design', 'name': 'Sample Design'},
+                                {'field': 'model', 'name': 'Regression Model'},
+                                {'field': 'strata', 'name': 'Strata'},
+                                {'field': 'weight', 'name': 'Weight'},
+                                {'field': 'outcomeC', 'name': 'C'},
+                                {'field': 'outcomeL', 'name': 'L'},
+                                {'field': 'outcomeR', 'name': 'R'},
+                                {'field': 'covariatesSelection', 'name': 'Covariates'},
+                                {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
+                                {'field': 'effects', 'name': 'Interactive Effects'},
+                                {'field': 'email', 'name': 'Email'}
+                             ]
+            for param in savedParameters:
+                key = param['field']
+                name = param['name']
+                if key in parameters:
+                    val = parameters[key]
+                    if hasattr(val, 'filename'):
+                        writer.writerow([name, val.filename])
+                    elif key == 'covariatesArr':
+                        writer.writerow(['Covariate Configuaration'])
+                        writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
+                        for cov in val:
+                            writer.writerow(['', cov['text'], cov['type'], cov['category']])
+                    elif key == 'covariatesSelection':
+                        writer.writerow([name, ' + '.join(val)])
+                    elif key == 'design':
+                        val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
+                        writer.writerow([name, val])
+                    elif key == 'model':
+                        val = 'Parametric' if val == 'logistic-Weibull' else val
+                        writer.writerow([name, val])
+                    elif val:
+                        writer.writerow([name, val])
+            writer.writerow([])
+
             writer.writerow(['Data Summary'])
             writer.writerow(['Label', 'Number of the cases'])
             for key, val in results['data.summary'].items():
@@ -117,24 +162,34 @@ def runModel():
             writer.writerow(['Odds Ratio (OR) for the prevalence'])
             writer.writerow(['Model', 'Label', 'OR'])
             for val in results['odds.ratio']:
-                writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+                if parameters['model'] == 'logistic-Weibull':
+                    writer.writerow(val)
+                else:
+                    writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
 
             writer.writerow([])
             writer.writerow(['Hazard Ratio (HR) for the incidence'])
             writer.writerow(['Model', 'Label', 'HR'])
             for val in results['hazard.ratio']:
-                writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+                if parameters['model'] == 'logistic-Weibull':
+                    writer.writerow(val)
+                else:
+                    writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
 
         return buildSuccess(results)
     except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        inputFileName = f.f_code.co_filename
-        linecache.checkcache(inputFileName)
-        line = linecache.getline(inputFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            inputFileName = f.f_code.co_filename
+            linecache.checkcache(inputFileName)
+            line = linecache.getline(inputFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
+            return buildFailure(rOutput, 500)
 
 @app.route('/predict', methods=["POST"])
 def runPredict():
@@ -200,17 +255,17 @@ def runPredict():
                 parameters['timePoints'] = list(range(start, end + 1, step))
 
         r = pr.R()
-        r('source("./pimixtureWrapper.R")')
+        r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
         rOutput = r('predictionResult = runPredict(parameters)')
         print(rOutput)
         rResults = r.get('predictionResult')
         if not rResults:
-            message = "Got an error when trying to run PIMixture.predict() function"
-            print message
-            return buildFailure(message, 500)
+            return buildFailure(rOutput, 500)
         del r
-        results = json.loads(rResults)
+        predictionResult = json.loads(rResults)
+        results = predictionResult['predict']
+        model = predictionResult['model']
 
         fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR.se', 'LL95', 'UL95', 'CR']
         id = str(uuid.uuid4())
@@ -223,20 +278,29 @@ def runPredict():
         data = {
             'results': {
                 'prediction': results,
+                'model': model,
                 'csvFile': csvFileName
             }
         }
+        if 'jobName' in parameters:
+            data['jobName'] = parameters['jobName']
+
         return buildSuccess(data)
 
     except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        errFileName = f.f_code.co_filename
-        linecache.checkcache(errFileName)
-        line = linecache.getline(errFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            errFileName = f.f_code.co_filename
+            linecache.checkcache(errFileName)
+            line = linecache.getline(errFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
+            return buildFailure(rOutput, 500)
+
 
     finally:
         if filesToRemoveWhenDone:
@@ -255,7 +319,7 @@ def uploadModelFile():
             modelFile.save(inputModelFileName)
             if os.path.isfile(inputModelFileName):
                 r = pr.R()
-                r('source("./pimixtureWrapper.R")')
+                r(IMPORT_R_WRAPPER)
                 r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
                 params = r.get('params')
                 print(params)

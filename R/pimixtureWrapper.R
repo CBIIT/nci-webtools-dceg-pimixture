@@ -8,7 +8,7 @@ runCalculation <- function(jsonData) {
     input = fromJSON(jsonData)
     csvFile = read.csv(input$filename)
     csvData = csvFile[, input$columns]
-    model=tolower(input$model)
+    model <- input$model
     design = input$design
     if (length(input$covariatesSelection) == 0) {
         p.model <- paste(paste(input$outcomeC,input$outcomeL,input$outcomeR,sep=" + "), "1", sep=" ~ ")
@@ -40,6 +40,7 @@ runCalculation <- function(jsonData) {
       hazard.ratio = result$HR,
       odds.ratio = result$OR,
       regression.coefficient = result$regression.coef,
+      model = result$model,
       Rfile=outputFileName
     ), auto_unbox = T)
     output = returnValue
@@ -66,11 +67,13 @@ runPredict <- function(jsonData) {
 
     # read time.points from input
     time.points <- input$timePoints
-    print(time.points)
 
     # run prediction function
     predict<-PIMixture.predict(x=model, data=test.data, time.points=time.points)
-    exportJson <- toJSON(predict)
+    exportJson <- toJSON(list(
+        predict = predict,
+        model = model$model
+    ), auto_unbox = T)
     return (exportJson)
 }
 

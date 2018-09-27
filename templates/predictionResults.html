@@ -10,8 +10,8 @@
                         <% } %>
                     </select>
                     entries of <%= data.results.prediction.length %>
-                    <a class="pageNav <%= data.pageNum <= 1 ? 'disabledPageNav' : '' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
-                    <a class="pageNav <%= data.pageNum <= 1 ? 'disabledPageNav' : '' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= data.pageNum -1 %>" class="glyphicon glyphicon-chevron-left"></span></a>
+                    <a class="<%= data.pageNum <= 1 ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
+                    <a class="<%= data.pageNum <= 1 ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= Math.max(data.pageNum -1, 1) %>" class="glyphicon glyphicon-chevron-left"></span></a>
                     <% for (var page of data.neighborPages) { %>
                         <% if (page === data.pageNum) { %>
                             <span class="pageNav" id="currentPageNum" > <%= page %> </span>
@@ -19,24 +19,26 @@
                             <a class="pageNav" data-page-num="<%= page %>"> <%= page %> </a>
                         <% } %>
                     <% } %>
-                    <a class="pageNav <%= data.pageNum >= data.pages ? 'disabledPageNav' : '' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pageNum +1 %>" class="glyphicon glyphicon-chevron-right"></span></a>
-                    <a class="pageNav <%= data.pageNum >= data.pages ? 'disabledPageNav' : '' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
+                    <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= Math.min(data.pageNum +1, data.pages) %>" class="glyphicon glyphicon-chevron-right"></span></a>
+                    <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
                 </div>
                 <div class="col-md-4 text-right">
-                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="PIMixturePredictionResults">Download result (.csv) file</a>
+                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="<%= data.jobName ? data.jobName : 'PIMixture' %>_Prediction">Download result (.csv) file</a>
                 </div>
             </div>
             <div id="predictionResultTable">
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
                     <tr>
-                        <th>Time Point</th>
-                        <th>cox.predictor</th>
-                        <th>logit.predictor</th>
-                        <th>Standard Error</th>
-                        <th>Lower Confidence Limit</th>
-                        <th>Upper Confidence Limit</th>
-                        <th>CR</th>
+                        <th class="sortByColumn" data-column="<%= 'time' %>">Time Point <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'cox.predictor' %>">cox.predictor <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'logit.predictor' %>">logit.predictor <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'CR' %>">CR <span class="glyphicon"></span></th>
+                        <% if (data.results.model !== 'semi-parametric') { %>
+                        <th class="sortByColumn" data-column="<%= 'CR.se' %>">Standard Error <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'LL95' %>">Lower Confidence Limit (95%) <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'UL95' %>">Upper Confidence Limit (95%) <span class="glyphicon"></span></th>
+                        <% } %>
                     </tr>
                     </thead>
                     <tbody id="predictionResultTbody">
@@ -47,10 +49,12 @@
                         <td><%= res.time %><br/></td>
                         <td><%= res['cox.predictor'] %><br/></td>
                         <td><%= res['logit.predictor']%><br/></td>
+                        <td><%= res.CR %><br/></td>
+                        <% if (data.results.model !== 'semi-parametric') { %>
                         <td><%= res['CR.se'] %></td>
                         <td><%= res.LL95 %></td>
                         <td><%= res.UL95 %></td>
-                        <td><%= res.CR %><br/></td>
+                        <% } %>
                     </tr>
                     <% } %>
                     </tbody>

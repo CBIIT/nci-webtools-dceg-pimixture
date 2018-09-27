@@ -1,13 +1,13 @@
 <form id="calculationForm" class="well form-horizontal" method="POST">
     <fieldset id="fileSet" class="well">
         <div class="form-group">
-            <label class="control-label col-md-4">Job Name <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Job Name" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">Job Name <a id="jobNamePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <input type="text" name="jobName" placeholder="Enter a name for this job" class="form-control" value="<%= data.jobName %>">
             </div>
         </div>
         <div class="form-group">
-            <label id="csvFileLabel" class="col-md-4 control-label">Input File <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Input File" data-content="Input file tips: ..." ></a></label>
+            <label id="csvFileLabel" class="col-md-4 control-label">Input File <span class="text-danger">*</span> <a id="inputFilePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8 sampleDownloadContainer">
                 <a href="bd.mock.data.csv" download="PIMixtureSample.csv" class="sampleDownload">Download Sample</a>
             </div>
@@ -24,7 +24,7 @@
     </fieldset>
     <fieldset id="designAndModelSet" class="well form-group">
         <div class="form-group">
-            <label id="designLabel" class="control-label col-md-6">Sample Design <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Sample Design" data-content="Tips: ..." ></a></label>
+            <label id="designLabel" class="control-label col-md-6">Sample Design <span class="text-danger">*</span> <a id="designPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-6">
                 <select name="design" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Design---</option>
@@ -34,13 +34,13 @@
             </div>
         </div>
         <div class="form-group">
-            <label id="modelLabel" class="control-label col-md-6">Regression Model <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Regression Model" data-content="Tips: ..." ></a></label>
+        <label id="modelLabel" class="control-label col-md-6">Regression Model <span class="text-danger">*</span> <a id="modelPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-6">
                 <select name="model" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Model----</option>
-                    <option <%= data.model === 'Semi-parametric' ? 'selected' : '' %>>Semi-parametric</option>
-                    <option <%= data.model === 'Weakly-parametric' ? 'selected' : '' %>>Weakly-parametric</option>
-                    <option <%= data.model === 'Parametric' ? 'selected' : '' %> <%= data.design === 1 ? 'disabled' : '' %>>Parametric</option>
+                    <option <%= data.model === 'semi-parametric' ? 'selected' : '' %> value="semi-parametric">Semi-parametric</option>
+                    <option <%= data.model === 'weakly-parametric' ? 'selected' : '' %> value="weakly-parametric">Weakly-parametric</option>
+                    <option <%= data.model === 'logistic-Weibull' ? 'selected' : '' %> <%= data.design === 1 ? 'disabled' : '' %> value="logistic-Weibull">Parametric</option>
                 </select>
             </div>
         </div>
@@ -48,7 +48,7 @@
     <fieldset id="covariatesSet" class="well">
         <div id="mutex-error" class=""></div>
         <div id="Strata" class="form-group" <%= data.design !== 1 ? 'hidden' : '' %>>
-            <label class="control-label col-md-4">Strata <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Strata" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">Strata <span class="text-danger">*</span> <a id="strataPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <select name="strata" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
@@ -61,7 +61,7 @@
             </div>
         </div>
         <div id="Weight" class="form-group" <%= data.design !== 1 ? 'hidden' : '' %>>
-            <label class="control-label col-md-4">Weight <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Weight" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">Weight <span class="text-danger">*</span> <a id="weightPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <select name="weight" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
                 <% if (data.headers.length > 0) { %>
@@ -74,7 +74,7 @@
             </div>
         </div>
         <div id="outcomeC" class="form-group">
-            <label class="control-label col-md-4">C <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="C" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">C <span class="text-danger">*</span> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <select name="outcomeC" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
@@ -87,7 +87,7 @@
             </div>
         </div>
         <div id="outcomeL" class="form-group">
-            <label class="control-label col-md-4">L <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="L" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">L <span class="text-danger">*</span> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <select name="outcomeL" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
@@ -100,7 +100,7 @@
             </div>
         </div>
         <div id="outcomeR" class="form-group">
-            <label class="control-label col-md-4">R <span class="text-danger">*</span> <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="R" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">R <span class="text-danger">*</span> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <select name="outcomeR" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <% if (data.headers.length > 0) { %>
@@ -113,7 +113,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-md-4">Covariates <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Covariates" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-4">Covariates <a id="covariatePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
                 <input type="text" name="covariatesSelection" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
             </div>
@@ -133,11 +133,11 @@
     <fieldSet id="emailSet" class="well">
         <div class="form-group">
             <div class="checkbox col-md-8">
-                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus"  title="Queue" data-content="Tips: ..." ></a></label>
+                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a>
             </div>
         </div>
         <div class="form-group">
-            <label for="email" class="control-label col-md-3">Email <a role="button" tabindex="0" class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="focus" title="Email" data-content="Tips: ..." ></a></label>
+            <label class="control-label col-md-3">Email <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-9">
                 <input type="text" name="email" class="form-control"  value="<%= data.email %>" disabled>
             </div>
@@ -146,7 +146,7 @@
     </fieldset>
     <fieldset id="submitSet" class="form-group">
         <div class="col-md-3 col-md-offset-6">
-            <button id="run" type="submit" class="btn btn-primary form-control" <%= data.csvFile.name ? '' : 'disabled' %> style="position: relative;">Submit<span id="indicator"></span></button>
+            <button id="run" type="submit" class="btn btn-primary form-control" <%= data.csvFile.name ? '' : 'disabled' %> style="position: relative;">Submit</button>
         </div>
         <div class="col-md-3">
             <button id="reset" type="reset" class="btn btn-default form-control" <%= data.csvFile.name ? '' : 'disabled' %>>Reset</button>

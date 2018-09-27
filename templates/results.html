@@ -39,19 +39,23 @@
                                 <tr>
                                     <th>Model</th>
                                     <th>Covariate</th>
-                                    <th>Standard Error</th>
-                                    <th>Lower Confidence Limit</th>
-                                    <th>Upper Confidence Limit</th>
                                     <th>Coefficient</th>
+                                    <% if (data.model !== 'semi-parametric') { %>
+                                    <th>Standard Error</th>
+                                    <th>Lower Confidence Limit (95%)</th>
+                                    <th>Upper Confidence Limit (95%)</th>
+                                    <% } %>
                                 </tr>
                                 <%    _.each(data["regression.coefficient"],function(entry) { %>
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td><%= entry.Label %></td>
+                                    <td><%= entry["Coef."] %></td>
+                                    <% if (data.model !== 'semi-parametric') { %>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
                                     <td><%= entry["95%UL"] || '' %></td>
-                                    <td><%= entry["Coef."] %></td>
+                                    <% } %>
                                 </tr>
                                 <%    }); %>
                             </table>
@@ -70,19 +74,23 @@
                                 <tr>
                                     <th>Model</th>
                                     <th>Covariate</th>
-                                    <th>Standard Error</th>
-                                    <th>Lower Confidence Limit</th>
-                                    <th>Upper Confidence Limit</th>
                                     <th>OR</th>
+                                    <% if (data.model !== 'semi-parametric') { %>
+                                    <th>Standard Error</th>
+                                    <th>Lower Confidence Limit (95%)</th>
+                                    <th>Upper Confidence Limit (95%)</th>
+                                    <% } %>
                                 </tr>
                                 <%    _.each(data["odds.ratio"],function(entry) { %>
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td><%= entry.Label %></td>
+                                    <td><%= entry["exp(Coef.)"] %></td>
+                                    <% if (data.model !== 'semi-parametric') { %>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
                                     <td><%= entry["95%UL"] || '' %></td>
-                                    <td><%= entry["exp(Coef.)"] %></td>
+                                    <% } %>
                                 </tr>
                                 <%    }); %>
                             </table>
@@ -101,19 +109,23 @@
                                 <tr>
                                     <th>Model</th>
                                     <th>Covariate</th>
-                                    <th>Standard Error</th>
-                                    <th>Lower Confidence Limit</th>
-                                    <th>Upper Confidence Limit</th>
                                     <th>HR</th>
+                                    <% if (data.model !== 'semi-parametric') { %>
+                                    <th>Standard Error</th>
+                                    <th>Lower Confidence Limit (95%)</th>
+                                    <th>Upper Confidence Limit (95%)</th>
+                                    <% } %>
                                 </tr>
                                 <%    _.each(data["hazard.ratio"],function(entry) { %>
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td><%= entry.Label %></td>
+                                    <td><%= entry["exp(Coef.)"] %></td>
+                                    <% if (data.model !== 'semi-parametric') { %>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
                                     <td><%= entry["95%UL"] || '' %></td>
-                                    <td><%= entry["exp(Coef.)"] %></td>
+                                    <% } %>
                                 </tr>
                                 <%    }); %>
                             </table>
@@ -129,8 +141,8 @@
                         Download Fitting Results <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="btn" href="<%= data['Rfile'] %>"  download="<%= data.jobName ? data.jobName : 'PIMixture' %>-FittingResults.rds">RDS file</a></li>
-                        <li><a class="btn" href="<%= data['csvFile'] %>" download="<%= data.jobName ? data.jobName : 'PIMixture' %>-FittingResults.csv">CSV file</a></li>
+                        <li><a class="btn" href="<%= data['Rfile'] %>"  download="<%= data.jobName ? data.jobName : 'PIMixture' %>.rds">RDS file</a></li>
+                        <li><a class="btn" href="<%= data['csvFile'] %>" download="<%= data.jobName ? data.jobName : 'PIMixture' %>.csv">CSV file</a></li>
                     </ul>
                 </div>
             </div>
