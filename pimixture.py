@@ -5,6 +5,8 @@ import pyper as pr
 import csv
 import uuid
 import codecs
+from sqs import SQS
+from s3 import S3
 
 app = Flask(__name__)
 
@@ -53,24 +55,41 @@ def runModel():
             print(message)
             return buildFailure(message, 400)
 
+        sendToQueue = parameters.get('sendToQueue', False)
+        print('Send to Queue: {}'.format(sendToQueue))
+
         inputFileName = None
         id = str(uuid.uuid4())
         if (len(request.files) > 0):
             inputCSVFile = request.files['csvFile']
-            parameters['inputCSVFile'] = inputCSVFile.filename
             ext = os.path.splitext(inputCSVFile.filename)[1]
-            inputFileName = getInputFilePath(id, ext)
-            inputCSVFile.save(inputFileName)
-            if not os.path.isfile(inputFileName):
-                message = "Upload file failed!"
-                print(message)
-                return buildFailure(message, 500)
-        outputRdsFileName = getOutputFilePath(id, '.rds')
-        outputCSVFileName = getOutputFilePath(id, '.csv')
-        outputFileName = getOutputFilePath(id, '.out')
-        parameters['filename'] = inputFileName
-        parameters['outputRdsFilename'] = outputRdsFileName
-        parameters['outputFilename'] = outputFileName
+            if sendToQueue:
+                s3 = S3()
+                object = s3.uploadFile('{}{}'.format(id, ext), inputCSVFile)
+                if object:
+                    parameters['inputCSVFile'] = {
+                        'bucket': object.bucket_name,
+                        'key': object.key
+                    }
+                else:
+                    message = "Upload CSV file to S3 failed!"
+                    print(message)
+                    return buildFailure(message, 500)
+
+            else:
+                parameters['inputCSVFile'] = inputCSVFile.filename
+                inputFileName = getInputFilePath(id, ext)
+                inputCSVFile.save(inputFileName)
+                if not os.path.isfile(inputFileName):
+                    message = "Upload file failed!"
+                    print(message)
+                    return buildFailure(message, 500)
+                outputRdsFileName = getOutputFilePath(id, '.rds')
+                outputCSVFileName = getOutputFilePath(id, '.csv')
+                outputFileName = getOutputFilePath(id, '.out')
+                parameters['filename'] = inputFileName
+                parameters['outputRdsFilename'] = outputRdsFileName
+                parameters['outputFilename'] = outputFileName
         columns = [parameters['outcomeC'], parameters['outcomeL'],  parameters['outcomeR']]
         if 'design' in parameters and parameters['design'] == 1:
             columns += [parameters['strata'], parameters['weight']]
@@ -88,67 +107,95 @@ def runModel():
             parameters['covariates'] = covariates
         parameters['columns'] = columns
 
-        r = pr.R()
-        r(IMPORT_R_WRAPPER)
-        r.assign('parameters',json.dumps(parameters))
-        rOutput = r('returnFile = runCalculation(parameters)')
-        print(rOutput)
-        returnFile = r.get('returnFile')
-        del r
-        if not returnFile:
+        if sendToQueue:
+            # Send parameters to queue
+            sqs = SQS()
+            sqs.sendMsgToQueue({
+                'parameters': parameters,
+                'jobType': 'fitting'
+            })
+            return buildFailure('Job sent to queue!')
+        else:
+            results = fitting(parameters, outputCSVFileName)
+            return buildSuccess(results)
+
+    except Exception as e:
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            inputFileName = f.f_code.co_filename
+            linecache.checkcache(inputFileName)
+            line = linecache.getline(inputFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
             return buildFailure(rOutput, 500)
-        rOutput = None
-        with open(returnFile) as file:
-            results = json.loads(file.read())
-        os.remove(returnFile)
-        os.remove(parameters['filename'])
-        results['prediction.results'] = None
-        results['csvFile'] = outputCSVFileName
-        if 'jobName' in parameters:
-            results['jobName'] = parameters['jobName']
-        with open(outputCSVFileName, 'w') as outputCSVFile:
-            writer = csv.writer(outputCSVFile, dialect='excel')
 
-            writer.writerow(['Job Parameters'])
-            writer.writerow(['Name', 'Value'])
-            savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
-                                {'field': 'inputCSVFile', 'name': 'Input File'},
-                                {'field': 'design', 'name': 'Sample Design'},
-                                {'field': 'model', 'name': 'Regression Model'},
-                                {'field': 'strata', 'name': 'Strata'},
-                                {'field': 'weight', 'name': 'Weight'},
-                                {'field': 'outcomeC', 'name': 'C'},
-                                {'field': 'outcomeL', 'name': 'L'},
-                                {'field': 'outcomeR', 'name': 'R'},
-                                {'field': 'covariatesSelection', 'name': 'Covariates'},
-                                {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
-                                {'field': 'effects', 'name': 'Interactive Effects'},
-                                {'field': 'email', 'name': 'Email'}
-                             ]
-            for param in savedParameters:
-                key = param['field']
-                name = param['name']
-                if key in parameters:
-                    val = parameters[key]
-                    if hasattr(val, 'filename'):
-                        writer.writerow([name, val.filename])
-                    elif key == 'covariatesArr':
-                        writer.writerow(['Covariate Configuaration'])
-                        writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
-                        for cov in val:
-                            writer.writerow(['', cov['text'], cov['type'], cov['category']])
-                    elif key == 'covariatesSelection':
-                        writer.writerow([name, ' + '.join(val)])
-                    elif key == 'design':
-                        val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
-                        writer.writerow([name, val])
-                    elif key == 'model':
-                        val = 'Parametric' if val == 'logistic-Weibull' else val
-                        writer.writerow([name, val])
-                    elif val:
-                        writer.writerow([name, val])
+def fitting(parameters, outputCSVFileName):
+    r = pr.R()
+    r(IMPORT_R_WRAPPER)
+    r.assign('parameters',json.dumps(parameters))
+    rOutput = r('returnFile = runCalculation(parameters)')
+    print(rOutput)
+    returnFile = r.get('returnFile')
+    del r
+    if not returnFile:
+        return buildFailure(rOutput, 500)
+    rOutput = None
+    with open(returnFile) as file:
+        results = json.loads(file.read())
+    os.remove(returnFile)
+    os.remove(parameters['filename'])
+    results['prediction.results'] = None
+    results['csvFile'] = outputCSVFileName
+
+    if 'jobName' in parameters:
+        results['jobName'] = parameters['jobName']
+    with open(outputCSVFileName, 'w') as outputCSVFile:
+        writer = csv.writer(outputCSVFile, dialect='excel')
+        writer.writerow(['Job Parameters'])
+        writer.writerow(['Name', 'Value'])
+        savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
+                            {'field': 'inputCSVFile', 'name': 'Input File'},
+                            {'field': 'design', 'name': 'Sample Design'},
+                            {'field': 'model', 'name': 'Regression Model'},
+                            {'field': 'strata', 'name': 'Strata'},
+                            {'field': 'weight', 'name': 'Weight'},
+                            {'field': 'outcomeC', 'name': 'C'},
+                            {'field': 'outcomeL', 'name': 'L'},
+                            {'field': 'outcomeR', 'name': 'R'},
+                            {'field': 'covariatesSelection', 'name': 'Covariates'},
+                            {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
+                            {'field': 'effects', 'name': 'Interactive Effects'},
+                            {'field': 'email', 'name': 'Email'}
+                            ]
+
+        for param in savedParameters:
+            key = param['field']
+            name = param['name']
+            if key in parameters:
+                val = parameters[key]
+                if hasattr(val, 'filename'):
+                    writer.writerow([name, val.filename])
+                elif key == 'covariatesArr':
+                    writer.writerow(['Covariate Configuaration'])
+                    writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
+                    for cov in val:
+                        writer.writerow(['', cov['text'], cov['type'], cov['category']])
+                elif key == 'covariatesSelection':
+                    writer.writerow([name, ' + '.join(val)])
+                elif key == 'design':
+                    val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
+                    writer.writerow([name, val])
+                elif key == 'model':
+                    val = 'Parametric' if val == 'logistic-Weibull' else val
+                    writer.writerow([name, val])
+                elif val:
+                    writer.writerow([name, val])
+
             writer.writerow([])
-
             writer.writerow(['Data Summary'])
             writer.writerow(['Label', 'Number of the cases'])
             for key, val in results['data.summary'].items():
@@ -178,20 +225,7 @@ def runModel():
                 else:
                     writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
 
-        return buildSuccess(results)
-    except Exception as e:
-        if not rOutput:
-            exc_type, exc_obj, tb = sys.exc_info()
-            f = tb.tb_frame
-            lineno = tb.tb_lineno
-            inputFileName = f.f_code.co_filename
-            linecache.checkcache(inputFileName)
-            line = linecache.getline(inputFileName, lineno, f.f_globals)
-            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
-            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
-        else:
-            print(rOutput)
-            return buildFailure(rOutput, 500)
+    return results
 
 @app.route('/predict', methods=["POST"])
 def runPredict():
