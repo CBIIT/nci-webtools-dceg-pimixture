@@ -133,13 +133,14 @@
     <fieldSet id="emailSet" class="well">
         <div class="form-group">
             <div class="checkbox col-md-8">
-                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a>
+                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>
+                    <%= data.sendToQueue ? 'checked' : '' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-md-3">Email <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-9">
-                <input type="text" name="email" class="form-control"  value="<%= data.email %>" disabled>
+                <input type="text" name="email" class="form-control"  value="<%= data.email %>" <%= data.sendToQueue ? '' : 'disabled' %>>
             </div>
         </div>
         <div id="queueMessage">Note: if sending to queue, when computation is completed, a notification will be sent to the e-mail entered above.</div>
