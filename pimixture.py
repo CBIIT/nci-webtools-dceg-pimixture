@@ -267,7 +267,7 @@ def runPredict():
         results = predictionResult['predict']
         model = predictionResult['model']
 
-        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR.se', 'LL95', 'UL95', 'CR']
+        fieldNames = ['time', 'Subgroup', 'CR.se', 'LL95', 'UL95', 'CR']
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:

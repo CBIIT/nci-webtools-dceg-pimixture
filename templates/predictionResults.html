@@ -23,7 +23,7 @@
                     <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
                 </div>
                 <div class="col-md-4 text-right">
-                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="<%= data.jobName ? data.jobName : 'PIMixture' %>_Prediction">Download result (.csv) file</a>
+                    <a href="<%= data.results.csvFile %>" class="btn btn-success" download="<%= data.jobName ? data.jobName : 'PIMixture' %>_Prediction.csv">Download result (.csv) file</a>
                 </div>
             </div>
             <div id="predictionResultTable">
@@ -31,8 +31,7 @@
                     <thead>
                     <tr>
                         <th class="sortByColumn" data-column="<%= 'time' %>">Time Point <span class="glyphicon"></span></th>
-                        <th class="sortByColumn" data-column="<%= 'cox.predictor' %>">cox.predictor <span class="glyphicon"></span></th>
-                        <th class="sortByColumn" data-column="<%= 'logit.predictor' %>">logit.predictor <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'Subgroup' %>">Subgroup <span class="glyphicon"></span></th>
                         <th class="sortByColumn" data-column="<%= 'CR' %>">CR <span class="glyphicon"></span></th>
                         <% if (data.results.model !== 'semi-parametric') { %>
                         <th class="sortByColumn" data-column="<%= 'CR.se' %>">Standard Error <span class="glyphicon"></span></th>
@@ -47,8 +46,7 @@
                     %>
                     <tr>
                         <td><%= res.time %><br/></td>
-                        <td><%= res['cox.predictor'] %><br/></td>
-                        <td><%= res['logit.predictor']%><br/></td>
+                        <td><%= res['Subgroup']%><br/></td>
                         <td><%= res.CR %><br/></td>
                         <% if (data.results.model !== 'semi-parametric') { %>
                         <td><%= res['CR.se'] %></td>

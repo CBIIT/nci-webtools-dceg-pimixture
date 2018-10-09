@@ -37,16 +37,40 @@ testdata.check<-function(fit,test.data,data.type){
 }
 #If VALUE=TRUE, test.data is valid for prediction; otherwise, it is not valid for prediction.
 
+########## Relabel function for prediction output #########################
 predict.relabel<-function(test.data,time.points){
-  
-  if(nrow(test.data)>1){
-    var.names<-colnames(test.data)
-    relabel<-t(apply(test.data,1, function(x) paste0(var.names,"=",x)))
-  }else if(nrow(test.data)==1){
-    var.names<-names(test.data)
-    relabel<-paste0(var.names,"=",test.data)
+
+
+  collapse<-function(x){
+    a<-x[1]
+    for(i in 2:length(x)){
+      a<-paste0(a,",",x[i])
+    }
+    return(a)
   }
-  
-  output<-as.data.frame(lapply(data.frame(relabel), rep, length(time.points)))
+
+
+  var.names<-names(test.data)
+
+  if(nrow(test.data)>1){
+    if(length(var.names)==1){
+      relabel<-paste0(var.names,"=",test.data[,1])
+    }else {
+      relabel2<-t(apply(test.data,1, function(x) paste0(var.names,"=",x)))
+      relabel<-apply(relabel2,1,collapse )
+    }
+
+  }else if(nrow(test.data)==1){
+    if(length(var.names)==1){
+      relabel<-paste0(var.names,"=",test.data)
+    }else {
+      relabel2<-relabel<-paste0(var.names,"=",test.data)
+      relabel<-collapse(relabel2)
+    }
+  }
+
+  output<-rep(relabel,each=length(time.points))
+
   return(output)
 }
+
