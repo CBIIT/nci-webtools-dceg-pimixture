@@ -1,8 +1,6 @@
 testdata.check<-function(fit,test.data,data.type){
     fml<-as.formula(fit$p.model)
     var.list<-all.vars(fml)
-    print(names(test.data))
-    print(var.list[-seq(1,3)])
     VALUE<-identical(names(test.data),var.list[-seq(1,3)])
     if(VALUE==TRUE){
       factor.var<-data.type$text[data.type$type=="nominal"]
