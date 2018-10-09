@@ -54,6 +54,7 @@ appMixture.ResultsModel = Backbone.Model.extend({
 });
 
 appMixture.PredictionModel = Backbone.Model.extend({
+    url: 'uploadModel',
     defaults: {
         'rdsFile': {},
         'testDataFile': {},

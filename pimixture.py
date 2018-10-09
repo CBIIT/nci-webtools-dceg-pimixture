@@ -323,33 +323,33 @@ def runPredict():
 @app.route('/uploadModel', methods=["POST"])
 def uploadModelFile():
     try:
+        rOutput = None
         if len(request.files) > 0 and 'rdsFile' in request.files:
             id = str(uuid.uuid4())
             modelFile = request.files['rdsFile']
-            ext = os.path.splitext(modelFile.filename)[1]
+            jobName, ext = os.path.splitext(modelFile.filename)
             inputModelFileName = getInputFilePath(id, ext)
             modelFile.save(inputModelFileName)
             if os.path.isfile(inputModelFileName):
                 r = pr.R()
                 r(IMPORT_R_WRAPPER)
                 r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
-                params = r.get('params')
-                print(params)
-                print(r('covariates <- readFromRDS(params)'))
-                results = r.get('covariates')
+                rOutput = r('model <- readFromRDS(params)')
+                print(rOutput)
+                results = r.get('model')
+                del r
                 if results:
-                    covariatesArr = json.loads(results)
-                    if len(covariatesArr) > 0:
-                        return buildSuccess({
-                                'serverFile': inputModelFileName,
-                                'covariatesArr': covariatesArr
-                            })
-                    else:
-                        message = "Couldn't read covariates from RDS file!"
-                        print message
-                        return buildFailure(message, 400)
+                    model = json.loads(results)
+                    maxTimePoint = model['maxTimePoint'][0]
+                    if (len(model['jobName'])):
+                        jobName = model['jobName'][0]
+                    return buildSuccess({
+                        'jobName': jobName,
+                        'maxTimePoint': maxTimePoint,
+                        'serverFile': inputModelFileName
+                        })
                 else:
-                    message = "Couldn't read covariates from RDS file!"
+                    message = "Couldn't read Time Points from RDS file!"
                     print message
                     return buildFailure(message, 400)
             else:
@@ -362,14 +362,18 @@ def uploadModelFile():
             return buildFailure(message, 500)
 
     except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        errFileName = f.f_code.co_filename
-        linecache.checkcache(errFileName)
-        line = linecache.getline(errFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            errFileName = f.f_code.co_filename
+            linecache.checkcache(errFileName)
+            line = linecache.getline(errFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
+            return buildFailure(rOutput, 500)
 
 
 def getInputFilePath(id, extention):
