@@ -267,7 +267,7 @@ def runPredict():
         results = predictionResult['predict']
         model = predictionResult['model']
 
-        fieldNames = ['time', 'Subgroup']
+        fieldNames = ['time', 'Subgroup', 'CR']
         if len(results) > 0:
             if 'CR.se' in results[0]:
                 fieldNames.append('CR.se')
@@ -275,13 +275,14 @@ def runPredict():
                 fieldNames.append('LL95')
             if 'UL95' in results[0]:
                 fieldNames.append('UL95')
-        fieldNames.append('CR')
+
+        fieldNamesMapping = {'time': 'Time Point', 'Subgroup': 'Subgroup', 'CR.se': 'Standard Error', 'LL95': 'Lower Confidence Limit (95%)', 'UL95': 'Upper Confidence Limit (95%)', 'CR': 'CR'}
 
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:
             writer = csv.DictWriter(outputCSVFile, fieldnames=fieldNames)
-            writer.writeheader()
+            writer.writerow(fieldNamesMapping)
             writer.writerows(results)
 
         data = {
