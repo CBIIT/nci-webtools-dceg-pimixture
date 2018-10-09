@@ -97,6 +97,7 @@ def runModel():
         del r
         if not returnFile:
             return buildFailure(rOutput, 500)
+        rOutput = None
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)
@@ -265,6 +266,7 @@ def runPredict():
         if not rResults:
             return buildFailure(rOutput, 500)
         del r
+        rOutput = None
         predictionResult = json.loads(rResults)
         results = predictionResult['predict']
         model = predictionResult['model']
@@ -338,6 +340,7 @@ def uploadModelFile():
                 print(rOutput)
                 results = r.get('model')
                 del r
+                rOutput = None
                 if results:
                     model = json.loads(results)
                     maxTimePoint = model['maxTimePoint'][0]
