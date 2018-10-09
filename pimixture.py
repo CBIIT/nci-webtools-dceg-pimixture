@@ -273,6 +273,11 @@ def runPredict():
 
         fieldNames = ['time', 'Subgroup', 'CR']
         if len(results) > 0:
+            # Parametric model prediction result has 'times' instead of 'time'
+            if 'times' in results[0]:
+                for pred in results:
+                    pred['time'] = pred['times']
+                    del(pred['times'])
             if 'CR.se' in results[0]:
                 fieldNames.append('CR.se')
             if 'LL95' in results[0]:
@@ -285,7 +290,7 @@ def runPredict():
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:
-            writer = csv.DictWriter(outputCSVFile, fieldnames=fieldNames)
+            writer = csv.DictWriter(outputCSVFile, fieldnames=fieldNames, extrasaction='ignore')
             writer.writerow(fieldNamesMapping)
             writer.writerows(results)
 
