@@ -267,7 +267,16 @@ def runPredict():
         results = predictionResult['predict']
         model = predictionResult['model']
 
-        fieldNames = ['time', 'Subgroup', 'CR.se', 'LL95', 'UL95', 'CR']
+        fieldNames = ['time', 'Subgroup']
+        if len(results) > 0:
+            if 'CR.se' in results[0]:
+                fieldNames.append('CR.se')
+            if 'LL95' in results[0]:
+                fieldNames.append('LL95')
+            if 'UL95' in results[0]:
+                fieldNames.append('UL95')
+        fieldNames.append('CR')
+
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:
