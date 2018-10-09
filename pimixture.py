@@ -45,6 +45,7 @@ def templates():
 @app.route('/run', methods=["POST"])
 def runModel():
     try:
+        rOutput = None
         if request.form and request.form['jsonData']:
             parameters = json.loads(request.form['jsonData'])
         else:
@@ -194,6 +195,7 @@ def runModel():
 @app.route('/predict', methods=["POST"])
 def runPredict():
     try:
+        rOutput = None
         if request.form and request.form['jsonData']:
             parameters = json.loads(request.form['jsonData'])
         else:
