@@ -859,8 +859,13 @@ appMixture.PredictionView = Backbone.View.extend({
         var jsonData = {};
 
         var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
+        var uploadedFile = this.model.get('uploadedFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
+            jsonData['jobName'] = this.model.get('jobName');
+        } else if (uploadedFile) {
+            jsonData["uploadedFile"] = uploadedFile;
+            this.model.unset('uploadedFile');
             jsonData['jobName'] = this.model.get('jobName');
         } else if (this.model.get('rdsFile')) {
             formData.append('rdsFile', this.model.get('rdsFile'));

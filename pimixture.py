@@ -215,6 +215,16 @@ def runPredict():
                 message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
                 print(message)
                 return buildFailure(message, 410)
+        elif 'uploadedFile' in parameters:
+            rdsFile = parameters['uploadedFile']
+            if os.path.isfile(rdsFile):
+                # uploaded file exists
+                parameters['rdsFile'] = rdsFile
+                filesToRemoveWhenDone.append(rdsFile)
+            else:
+                message = "Uploaded file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
+                print(message)
+                return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
             rdsFile = request.files['rdsFile']
             ext = os.path.splitext(rdsFile.filename)[1]
@@ -354,7 +364,7 @@ def uploadModelFile():
                     return buildSuccess({
                         'jobName': jobName,
                         'maxTimePoint': maxTimePoint,
-                        'serverFile': inputModelFileName
+                        'uploadedFile': inputModelFileName
                         })
                 else:
                     message = "Couldn't read Time Points from RDS file!"
