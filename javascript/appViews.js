@@ -730,6 +730,7 @@ appMixture.ResultsView = Backbone.View.extend({
         appMixture.models.prediction.clear().set(appMixture.models.prediction.defaults);
         appMixture.models.prediction.set('serverFile', this.model.get('Rfile'));
         appMixture.models.prediction.set('jobName', this.model.get('jobName'));
+        appMixture.models.prediction.set('maxTimePoint', this.model.get('maxTimePoint'));
         appMixture.router.navigate('#prediction', true);
     },
     initialize: function () {
@@ -764,7 +765,8 @@ appMixture.PredictionView = Backbone.View.extend({
         });
 
         this.model.on({
-            'change:results': this.render
+            'change:results': this.render,
+            'change:maxTimePoint': this.updateMaxTimePoint
         }, this);
 
         appMixture.predictionResultModel = new appMixture.PredictionResultModel();
@@ -788,13 +790,34 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#timePointsPopover').popover({title: "Time Points", content: 'Enter discreet time points manually',  trigger:"focus", container:"body", html: true});
     },
     selectModelFile: function(e) {
+        var $that = this;
         var file = e.target.files[0];
         if (file) {
+            var formData = new FormData();
+            formData.append('rdsFile', file);
+            this.model.fetch({
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "POST",
+                success: function(model, res, options) {
+                    $that.$('#error-message').html('');
+                },
+                error: function(model, res, options) {
+                    console.log(res.responseText);
+                    $that.$('#error-message').html(res.responseText)
+                }
+            })
             this.model.set('rdsFile', file);
             this.$('#modelFileName').html(file.name);
             this.$('#modelFileBtn').prop('disabled', true);
             this.tryEnableInputs();
         }
+    },
+    updateMaxTimePoint: function(e) {
+        var maxTimePoint = this.model.get('maxTimePoint');
+        this.$('#end').prop('max', maxTimePoint);
     },
     selectTestDataFile: function(e) {
         var file = e.target.files[0];
@@ -836,8 +859,13 @@ appMixture.PredictionView = Backbone.View.extend({
         var jsonData = {};
 
         var serverFile = this.$('[name="serverFile"]').val() || this.model.get('serverFile');
+        var uploadedFile = this.model.get('uploadedFile');
         if (serverFile) {
             jsonData["serverFile"] = serverFile;
+            jsonData['jobName'] = this.model.get('jobName');
+        } else if (uploadedFile) {
+            jsonData["uploadedFile"] = uploadedFile;
+            this.model.unset('uploadedFile');
             jsonData['jobName'] = this.model.get('jobName');
         } else if (this.model.get('rdsFile')) {
             formData.append('rdsFile', this.model.get('rdsFile'));

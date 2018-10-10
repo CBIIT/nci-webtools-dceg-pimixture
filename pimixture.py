@@ -45,6 +45,7 @@ def templates():
 @app.route('/run', methods=["POST"])
 def runModel():
     try:
+        rOutput = None
         if request.form and request.form['jsonData']:
             parameters = json.loads(request.form['jsonData'])
         else:
@@ -96,6 +97,7 @@ def runModel():
         del r
         if not returnFile:
             return buildFailure(rOutput, 500)
+        rOutput = None
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)
@@ -194,6 +196,7 @@ def runModel():
 @app.route('/predict', methods=["POST"])
 def runPredict():
     try:
+        rOutput = None
         if request.form and request.form['jsonData']:
             parameters = json.loads(request.form['jsonData'])
         else:
@@ -210,6 +213,16 @@ def runPredict():
                 parameters['rdsFile'] = rdsFile
             else:
                 message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
+                print(message)
+                return buildFailure(message, 410)
+        elif 'uploadedFile' in parameters:
+            rdsFile = parameters['uploadedFile']
+            if os.path.isfile(rdsFile):
+                # uploaded file exists
+                parameters['rdsFile'] = rdsFile
+                filesToRemoveWhenDone.append(rdsFile)
+            else:
+                message = "Uploaded file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
                 print(message)
                 return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
@@ -263,16 +276,32 @@ def runPredict():
         if not rResults:
             return buildFailure(rOutput, 500)
         del r
+        rOutput = None
         predictionResult = json.loads(rResults)
         results = predictionResult['predict']
         model = predictionResult['model']
 
-        fieldNames = ['time', 'cox.predictor', 'logit.predictor', 'CR.se', 'LL95', 'UL95', 'CR']
+        fieldNames = ['time', 'Subgroup', 'CR']
+        if len(results) > 0:
+            # Parametric model prediction result has 'times' instead of 'time'
+            if 'times' in results[0]:
+                for pred in results:
+                    pred['time'] = pred['times']
+                    del(pred['times'])
+            if 'CR.se' in results[0]:
+                fieldNames.append('CR.se')
+            if 'LL95' in results[0]:
+                fieldNames.append('LL95')
+            if 'UL95' in results[0]:
+                fieldNames.append('UL95')
+
+        fieldNamesMapping = {'time': 'Time Point', 'Subgroup': 'Subgroup', 'CR.se': 'Standard Error', 'LL95': 'Lower Confidence Limit (95%)', 'UL95': 'Upper Confidence Limit (95%)', 'CR': 'CR'}
+
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
         with open(csvFileName, 'w') as outputCSVFile:
-            writer = csv.DictWriter(outputCSVFile, fieldnames=fieldNames)
-            writer.writeheader()
+            writer = csv.DictWriter(outputCSVFile, fieldnames=fieldNames, extrasaction='ignore')
+            writer.writerow(fieldNamesMapping)
             writer.writerows(results)
 
         data = {
@@ -311,33 +340,34 @@ def runPredict():
 @app.route('/uploadModel', methods=["POST"])
 def uploadModelFile():
     try:
+        rOutput = None
         if len(request.files) > 0 and 'rdsFile' in request.files:
             id = str(uuid.uuid4())
             modelFile = request.files['rdsFile']
-            ext = os.path.splitext(modelFile.filename)[1]
+            jobName, ext = os.path.splitext(modelFile.filename)
             inputModelFileName = getInputFilePath(id, ext)
             modelFile.save(inputModelFileName)
             if os.path.isfile(inputModelFileName):
                 r = pr.R()
                 r(IMPORT_R_WRAPPER)
                 r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
-                params = r.get('params')
-                print(params)
-                print(r('covariates <- readFromRDS(params)'))
-                results = r.get('covariates')
+                rOutput = r('model <- readFromRDS(params)')
+                print(rOutput)
+                results = r.get('model')
+                del r
+                rOutput = None
                 if results:
-                    covariatesArr = json.loads(results)
-                    if len(covariatesArr) > 0:
-                        return buildSuccess({
-                                'serverFile': inputModelFileName,
-                                'covariatesArr': covariatesArr
-                            })
-                    else:
-                        message = "Couldn't read covariates from RDS file!"
-                        print message
-                        return buildFailure(message, 400)
+                    model = json.loads(results)
+                    maxTimePoint = model['maxTimePoint'][0]
+                    if (len(model['jobName'])):
+                        jobName = model['jobName'][0]
+                    return buildSuccess({
+                        'jobName': jobName,
+                        'maxTimePoint': maxTimePoint,
+                        'uploadedFile': inputModelFileName
+                        })
                 else:
-                    message = "Couldn't read covariates from RDS file!"
+                    message = "Couldn't read Time Points from RDS file!"
                     print message
                     return buildFailure(message, 400)
             else:
@@ -350,14 +380,18 @@ def uploadModelFile():
             return buildFailure(message, 500)
 
     except Exception as e:
-        exc_type, exc_obj, tb = sys.exc_info()
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        errFileName = f.f_code.co_filename
-        linecache.checkcache(errFileName)
-        line = linecache.getline(errFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        if not rOutput:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            errFileName = f.f_code.co_filename
+            linecache.checkcache(errFileName)
+            line = linecache.getline(errFileName, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+            return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        else:
+            print(rOutput)
+            return buildFailure(rOutput, 500)
 
 
 def getInputFilePath(id, extention):

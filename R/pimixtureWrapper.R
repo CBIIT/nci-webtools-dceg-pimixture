@@ -25,6 +25,8 @@ runCalculation <- function(jsonData) {
     result <-PIMixture(p.model=p.model, data=data, model=model, sample.design=design)
     result$covariatesSelection <- input$covariatesSelection
     result$covariatesArr <- input$covariatesArr
+    result$jobName <- input$jobName
+    maxTimePoint <- max(result$cum.hazard$time)
     outputFileName = input$outputRdsFilename
     cat(outputFileName)
     saveRDS(result, outputFileName)
@@ -35,6 +37,7 @@ runCalculation <- function(jsonData) {
       yAxis=as.vector(result$cum.hazard[[2]])
     )
     returnValue = toJSON(list(
+      maxTimePoint = maxTimePoint,
       cumulative.hazard = result$cum.hazard,
       data.summary = result$data.summary,
       hazard.ratio = result$HR,
@@ -69,9 +72,13 @@ runPredict <- function(jsonData) {
     time.points <- input$timePoints
 
     # run prediction function
-    predict<-PIMixture.predict(x=model, data=test.data, time.points=time.points)
+    predict <- PIMixture.predict(x=model, data=test.data, time.points=time.points)
+
+    label <- predict.relabel(test.data, time.points)
+    predict.out <- cbind(Subgroup=label, predict[,-c(1,2)])
+
     exportJson <- toJSON(list(
-        predict = predict,
+        predict = predict.out,
         model = model$model
     ), auto_unbox = T)
     return (exportJson)
@@ -99,10 +106,6 @@ readFromRDS <- function(jsonData) {
     input = fromJSON(jsonData)
     filename <- input$rdsFile
     model <- readRDS(filename)
-    covariatesArr <- model$covariatesSelection
-    if (is.null(covariatesArr)) {
-        return ("[]")
-    } else {
-        return (toJSON(covariatesArr))
-    }
+    results <- list(jobName = model$jobName, maxTimePoint = max(model$cum.hazard$time))
+    return (toJSON(results))
 }
