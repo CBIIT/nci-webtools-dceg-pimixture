@@ -3,7 +3,7 @@ import boto3
 import json
 from pprint import pprint
 from sqs import SQS
-from inputBucket import S3Bucket
+from s3 import S3Bucket
 import os, sys
 from pprint import pprint
 
