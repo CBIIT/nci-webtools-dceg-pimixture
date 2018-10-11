@@ -25,7 +25,12 @@ def getInputFilePath(id, extention):
 def getOutputFilePath(id, extention):
     return getFilePath(OUTPUT_DATA_PATH, OUTPUT_FILE_PREFIX, id, extention)
 
-def getFilePath(path, prefix, id, extention):
-    filename = prefix + id + extention
+def getOutputFileName(id, extension):
+    return getFileName(OUTPUT_FILE_PREFIX, id, extension)
+
+def getFilePath(path, prefix, id, extension):
+    filename = getFileName(prefix, id, extension)
     return os.path.join(path, filename)
 
+def getFileName(prefix, id, extension):
+    return prefix + id + extension
