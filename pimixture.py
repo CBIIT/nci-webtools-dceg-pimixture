@@ -75,6 +75,11 @@ def runModel():
                 parameters['filename'] = inputFileName
                 parameters['outputRdsFilename'] = outputRdsFileName
                 parameters['outputFilename'] = outputFileName
+        else:
+            message = 'No input data (CSV) file, please upload a data file!'
+            print(message)
+            return buildFailure(message, 400)
+
         columns = [parameters['outcomeC'], parameters['outcomeL'],  parameters['outcomeR']]
         if 'design' in parameters and parameters['design'] == 1:
             columns += [parameters['strata'], parameters['weight']]
