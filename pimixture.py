@@ -49,7 +49,7 @@ def runModel():
             inputCSVFile = request.files['csvFile']
             ext = os.path.splitext(inputCSVFile.filename)[1]
             if sendToQueue:
-                s3 = S3()
+                s3 = S3(INPUT_BUCKET)
                 object = s3.uploadFile('{}{}'.format(id, ext), inputCSVFile)
                 if object:
                     parameters['inputCSVFile'] = {

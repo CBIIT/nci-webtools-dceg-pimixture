@@ -3,13 +3,10 @@ import boto3
 import json
 from pprint import pprint
 
-BUCKET_NAME = 'pimixture'
-
 class S3:
-    def __init__(self, bucket=BUCKET_NAME):
+    def __init__(self, bucket):
         self.s3 = boto3.resource('s3')
-        self.bucket = self.s3.create_bucket(Bucket=BUCKET_NAME)
-        # self.bucket = self.s3.Bucket(BUCKET_NAME)
+        self.bucket = self.s3.create_bucket(Bucket=bucket)
 
     def uploadFile(self, key, data):
         return self.bucket.put_object(Key=key, Body=data)
