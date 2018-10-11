@@ -3,7 +3,7 @@ import boto3
 import json
 from pprint import pprint
 from sqs import SQS
-from s3 import S3
+from inputBucket import S3Bucket
 import os, sys
 from pprint import pprint
 
@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
                         downloadFileName = getInputFilePath(id, ext)
                         print('Download from {} to {}'.format(bucket, downloadFileName))
-                        s3 = S3(bucket)
-                        s3.downloadFile(key, downloadFileName)
+                        inputBucket = S3Bucket(bucket)
+                        inputBucket.downloadFile(key, downloadFileName)
                         parameters['filename'] = downloadFileName
 
                         outputRdsFileName = getOutputFilePath(id, '.rds')
@@ -66,15 +66,15 @@ if __name__ == '__main__':
 
                         fittingResult = fitting(parameters, outputCSVFileName)
                         if fittingResult['status']:
-                            s3 = S3(OUTPUT_BUCKET)
-                            object = uploadFileToS3(s3, getOutputFileName(id, '.rds'), outputRdsFileName)
+                            outputBucket = S3Bucket(OUTPUT_BUCKET)
+                            object = uploadFileToS3(outputBucket, getOutputFileName(id, '.rds'), outputRdsFileName)
                             if object:
                                 fittingResult['results']['Rfile'] = object
                                 os.remove(outputRdsFileName)
                             else:
                                 sys.exit(1)
 
-                            object = uploadFileToS3(s3, getOutputFileName(id, '.csv'), outputCSVFileName)
+                            object = uploadFileToS3(outputBucket, getOutputFileName(id, '.csv'), outputCSVFileName)
                             if object:
                                 fittingResult['results']['csvFile'] = object
                                 os.remove(outputCSVFileName)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                             if not sendErrors(fittingResult):
                                 print("An error happened when trying to send error email")
 
-                        s3.deleteFile(key)
+                        inputBucket.deleteFile(key)
                         msg.delete()
                     else:
                         pprint(data)

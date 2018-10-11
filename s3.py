@@ -3,7 +3,7 @@ import boto3
 import json
 from pprint import pprint
 
-class S3:
+class S3Bucket:
     def __init__(self, bucket):
         self.s3 = boto3.resource('s3')
         self.bucket = self.s3.create_bucket(Bucket=bucket)
