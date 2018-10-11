@@ -12,13 +12,28 @@ from fitting import *
 
 def sendResults(results):
     # Todo: send email to user
-    pprint(results)
+    print(results['Rfile'])
+    print(results['csvFile'])
     return True
 
 def sendErrors(errors):
     # Todo: send email to user
     pprint(errors)
     return True
+
+def uploadFileToS3(s3, key, fileName):
+    with open(fileName, 'rb') as data:
+        object = s3.uploadFile(key, data)
+        if object:
+           return {
+                    'bucket': object.bucket_name,
+                    'key': object.key
+                  }
+        else:
+            message = "Upload file {} to S3 failed!".format(fileName)
+            print(message)
+            return None
+
 
 if __name__ == '__main__':
     try:
@@ -51,6 +66,21 @@ if __name__ == '__main__':
 
                         fittingResult = fitting(parameters, outputCSVFileName)
                         if fittingResult['status']:
+                            s3 = S3(OUTPUT_BUCKET)
+                            object = uploadFileToS3(s3, getOutputFileName(id, '.rds'), outputRdsFileName)
+                            if object:
+                                fittingResult['results']['Rfile'] = object
+                                os.remove(outputRdsFileName)
+                            else:
+                                sys.exit(1)
+
+                            object = uploadFileToS3(s3, getOutputFileName(id, '.csv'), outputCSVFileName)
+                            if object:
+                                fittingResult['results']['csvFile'] = object
+                                os.remove(outputCSVFileName)
+                            else:
+                                sys.exit(1)
+
                             if not sendResults(fittingResult['results']):
                                 print("An error happened when trying to send result email")
                         else:
