@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
                         downloadFileName = getInputFilePath(id, ext)
                         print('Download from {} to {}'.format(bucket, downloadFileName))
-                        s3 = S3(bucket=bucket)
+                        s3 = S3(bucket)
                         s3.downloadFile(key, downloadFileName)
                         parameters['filename'] = downloadFileName
 
