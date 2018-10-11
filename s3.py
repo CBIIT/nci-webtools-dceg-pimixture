@@ -8,7 +8,7 @@ class S3Bucket:
         self.s3 = boto3.resource('s3')
         self.bucket = self.s3.create_bucket(Bucket=bucket)
 
-    def uploadFile(self, key, data):
+    def uploadFileObj(self, key, data):
         return self.bucket.put_object(Key=key, Body=data)
 
     def downloadFile(self, key, filename):
@@ -29,3 +29,16 @@ class S3Bucket:
             return False
         else:
             return True
+
+    def uploadFile(self, key, fileName):
+        with open(fileName, 'rb') as data:
+            object = self.uploadFileObj(key, data)
+            if object:
+                return {
+                    'bucket': object.bucket_name,
+                    'key': object.key
+                }
+            else:
+                message = "Upload file {} to S3 failed!".format(fileName)
+                print(message)
+                return None

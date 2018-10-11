@@ -21,18 +21,6 @@ def sendErrors(errors):
     pprint(errors)
     return True
 
-def uploadFileToS3(s3, key, fileName):
-    with open(fileName, 'rb') as data:
-        object = s3.uploadFile(key, data)
-        if object:
-           return {
-                    'bucket': object.bucket_name,
-                    'key': object.key
-                  }
-        else:
-            message = "Upload file {} to S3 failed!".format(fileName)
-            print(message)
-            return None
 
 
 if __name__ == '__main__':
@@ -67,14 +55,14 @@ if __name__ == '__main__':
                         fittingResult = fitting(parameters, outputCSVFileName)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
-                            object = uploadFileToS3(outputBucket, getOutputFileName(id, '.rds'), outputRdsFileName)
+                            object = outputBucket.uploadFile(getOutputFileName(id, '.rds'), outputRdsFileName)
                             if object:
                                 fittingResult['results']['Rfile'] = object
                                 os.remove(outputRdsFileName)
                             else:
                                 sys.exit(1)
 
-                            object = uploadFileToS3(outputBucket, getOutputFileName(id, '.csv'), outputCSVFileName)
+                            object = outputBucket.uploadFile(getOutputFileName(id, '.csv'), outputCSVFileName)
                             if object:
                                 fittingResult['results']['csvFile'] = object
                                 os.remove(outputCSVFileName)
