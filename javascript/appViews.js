@@ -158,11 +158,15 @@ appMixture.FormView = Backbone.View.extend({
             },
             error: function(model, res, options) {
                 $that.stopSpinner();
-                var error = res.responseText.replace(/\\n/g, '<br>');
-                error = error.replace(/^"(.*)"\n$/, '$1');
-                error = error.replace(/\\"/g, '"');
-                error = 'Error message from R package:<br>' + error;
-                $that.$('#error-message').html(error);
+                var result = res.responseJSON;
+                if (result) {
+                    $that.$('#error-message').html(result.message);
+                } else {
+                    var error = res.responseText.replace(/\\n/g, '<br>');
+                    error = error.replace(/^"(.*)"\n$/, '$1');
+                    error = error.replace(/\\"/g, '"');
+                    $that.$('#error-message').html(error);
+                }
             }
         });
     },
