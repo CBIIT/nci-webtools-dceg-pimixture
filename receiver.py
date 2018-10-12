@@ -83,8 +83,8 @@ if __name__ == '__main__':
                             if not sendErrors(fittingResult):
                                 print("An error happened when trying to send error email")
 
-                        inputBucket.deleteFile(inputFileName)
                         msg.delete()
+                        inputBucket.deleteFile(inputFileName)
                     else:
                         pprint(data)
                         print('Unknown message type!')
