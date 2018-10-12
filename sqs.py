@@ -26,8 +26,8 @@ class Queue:
                                            MessageDeduplicationId=id)
         print(response.get('MessageId'))
 
-    def receiveMsgs(self):
-        return self.queue.receive_messages()
+    def receiveMsgs(self, visibilityTimeOut):
+        return self.queue.receive_messages(VisibilityTimeout = visibilityTimeOut)
 
 # Automatically extend visibility timeout every timeOutValue/2 seconds
 class VisibilityExtender:

@@ -28,7 +28,7 @@ if __name__ == '__main__':
         sqs = Queue()
         while True:
             print("Receiving more messages...")
-            for msg in sqs.receiveMsgs():
+            for msg in sqs.receiveMsgs(VISIBILITY_TIMEOUT):
                 extender = None
                 try:
                     extender = VisibilityExtender(msg, VISIBILITY_TIMEOUT)
