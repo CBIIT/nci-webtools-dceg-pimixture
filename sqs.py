@@ -8,7 +8,7 @@ QUEUE_MSG_RETENTION_SECONDS = '1209600'
 QUEUE_LONG_PULL_TIME = '20'
 QUEUE_MESSAGE_GROUP_ID = 'fitting'
 
-class SQS:
+class Queue:
     def __init__(self, queName=QUEUE_NAME, longPullTime=QUEUE_LONG_PULL_TIME, msgRetentionTime=QUEUE_MSG_RETENTION_SECONDS):
         self.sqs = boto3.resource('sqs')
         self.queue = self.sqs.create_queue(

@@ -5,7 +5,7 @@ import pyper as pr
 import csv
 import uuid
 import codecs
-from sqs import SQS
+from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
 
@@ -99,7 +99,7 @@ def runModel():
 
         if sendToQueue:
             # Send parameters to queue
-            sqs = SQS()
+            sqs = Queue()
             sqs.sendMsgToQueue({
                 'parameters': parameters,
                 'jobId': id,

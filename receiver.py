@@ -2,7 +2,7 @@
 import boto3
 import json
 from pprint import pprint
-from sqs import SQS
+from sqs import Queue
 from s3 import S3Bucket
 import os, sys
 from pprint import pprint
@@ -25,7 +25,7 @@ def sendErrors(errors):
 
 if __name__ == '__main__':
     try:
-        sqs = SQS()
+        sqs = Queue()
         while True:
             print("Receiving more messages...")
             for msg in sqs.receiveMsgs():
