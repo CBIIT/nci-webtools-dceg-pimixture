@@ -105,7 +105,7 @@ def runModel():
                 'jobId': id,
                 'extension': ext,
                 'jobType': 'fitting'
-            })
+            }, id)
             return buildSuccess( {
                 'enqueued': True,
                 'jobId': id,
