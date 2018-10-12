@@ -106,7 +106,11 @@ def runModel():
                 'extension': ext,
                 'jobType': 'fitting'
             })
-            return buildFailure('Job sent to queue!')
+            return buildSuccess( {
+                'enqueued': True,
+                'jobId': id,
+                'message': 'Job "{}" sent to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
+            })
         else:
             fittingResult = fitting(parameters, outputCSVFileName)
             if fittingResult['status']:

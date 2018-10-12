@@ -1,4 +1,6 @@
-<%  if (!data["data.summary"]) { %>
+<% if (data['enqueued']) { %>
+    <p id="enqueuedMessage"><%= data['message'] %></p>
+<% } else if (!data["data.summary"]) { %>
     <p class="">Upload your data file and provide model configuration on the left panel. The results will be displayed here once you click on Submit button.</p>
 <% } else { %>
 <div class="">
