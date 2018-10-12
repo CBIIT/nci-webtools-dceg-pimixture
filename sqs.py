@@ -2,6 +2,7 @@
 import boto3
 import json
 from pprint import pprint
+from threading import Timer
 
 QUEUE_NAME = 'pimixture.fifo'
 QUEUE_MSG_RETENTION_SECONDS = '1209600'
@@ -27,3 +28,31 @@ class Queue:
 
     def receiveMsgs(self):
         return self.queue.receive_messages()
+
+# Automatically extend visibility timeout every timeOutValue/2 seconds
+class VisibilityExtender:
+    def __init__(self, msg, timeOutValue):
+        self._timeOutValue = timeOutValue if timeOutValue > 2 else 2
+        self._currentTimeOut = self._timeOutValue
+        self._interval = timeOutValue / 2 if timeOutValue > 2 else 1
+        self._msg = msg
+        self._timer = None
+        self.is_running = False
+        self.start()
+
+    def _run(self):
+        if self._msg:
+            self.is_running = False
+            self.start()
+            self._currentTimeOut += self._interval
+            self._msg.change_visibility(VisibilityTimeout = self._currentTimeOut)
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self._interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False

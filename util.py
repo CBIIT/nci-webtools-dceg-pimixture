@@ -19,6 +19,8 @@ IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
 INPUT_BUCKET = 'pimixture'
 OUTPUT_BUCKET = 'pimixture'
 
+VISIBILITY_TIMEOUT = 30
+
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)
 

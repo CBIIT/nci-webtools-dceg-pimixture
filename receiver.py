@@ -2,7 +2,7 @@
 import boto3
 import json
 from pprint import pprint
-from sqs import Queue
+from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 import os, sys
 from pprint import pprint
@@ -29,7 +29,9 @@ if __name__ == '__main__':
         while True:
             print("Receiving more messages...")
             for msg in sqs.receiveMsgs():
+                extender = None
                 try:
+                    extender = VisibilityExtender(msg, VISIBILITY_TIMEOUT)
                     data = json.loads(msg.body)
                     if data and 'jobType' in data and data['jobType'] == 'fitting':
                         print('Got a job!')
@@ -52,6 +54,7 @@ if __name__ == '__main__':
                         parameters['outputRdsFilename'] = outputRdsFileName
                         parameters['outputFilename'] = outputFileName
 
+                        extender.start()
                         fittingResult = fitting(parameters, outputCSVFileName)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
@@ -90,7 +93,8 @@ if __name__ == '__main__':
                     print(e)
 
                 finally:
-                    pass
+                    if extender:
+                        extender.stop()
     except KeyboardInterrupt:
         print("\nBye!")
         sys.exit()
