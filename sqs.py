@@ -4,10 +4,7 @@ import json
 from pprint import pprint
 from threading import Timer
 
-QUEUE_NAME = 'pimixture.fifo'
-QUEUE_MSG_RETENTION_SECONDS = '1209600'
-QUEUE_LONG_PULL_TIME = '20'
-QUEUE_MESSAGE_GROUP_ID = 'fitting'
+from util import *
 
 class Queue:
     def __init__(self, queName=QUEUE_NAME, longPullTime=QUEUE_LONG_PULL_TIME, msgRetentionTime=QUEUE_MSG_RETENTION_SECONDS):
