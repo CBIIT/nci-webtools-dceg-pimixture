@@ -1,7 +1,16 @@
 import os
+import smtplib
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from ConfigParser import SafeConfigParser
+
 config = SafeConfigParser()
 config.read('config.ini')
+
+# Mail setttings
+HOST = config.get('mail', 'host')
+SENDER = config.get('mail', 'sender')
 
 # Folder settings
 INPUT_DATA_PATH = config.get('folders', 'input_data_path')
@@ -22,6 +31,7 @@ OUTPUT_FILE_PREFIX = config.get('prefixes', 'output_file_prefix')
 INPUT_BUCKET = config.get('s3', 'input_bucket')
 OUTPUT_BUCKET = config.get('s3', 'output_bucket')
 VISIBILITY_TIMEOUT = int(config.get('s3', 'visibility_timeout'))
+URL_EXPIRE_TIME = int(config.get('s3', 'url_expire_time'))
 
 # SQS settings
 QUEUE_NAME = config.get('sqs', 'queue_name')
@@ -46,3 +56,43 @@ def getFilePath(path, prefix, id, extension):
 
 def getFileName(prefix, id, extension):
     return prefix + id + extension
+
+def send_mail(sender, recipient, subject, contents, attachments=None):
+    """Sends an email to the provided recipient
+
+    Arguments:
+        - sender {string} -- The sender of the email
+        - recipient {string} -- The recipient of the email
+        - subject {string} -- The email's subject
+        - contents {string} -- The email's contents
+
+    Keyword Arguments:
+        - attachments {string[]} -- Filenames of attachments (default: {None})
+    """
+    try:
+        message = MIMEMultipart()
+        message['Subject'] = subject
+        message['From'] = sender
+        message['To'] = recipient
+
+        # set text for message
+        message.attach(MIMEText(contents.encode('utf-8'), 'html', 'utf-8'))
+
+        # add attachments to message
+        if attachments is not None:
+            for attachment in attachments:
+                with open(attachment, 'rb') as _file:
+                    message.attach(MIMEApplication(
+                        _file.read(),
+                        Name=os.path.basename(attachment)
+                    ))
+        host = config.get('mail', 'host')
+        # send email
+        server = smtplib.SMTP(host)
+        server.sendmail(sender, recipient, message.as_string())
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    finally:
+        server.quit()

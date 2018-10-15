@@ -2,9 +2,11 @@
 import boto3
 import json
 from pprint import pprint
+from util import *
 
 class S3Bucket:
     def __init__(self, bucket):
+        self.client = boto3.client('s3')
         self.s3 = boto3.resource('s3')
         self.bucket = self.s3.create_bucket(Bucket=bucket)
 
@@ -30,15 +32,24 @@ class S3Bucket:
         else:
             return True
 
-    def uploadFile(self, key, fileName):
+    def uploadFile(self, key, fileName, downloadFileName):
         with open(fileName, 'rb') as data:
             object = self.uploadFileObj(key, data)
             if object:
-                return {
-                    'bucket': object.bucket_name,
-                    'key': object.key
-                }
+                return  self.generateUrl(object, downloadFileName)
             else:
                 message = "Upload file {} to S3 failed!".format(fileName)
                 print(message)
                 return None
+
+
+    def generateUrl(self, object, fileName):
+            url = self.client.generate_presigned_url(
+                'get_object',
+                Params = {
+                    'Bucket': object.bucket_name,
+                    'Key': object.key,
+                    'ResponseContentDisposition': "attachment;filename={}".format(fileName)
+                },
+                ExpiresIn = URL_EXPIRE_TIME)
+            return(url)

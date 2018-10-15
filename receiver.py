@@ -10,16 +10,20 @@ from pprint import pprint
 from util import *
 from fitting import *
 
-def sendResults(results):
-    # Todo: send email to user
-    print(results['Rfile'])
-    print(results['csvFile'])
-    return True
+def sendResults(jobName, email, results):
+    subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
+    content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
+    content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
+    content += '<p><a href="{}" download="{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName)
+    content += '<p><a href="{}" download="{}.csv">Download CSV file</a></p>'.format(results['csvFile'], jobName)
+    return send_mail(SENDER, email, subject, content)
 
-def sendErrors(errors):
-    # Todo: send email to user
-    pprint(errors)
-    return True
+def sendErrors(jobName, email, errors):
+    subject = 'PIMixture job "{}" FAILED'.format(jobName)
+    content = '<h4>We are sorry to inform you, your PIMixture Fitting job "{}" has FAILED!</h4>'.format(jobName)
+    content += '<p>Here is the error messages:</p>'
+    content += str(errors)
+    return send_mail(SENDER, email, subject, content)
 
 
 
@@ -43,7 +47,6 @@ if __name__ == '__main__':
                         inputFileName = parameters['inputCSVFile']['key']
 
                         downloadFileName = getInputFilePath(id, ext)
-                        print('Download from {} to {}'.format(inputBucket , downloadFileName))
                         inputBucket = S3Bucket(inputBucket)
                         inputBucket.downloadFile(inputFileName, downloadFileName)
                         parameters['filename'] = downloadFileName
@@ -53,35 +56,38 @@ if __name__ == '__main__':
                         outputFileName = getOutputFilePath(id, '.out')
                         parameters['outputRdsFilename'] = outputRdsFileName
                         parameters['outputFilename'] = outputFileName
+                        jobName = parameters.get('jobName', 'PIMixture')
+                        jobName = jobName if jobName else 'PIMixture'
 
                         extender.start()
                         fittingResult = fitting(parameters, outputCSVFileName)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
                             outputRdsFileKey = getOutputFileName(id, '.rds')
-                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName)
+                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}.rds'.format(jobName))
                             os.remove(outputRdsFileName)
                             if object:
                                 fittingResult['results']['Rfile'] = object
                             else:
-                                sendErrors('Upload result RDS file failed!')
+                                sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileName(id, '.csv'), outputCSVFileName)
+                            object = outputBucket.uploadFile(getOutputFileName(id, '.csv'), outputCSVFileName, '{}.csv'.format(jobName))
                             os.remove(outputCSVFileName)
                             if object:
                                 fittingResult['results']['csvFile'] = object
                             else:
-                                sendErrors('Upload result CSV file failed!')
+                                sendErrors(jobName, parameters['email'], 'Upload result CSV file failed!')
                                 outputBucket.deleteFile(outputRdsFileKey)
                                 continue
 
-                            if not sendResults(fittingResult['results']):
+                            if not sendResults(jobName, parameters['email'], fittingResult['results']):
                                 print("An error happened when trying to send result email")
                                 continue
                         else:
-                            if not sendErrors(fittingResult):
+                            if not sendErrors(jobName, parameters['email'], fittingResult['message']):
                                 print("An error happened when trying to send error email")
+                                continue
 
                         msg.delete()
                         inputBucket.deleteFile(inputFileName)
