@@ -29,6 +29,9 @@ var appMixture = {
     }
 };
 
+const MAX_UNIQUE_VALUES = 20;
+const QUEUE_THRESHOLD = 8000;
+
 appMixture.FormView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-md-4',
@@ -231,8 +234,14 @@ appMixture.FormView = Backbone.View.extend({
             })
         });
     },
+    forceToUseQueue: function() {
+        this.$('[name="sendToQueue"]').prop('checked', true);
+        this.model.set('sendToQueue', true);
+        this.$('[name="sendToQueue"]').prop('disabled', true);
+        this.$('[name="email"]').prop('disabled', false);
+        this.$('[name="email"]').prop('required', true);
+    },
     uploadFile: function (e) {
-        const MAX_UNIQUE_VALUES = 20;
         e.preventDefault();
         var $that = this;
         if (window.FileReader) {
@@ -267,6 +276,9 @@ appMixture.FormView = Backbone.View.extend({
                         'headers': headers.sort(),
                         'uniqueValues': uniqueValues
                     });
+                    if (lines.length >= QUEUE_THRESHOLD) {
+                        $that.forceToUseQueue();
+                    }
                 }
             };
 
