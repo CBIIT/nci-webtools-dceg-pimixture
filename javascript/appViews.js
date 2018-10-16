@@ -214,6 +214,7 @@ appMixture.FormView = Backbone.View.extend({
         this.model.clear({silent: true}).set(this.model.defaults, {silent: true});
         appMixture.models.results.clear({silent: true}).set(appMixture.models.results.defaults, {silent: true});
         this.render();
+        appMixture.views.results.render();
     },
     openInteractiveEffects: function (e) {
         e.preventDefault();
