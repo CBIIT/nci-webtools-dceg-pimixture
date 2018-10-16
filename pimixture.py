@@ -53,6 +53,7 @@ def runModel():
                 object = bucket.uploadFileObj('{}{}'.format(id, ext), inputCSVFile)
                 if object:
                     parameters['inputCSVFile'] = {
+                        'originalName': inputCSVFile.filename,
                         'bucket': object.bucket_name,
                         'key': object.key
                     }

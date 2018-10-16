@@ -50,6 +50,7 @@ if __name__ == '__main__':
                         inputBucket = S3Bucket(inputBucket)
                         inputBucket.downloadFile(inputFileName, downloadFileName)
                         parameters['filename'] = downloadFileName
+                        parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
 
                         outputRdsFileName = getOutputFilePath(id, '.rds')
                         outputCSVFileName = getOutputFilePath(id, '.csv')
