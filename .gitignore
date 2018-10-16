@@ -6,4 +6,3 @@ tmp/
 common/
 .idea/
 *.pyc
-config.ini
