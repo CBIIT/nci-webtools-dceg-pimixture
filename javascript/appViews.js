@@ -30,7 +30,8 @@ var appMixture = {
 };
 
 const MAX_UNIQUE_VALUES = 20;
-const QUEUE_THRESHOLD = 8000;
+const QUEUE_DATA_THRESHOLD = 8000;
+const QUEUE_COVARIATES_THRESHOLD = 20;
 
 appMixture.FormView = Backbone.View.extend({
     tagName: 'div',
@@ -234,12 +235,22 @@ appMixture.FormView = Backbone.View.extend({
             })
         });
     },
-    forceToUseQueue: function() {
-        this.$('[name="sendToQueue"]').prop('checked', true);
-        this.model.set('sendToQueue', true);
-        this.$('[name="sendToQueue"]').prop('disabled', true);
-        this.$('[name="email"]').prop('disabled', false);
-        this.$('[name="email"]').prop('required', true);
+    checkQueueThresholds: function() {
+        const numLines = this.model.get('inputLines');
+        const covariates = this.model.get('covariatesSelection');
+        var numCovariates = 0;
+        if (covariates) {
+            numCovariates = covariates.split(',').length;
+        }
+        this.$('[name="sendToQueue"]').prop('disabled', false);
+        this.$('[name="email"]').prop('required', false);
+        if (numCovariates >= QUEUE_COVARIATES_THRESHOLD || numLines >= QUEUE_DATA_THRESHOLD) {
+            this.model.set('sendToQueue', true);
+            this.$('[name="sendToQueue"]').prop('checked', true);
+            this.$('[name="sendToQueue"]').prop('disabled', true);
+            this.$('[name="email"]').prop('disabled', false);
+            this.$('[name="email"]').prop('required', true);
+        }
     },
     uploadFile: function (e) {
         e.preventDefault();
@@ -273,12 +284,11 @@ appMixture.FormView = Backbone.View.extend({
 
                     $that.model.set({
                         'csvFile': e.target.files[0],
+                        'inputLines': lines.length,
                         'headers': headers.sort(),
                         'uniqueValues': uniqueValues
                     });
-                    if (lines.length >= QUEUE_THRESHOLD) {
-                        $that.forceToUseQueue();
-                    }
+                    $that.checkQueueThresholds();
                 }
             };
 
@@ -355,7 +365,9 @@ appMixture.FormView = Backbone.View.extend({
     changeCovariateList: function () {
         var model = this.model,
             covariatesSelection = this.model.get('covariatesSelection');
-        if (covariatesSelection && covariatesSelection.split(',').length > 1) {
+        var numCovariates = covariatesSelection.split(',').length;
+        this.checkQueueThresholds();
+        if (covariatesSelection && numCovariates > 1) {
             model.set('effects', []);
         } else {
             if (model.get('effects')) {
