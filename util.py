@@ -6,7 +6,8 @@ from email.mime.text import MIMEText
 from ConfigParser import SafeConfigParser
 
 config = SafeConfigParser()
-config.read('config.ini')
+config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
+config.read(config_file)
 
 # Mail setttings
 HOST = config.get('mail', 'host')
