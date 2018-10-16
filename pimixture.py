@@ -110,7 +110,7 @@ def runModel():
             return buildSuccess( {
                 'enqueued': True,
                 'jobId': id,
-                'message': 'Job "{}" sent to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
+                'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
             })
         else:
             fittingResult = fitting(parameters, outputCSVFileName)
