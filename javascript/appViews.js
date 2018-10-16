@@ -52,7 +52,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:covariatesSelection': this.changeCovariateList,
             'change:covariatesArrValid': this.changeCovariatesArr,
             'change:effects': this.changeEffectsList,
-            'change:email': this.changeEmail
+            'change:email': this.validateEmail
         }, this);
     },
     events: {
@@ -60,7 +60,6 @@ appMixture.FormView = Backbone.View.extend({
         'change input[type="file"]': 'uploadFile',
         'change input.selectized': 'updateModel',
         'change input[type="text"]': 'updateModel',
-        'keyup input[type="text"]': 'updateModel',
         'change input[type="checkbox"]': 'updateModel',
         'change select': 'updateModel',
         'change [name="sendToQueue"]': 'changeQueueStatus',
@@ -128,6 +127,10 @@ appMixture.FormView = Backbone.View.extend({
         }
         if (!this.model.get('covariatesArrValid')) {
             this.$('#covariates-error').html('Some of the Covariates are not properly configured.');
+            return;
+        }
+        if (this.model.get('sendToQueue') && !this.model.get('emailValidated')) {
+            this.$('#email-error').html('Please enter a valid email address!');
             return;
         }
         appMixture.models.results.clear().set(appMixture.models.results.defaults);
@@ -468,9 +471,18 @@ appMixture.FormView = Backbone.View.extend({
     displayExtraMappings: function(status) {
         this.$('#Strata, #Weight').prop('hidden', !status);
     },
-    changeEmail: function () {
-        if (this.model.get('email') === "") {
-        } else {
+    validateEmail: function () {
+        var email = this.model.get('email');
+        this.$('#email-error').html('');
+        this.model.set('emailValidated', false);
+        if ( email && email.length > 0) {
+            email = email.trim();
+            if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+                this.$('#email-error').html('Please enter a valid email address!');
+                this.model.set('emailValidated', false);
+            } else {
+                this.model.set('emailValidated', true);
+            }
         }
     },
     changeModel: function () {
