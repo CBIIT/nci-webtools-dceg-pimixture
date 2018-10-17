@@ -3,7 +3,7 @@
         <div class="form-group">
             <label class="control-label col-md-4">Job Name <a id="jobNamePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-8">
-                <input type="text" name="jobName" placeholder="Enter a name for this job" class="form-control" value="<%= data.jobName %>">
+                <input type="text" name="jobName" placeholder="PIMixture" class="form-control" value="<%= data.jobName %>">
             </div>
         </div>
         <div class="form-group">
@@ -137,6 +137,7 @@
                     <%= data.sendToQueue ? 'checked' : '' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a>
             </div>
         </div>
+        <div id="email-error" class=""></div>
         <div class="form-group">
             <label class="control-label col-md-3">Email <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-9">

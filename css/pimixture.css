@@ -259,6 +259,7 @@ h2.stage-header {
     display: inline-block;
 }
 
+#email-error,
 #covariates-error,
 #error-message,
 #mutex-error {
@@ -292,6 +293,11 @@ fieldset.well .form-group {
     color: darkgray;
     font-style: italic;
     font-size: 0.8em;
+}
+
+#enqueuedMessage {
+    color: green;
+    font-size: 1.5em;
 }
 
 .download-buttons {

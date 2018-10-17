@@ -29,6 +29,10 @@ var appMixture = {
     }
 };
 
+const MAX_UNIQUE_VALUES = 20;
+const QUEUE_DATA_THRESHOLD = 8000;
+const QUEUE_COVARIATES_THRESHOLD = 20;
+
 appMixture.FormView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-md-4',
@@ -48,7 +52,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:covariatesSelection': this.changeCovariateList,
             'change:covariatesArrValid': this.changeCovariatesArr,
             'change:effects': this.changeEffectsList,
-            'change:email': this.changeEmail
+            'change:email': this.validateEmail
         }, this);
     },
     events: {
@@ -56,7 +60,6 @@ appMixture.FormView = Backbone.View.extend({
         'change input[type="file"]': 'uploadFile',
         'change input.selectized': 'updateModel',
         'change input[type="text"]': 'updateModel',
-        'keyup input[type="text"]': 'updateModel',
         'change input[type="checkbox"]': 'updateModel',
         'change select': 'updateModel',
         'change [name="sendToQueue"]': 'changeQueueStatus',
@@ -126,6 +129,10 @@ appMixture.FormView = Backbone.View.extend({
             this.$('#covariates-error').html('Some of the Covariates are not properly configured.');
             return;
         }
+        if (this.model.get('sendToQueue') && !this.model.get('emailValidated')) {
+            this.$('#email-error').html('Please enter a valid email address!');
+            return;
+        }
         appMixture.models.results.clear().set(appMixture.models.results.defaults);
         var $that = this,
             params = _.extend({}, this.model.attributes);
@@ -158,11 +165,15 @@ appMixture.FormView = Backbone.View.extend({
             },
             error: function(model, res, options) {
                 $that.stopSpinner();
-                var error = res.responseText.replace(/\\n/g, '<br>');
-                error = error.replace(/^"(.*)"\n$/, '$1');
-                error = error.replace(/\\"/g, '"');
-                error = 'Error message from R package:<br>' + error;
-                $that.$('#error-message').html(error);
+                var result = res.responseJSON;
+                if (result) {
+                    $that.$('#error-message').html(result.message);
+                } else {
+                    var error = res.responseText.replace(/\\n/g, '<br>');
+                    error = error.replace(/^"(.*)"\n$/, '$1');
+                    error = error.replace(/\\"/g, '"');
+                    $that.$('#error-message').html(error);
+                }
             }
         });
     },
@@ -203,6 +214,7 @@ appMixture.FormView = Backbone.View.extend({
         this.model.clear({silent: true}).set(this.model.defaults, {silent: true});
         appMixture.models.results.clear({silent: true}).set(appMixture.models.results.defaults, {silent: true});
         this.render();
+        appMixture.views.results.render();
     },
     openInteractiveEffects: function (e) {
         e.preventDefault();
@@ -227,8 +239,24 @@ appMixture.FormView = Backbone.View.extend({
             })
         });
     },
+    checkQueueThresholds: function() {
+        const numLines = this.model.get('inputLines');
+        const covariates = this.model.get('covariatesSelection');
+        var numCovariates = 0;
+        if (covariates) {
+            numCovariates = covariates.split(',').length;
+        }
+        this.$('[name="sendToQueue"]').prop('disabled', false);
+        this.$('[name="email"]').prop('required', false);
+        if (numCovariates >= QUEUE_COVARIATES_THRESHOLD || numLines >= QUEUE_DATA_THRESHOLD) {
+            this.model.set('sendToQueue', true);
+            this.$('[name="sendToQueue"]').prop('checked', true);
+            this.$('[name="sendToQueue"]').prop('disabled', true);
+            this.$('[name="email"]').prop('disabled', false);
+            this.$('[name="email"]').prop('required', true);
+        }
+    },
     uploadFile: function (e) {
-        const MAX_UNIQUE_VALUES = 20;
         e.preventDefault();
         var $that = this;
         if (window.FileReader) {
@@ -260,9 +288,11 @@ appMixture.FormView = Backbone.View.extend({
 
                     $that.model.set({
                         'csvFile': e.target.files[0],
+                        'inputLines': lines.length,
                         'headers': headers.sort(),
                         'uniqueValues': uniqueValues
                     });
+                    $that.checkQueueThresholds();
                 }
             };
 
@@ -339,7 +369,9 @@ appMixture.FormView = Backbone.View.extend({
     changeCovariateList: function () {
         var model = this.model,
             covariatesSelection = this.model.get('covariatesSelection');
-        if (covariatesSelection && covariatesSelection.split(',').length > 1) {
+        var numCovariates = covariatesSelection.split(',').length;
+        this.checkQueueThresholds();
+        if (covariatesSelection && numCovariates > 1) {
             model.set('effects', []);
         } else {
             if (model.get('effects')) {
@@ -440,9 +472,18 @@ appMixture.FormView = Backbone.View.extend({
     displayExtraMappings: function(status) {
         this.$('#Strata, #Weight').prop('hidden', !status);
     },
-    changeEmail: function () {
-        if (this.model.get('email') === "") {
-        } else {
+    validateEmail: function () {
+        var email = this.model.get('email');
+        this.$('#email-error').html('');
+        this.model.set('emailValidated', false);
+        if ( email && email.length > 0) {
+            email = email.trim();
+            if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+                this.$('#email-error').html('Please enter a valid email address!');
+                this.model.set('emailValidated', false);
+            } else {
+                this.model.set('emailValidated', true);
+            }
         }
     },
     changeModel: function () {
@@ -831,6 +872,24 @@ appMixture.PredictionView = Backbone.View.extend({
     updateModel: function(e) {
         var val = $(e.target).val();
         var name = $(e.target).attr('name');
+        if (name === 'timePoints') {
+            var points = val.split(',').map(function(point) { return point.trim()} );
+            var maxTimePoint = this.model.get('maxTimePoint');
+            this.model.unset('timePointError');
+            this.$('#error-message').html('');
+            for (var point of points) {
+                if (point) {
+                    var num = parseInt(point);
+                    if (Number.isNaN(num)) {
+                        this.model.set('timePointError', true);
+                        return this.$('#error-message').html('Invalid time point "' + point + '"');
+                    } else if (num > maxTimePoint) {
+                        this.model.set('timePointError', true);
+                        return this.$('#error-message').html('Time point can\'t be greater than "' + maxTimePoint + '"');
+                    }
+                }
+            }
+        }
         this.model.set(name, val);
     },
     tryEnableInputs: function() {
@@ -854,6 +913,9 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
+        if (this.model.get('timePointError')) {
+            return;
+        }
         var $that = this;
         var formData = new FormData();
         var jsonData = {};
