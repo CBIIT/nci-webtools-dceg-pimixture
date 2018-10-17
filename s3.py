@@ -27,7 +27,7 @@ class S3Bucket:
             }
         )
         if 'Errors' in response:
-            print('S3: delete file {} failed!'.format(key))
+            log.error('S3: delete file {} failed!'.format(key))
             return False
         else:
             return True
@@ -39,7 +39,7 @@ class S3Bucket:
                 return  self.generateUrl(object, downloadFileName)
             else:
                 message = "Upload file {} to S3 failed!".format(fileName)
-                print(message)
+                log.error(message)
                 return None
 
 

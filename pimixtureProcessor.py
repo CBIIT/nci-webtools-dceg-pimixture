@@ -5,7 +5,6 @@ from pprint import pprint
 from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 import os, sys
-from pprint import pprint
 
 from util import *
 from fitting import *
@@ -31,14 +30,14 @@ if __name__ == '__main__':
     try:
         sqs = Queue()
         while True:
-            print("Receiving more messages...")
+            log.info("Receiving more messages...")
             for msg in sqs.receiveMsgs(VISIBILITY_TIMEOUT):
                 extender = None
                 try:
                     extender = VisibilityExtender(msg, VISIBILITY_TIMEOUT)
                     data = json.loads(msg.body)
                     if data and 'jobType' in data and data['jobType'] == 'fitting':
-                        print('Got a job!')
+                        log.info('Got a job!')
 
                         parameters = data['parameters']
                         id = data['jobId']
@@ -83,25 +82,25 @@ if __name__ == '__main__':
                                 continue
 
                             if not sendResults(jobName, parameters['email'], fittingResult['results']):
-                                print("An error happened when trying to send result email")
+                                log.error("An error happened when trying to send result email")
                                 continue
                         else:
                             if not sendErrors(jobName, parameters['email'], fittingResult['message']):
-                                print("An error happened when trying to send error email")
+                                log.error("An error happened when trying to send error email")
                                 continue
 
                         msg.delete()
                         inputBucket.deleteFile(inputFileName)
                     else:
-                        pprint(data)
-                        print('Unknown message type!')
+                        log.debug(data)
+                        log.error('Unknown message type!')
                         msg.delete()
                 except Exception as e:
-                    print(e)
+                    log.exception(e)
 
                 finally:
                     if extender:
                         extender.stop()
     except KeyboardInterrupt:
-        print("\nBye!")
+        log.info("\nBye!")
         sys.exit()

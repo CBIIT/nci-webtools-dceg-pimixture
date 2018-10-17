@@ -1,13 +1,28 @@
-import os
+import os, sys
 import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from ConfigParser import SafeConfigParser
+import logging as log
 
 config = SafeConfigParser()
 config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
 config.read(config_file)
+
+logLevel = config.get('log', 'log_level')
+numericLevel = getattr(log, logLevel.upper(), None)
+if not isinstance(numericLevel, int):
+    raise ValueError('Invalid log level: %s' % logLevel)
+
+log.basicConfig(level=numericLevel, format='%(asctime)s [%(levelname)s] %(module)s - %(message)s')
+
+# log = logging.getLogger('pimixture')
+# stdHandler = logging.StreamHandler(sys.stdout)
+# stdHandler.setLevel(logging.INFO)
+# stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(message)s')
+# stdHandler.setFormatter(stdFormatter)
+# log.addHandler(stdHandler)
 
 # Mail setttings
 HOST = config.get('mail', 'host')
@@ -15,12 +30,12 @@ SENDER = config.get('mail', 'sender')
 
 # Folder settings
 INPUT_DATA_PATH = config.get('folders', 'input_data_path')
-print('INPUT_DATA_PATH: {}'.format(INPUT_DATA_PATH))
+log.info('INPUT_DATA_PATH: {}'.format(INPUT_DATA_PATH))
 if not os.path.isdir(INPUT_DATA_PATH):
     os.makedirs(INPUT_DATA_PATH)
 
 OUTPUT_DATA_PATH = config.get('folders', 'output_data_path')
-print('OUTPUT_DATA_PATH: {}'.format(OUTPUT_DATA_PATH))
+log.info('OUTPUT_DATA_PATH: {}'.format(OUTPUT_DATA_PATH))
 if not os.path.isdir(OUTPUT_DATA_PATH):
     os.makedirs(OUTPUT_DATA_PATH)
 
@@ -93,7 +108,7 @@ def send_mail(sender, recipient, subject, contents, attachments=None):
         server.sendmail(sender, recipient, message.as_string())
         return True
     except Exception as e:
-        print(e)
+        log.error(e)
         return False
     finally:
         server.quit()

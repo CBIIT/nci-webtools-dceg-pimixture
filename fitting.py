@@ -13,7 +13,7 @@ def fitting(parameters, outputCSVFileName):
         r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
         rOutput = r('returnFile = runCalculation(parameters)')
-        print(rOutput)
+        log.info(rOutput)
         returnFile = r.get('returnFile')
         del r
         if not returnFile:
@@ -108,9 +108,10 @@ def fitting(parameters, outputCSVFileName):
             inputFileName = f.f_code.co_filename
             linecache.checkcache(inputFileName)
             line = linecache.getline(inputFileName, lineno, f.f_globals)
-            message = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj)
-            print(message)
+            # message = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj)
+            # print(message)
+            log.exception('Exception happend!')
             return {"status": False, "message": message}
         else:
-            print(rOutput)
+            log.error(rOutput)
             return {"status": False, "message": 'R output:<br>{}'.format(rOutput)}

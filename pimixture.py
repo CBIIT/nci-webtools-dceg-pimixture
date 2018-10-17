@@ -38,7 +38,7 @@ def runModel():
             parameters = json.loads(request.form['jsonData'])
         else:
             message = "Missing input jsonData!"
-            print(message)
+            log.error(message)
             return buildFailure(message, 400)
 
         sendToQueue = parameters.get('sendToQueue', False)
@@ -59,7 +59,7 @@ def runModel():
                     }
                 else:
                     message = "Upload CSV file to S3 failed!"
-                    print(message)
+                    log.error(message)
                     return buildFailure(message, 500)
 
             else:
@@ -68,7 +68,7 @@ def runModel():
                 inputCSVFile.save(inputFileName)
                 if not os.path.isfile(inputFileName):
                     message = "Upload file failed!"
-                    print(message)
+                    log.error(message)
                     return buildFailure(message, 500)
                 outputRdsFileName = getOutputFilePath(id, '.rds')
                 outputCSVFileName = getOutputFilePath(id, '.csv')
@@ -78,7 +78,7 @@ def runModel():
                 parameters['outputFilename'] = outputFileName
         else:
             message = 'No input data (CSV) file, please upload a data file!'
-            print(message)
+            log.warning(message)
             return buildFailure(message, 400)
 
         columns = [parameters['outcomeC'], parameters['outcomeL'],  parameters['outcomeR']]
@@ -126,7 +126,7 @@ def runModel():
         inputFileName = f.f_code.co_filename
         linecache.checkcache(inputFileName)
         line = linecache.getline(inputFileName, lineno, f.f_globals)
-        print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj))
+        log.exception("Exception occurred")
         return buildFailure({"status": False, "message":"An unknown error occurred"})
 
 @app.route('/predict', methods=["POST"])
@@ -137,7 +137,7 @@ def runPredict():
             parameters = json.loads(request.form['jsonData'])
         else:
             message = "Missing input jsonData!"
-            print(message)
+            log.error(message)
             return buildFailure(message, 400)
 
         id = str(uuid.uuid4())
@@ -149,7 +149,7 @@ def runPredict():
                 parameters['rdsFile'] = rdsFile
             else:
                 message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
-                print(message)
+                log.error(message)
                 return buildFailure(message, 410)
         elif 'uploadedFile' in parameters:
             rdsFile = parameters['uploadedFile']
@@ -159,7 +159,7 @@ def runPredict():
                 filesToRemoveWhenDone.append(rdsFile)
             else:
                 message = "Uploaded file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
-                print(message)
+                log.error(message)
                 return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
             rdsFile = request.files['rdsFile']
@@ -171,11 +171,11 @@ def runPredict():
                 filesToRemoveWhenDone.append(inputRdsFileName)
             else:
                 message = "Upload RDS file failed!"
-                print(message)
+                log.error(message)
                 return buildFailure(message, 500)
         else:
             message = "Missing model file!"
-            print(message)
+            log.error(message)
             return buildFailure(message, 400)
 
         if len(request.files) > 0 and 'testDataFile' in request.files:
@@ -190,7 +190,7 @@ def runPredict():
                 parameters['testDataFile'] = inputTestDataFileName
             else:
                 message = "Upload test data file failed!"
-                print(message)
+                log.error(message)
                 return buildFailure(message, 500)
 
         # generate timePoints from 'start', 'end' and optional 'step'
@@ -207,7 +207,7 @@ def runPredict():
         r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
         rOutput = r('predictionResult = runPredict(parameters)')
-        print(rOutput)
+        log.info(rOutput)
         rResults = r.get('predictionResult')
         if not rResults:
             return buildFailure(rOutput, 500)
@@ -260,10 +260,10 @@ def runPredict():
             errFileName = f.f_code.co_filename
             linecache.checkcache(errFileName)
             line = linecache.getline(errFileName, lineno, f.f_globals)
-            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+            log.exception("Exception occurred")
             return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
         else:
-            print(rOutput)
+            log.error(rOutput)
             return buildFailure(rOutput, 500)
 
 
@@ -288,7 +288,7 @@ def uploadModelFile():
                 r(IMPORT_R_WRAPPER)
                 r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
                 rOutput = r('model <- readFromRDS(params)')
-                print(rOutput)
+                log.info(rOutput)
                 results = r.get('model')
                 del r
                 rOutput = None
@@ -304,15 +304,15 @@ def uploadModelFile():
                         })
                 else:
                     message = "Couldn't read Time Points from RDS file!"
-                    print message
+                    log.error(message)
                     return buildFailure(message, 400)
             else:
                 message = "Upload RDS file failed!"
-                print message
+                log.error(message)
                 return buildFailure(message, 500)
         else:
             message = "No valid RDS file provided!"
-            print message
+            log.error(message)
             return buildFailure(message, 500)
 
     except Exception as e:
@@ -323,10 +323,10 @@ def uploadModelFile():
             errFileName = f.f_code.co_filename
             linecache.checkcache(errFileName)
             line = linecache.getline(errFileName, lineno, f.f_globals)
-            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(errFileName, lineno, line.strip(), exc_obj))
+            log.exception("Exception occurred")
             return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
         else:
-            print(rOutput)
+            log.error(rOutput)
             return buildFailure(rOutput, 500)
 
 if __name__ == '__main__':
