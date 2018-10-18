@@ -110,7 +110,7 @@ def fitting(parameters, outputCSVFileName):
             inputFileName = f.f_code.co_filename
             linecache.checkcache(inputFileName)
             line = linecache.getline(inputFileName, lineno, f.f_globals)
-            # message = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj)
+            message = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj)
             # print(message)
             log.exception('Exception happend!')
             return {"status": False, "message": message}
