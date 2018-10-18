@@ -46,12 +46,12 @@ OUTPUT_FILE_PREFIX = config.get('prefixes', 'output_file_prefix')
 # S3 settings
 INPUT_BUCKET = config.get('s3', 'input_bucket')
 OUTPUT_BUCKET = config.get('s3', 'output_bucket')
-VISIBILITY_TIMEOUT = int(config.get('s3', 'visibility_timeout'))
 URL_EXPIRE_TIME = int(config.get('s3', 'url_expire_time'))
 
 # SQS settings
 QUEUE_NAME = config.get('sqs', 'queue_name')
 QUEUE_MSG_RETENTION_SECONDS = config.get('sqs', 'queue_msg_retention_seconds')
+VISIBILITY_TIMEOUT = int(config.get('sqs', 'visibility_timeout'))
 QUEUE_LONG_PULL_TIME = config.get('sqs', 'queue_long_pull_time')
 QUEUE_MESSAGE_GROUP_ID = config.get('sqs', 'queue_message_group_id')
 
