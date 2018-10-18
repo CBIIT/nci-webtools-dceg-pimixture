@@ -244,7 +244,8 @@ def runPredict():
             'results': {
                 'prediction': results,
                 'model': model,
-                'csvFile': csvFileName
+                'csvFile': csvFileName,
+                'suffix': PREDICTION_SUFFIX
             }
         }
         if 'jobName' in parameters:
