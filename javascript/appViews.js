@@ -419,11 +419,12 @@ appMixture.FormView = Backbone.View.extend({
                 }
             });
             model.set('covariatesArr', covariatesArrNew);
-            model.set('covariatesArrValid', false);
+            if (_.difference(covariatesArrNew, covariatesArr).length) { // only do this when covariatesArrNew has new variables
+                model.set('covariatesArrValid', false);
+            }
         } else {
             model.set('covariatesArr', []);
             model.set('covariatesArrValid', true);
-            this.$('#covariates-error').html('');
         }
         this.updateCovariateBtnsStatus(covariatesSelectionSplit);
     },
@@ -441,7 +442,9 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     changeCovariatesArr: function() {
-        this.$('#covariates-error').html('');
+        if (this.model.get('covariatesArrValid')) {
+            this.$('#covariates-error').html('');
+        }
     },
     changeEffectsList: function () {
         return; // Don't display current interactive effects in form
