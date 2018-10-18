@@ -470,6 +470,11 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     displayExtraMappings: function(status) {
+        if (!status) {
+            this.model.unset('strata', {silent: true});
+            this.model.unset('weight', {silent: true});
+            this.checkMutuallyExclusive();
+        }
         this.$('#Strata, #Weight').prop('hidden', !status);
     },
     validateEmail: function () {
