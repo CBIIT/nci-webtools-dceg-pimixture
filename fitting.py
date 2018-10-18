@@ -77,28 +77,30 @@ def fitting(parameters, outputCSVFileName):
                 writer.writerow([key, val])
 
             writer.writerow([])
-            writer.writerow(['Regression coefficient estimates'])
-            writer.writerow(['Model', 'Label', 'Coefficient'])
-            for val in results['regression.coefficient']:
-                writer.writerow([val['Model'], val['Label'], val['Coef.']])
+            fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'exp(Coef.)': 'OR'}
+            writeResults(writer, 'Regression coefficient estimates', results['regression.coefficient'],
+                         ['Model', 'Label', 'Coef.'], fieldNamesMapping)
 
             writer.writerow([])
-            writer.writerow(['Odds Ratio (OR) for the prevalence'])
-            writer.writerow(['Model', 'Label', 'OR'])
-            for val in results['odds.ratio']:
-                if parameters['model'] == 'logistic-Weibull':
-                    writer.writerow(val)
-                else:
-                    writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+            if parameters['model'] == 'logistic-Weibull':
+                writer.writerow(['Prevalence Odds Ratio (OR)'])
+                writer.writerow(['Model', 'Label', 'OR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
+                for val in results['odds.ratio']:
+                    writer.writerow(['', ''] + val)
+            else:
+                writeResults(writer, 'Prevalence Odds Ratio (OR)', results['odds.ratio'],
+                         ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
 
             writer.writerow([])
-            writer.writerow(['Hazard Ratio (HR) for the incidence'])
-            writer.writerow(['Model', 'Label', 'HR'])
-            for val in results['hazard.ratio']:
-                if parameters['model'] == 'logistic-Weibull':
-                    writer.writerow(val)
-                else:
-                    writer.writerow([val['Model'], val['Label'], val['exp(Coef.)']])
+            if parameters['model'] == 'logistic-Weibull':
+                writer.writerow(['Incidence Hazard Ration (HR)'])
+                writer.writerow(['Model', 'Label', 'HR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
+                for val in results['hazard.ratio']:
+                    writer.writerow(['', ''] + val)
+            else:
+                fieldNamesMapping['exp(Coef.)'] = 'HR'
+                writeResults(writer, 'Incidence Hazard Ration (HR)', results['hazard.ratio'],
+                             ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
         return {'status': True, 'results': results}
     except Exception as e:
         if not rOutput:
@@ -115,3 +117,17 @@ def fitting(parameters, outputCSVFileName):
         else:
             log.error(rOutput)
             return {"status": False, "message": 'R output:<br>{}'.format(rOutput)}
+
+def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
+    if len(results) > 0:
+        if 'SE' in results[0]:
+            fieldNames.append('SE')
+        if '95%LL' in results[0]:
+            fieldNames.append('95%LL')
+        if '95%UL' in results[0]:
+            fieldNames.append('95%UL')
+
+    writer.writerow([subtitle])
+    writer.writerow([fieldNamesMapping[field] for field in fieldNames])
+    for val in results:
+        writer.writerow([val[field] for field in fieldNames])
