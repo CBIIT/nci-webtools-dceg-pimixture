@@ -13,8 +13,8 @@ def sendResults(jobName, email, results):
     subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
     content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
-    content += '<p><a href="{}" download="{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName)
-    content += '<p><a href="{}" download="{}.csv">Download CSV file</a></p>'.format(results['csvFile'], jobName)
+    content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_SUFFIX)
+    content += '<p><a href="{}" download="{}{}.csv">Download CSV file</a></p>'.format(results['csvFile'], jobName, FITTING_SUFFIX)
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
                             outputRdsFileKey = getOutputFileName(id, '.rds')
-                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}.rds'.format(jobName))
+                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_SUFFIX))
                             os.remove(outputRdsFileName)
                             if object:
                                 fittingResult['results']['Rfile'] = object
@@ -72,7 +72,7 @@ if __name__ == '__main__':
                                 sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileName(id, '.csv'), outputCSVFileName, '{}.csv'.format(jobName))
+                            object = outputBucket.uploadFile(getOutputFileName(id, '.csv'), outputCSVFileName, '{}{}.csv'.format(jobName, FITTING_SUFFIX))
                             os.remove(outputCSVFileName)
                             if object:
                                 fittingResult['results']['csvFile'] = object

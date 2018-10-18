@@ -25,6 +25,7 @@ def fitting(parameters, outputCSVFileName):
         os.remove(parameters['filename'])
         results['prediction.results'] = None
         results['csvFile'] = outputCSVFileName
+        results['suffix'] = FITTING_SUFFIX
 
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']

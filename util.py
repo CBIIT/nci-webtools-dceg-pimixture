@@ -43,6 +43,10 @@ if not os.path.isdir(OUTPUT_DATA_PATH):
 INPUT_FILE_PREFIX = config.get('prefixes', 'input_file_prefix')
 OUTPUT_FILE_PREFIX = config.get('prefixes', 'output_file_prefix')
 
+# Suffix settings
+FITTING_SUFFIX = config.get('suffixes', 'fitting_suffix')
+PREDICTION_SUFFIX = config.get('suffixes', 'prediction_suffix')
+
 # S3 settings
 INPUT_BUCKET = config.get('s3', 'input_bucket')
 OUTPUT_BUCKET = config.get('s3', 'output_bucket')

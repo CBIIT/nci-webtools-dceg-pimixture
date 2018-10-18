@@ -143,8 +143,8 @@
                         Download Fitting Results <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="btn" href="<%= data['Rfile'] %>"  download="<%= data.jobName ? data.jobName : 'PIMixture' %>.rds">RDS file</a></li>
-                        <li><a class="btn" href="<%= data['csvFile'] %>" download="<%= data.jobName ? data.jobName : 'PIMixture' %>.csv">CSV file</a></li>
+                        <li><a class="btn" href="<%= data['Rfile'] %>"  download="<%= data.jobName ? data.jobName : 'PIMixture' %><%= data['suffix'] %>.rds">RDS file</a></li>
+                        <li><a class="btn" href="<%= data['csvFile'] %>" download="<%= data.jobName ? data.jobName : 'PIMixture' %><%= data['suffix'] %>.csv">CSV file</a></li>
                     </ul>
                 </div>
             </div>
