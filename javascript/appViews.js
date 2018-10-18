@@ -46,9 +46,9 @@ appMixture.FormView = Backbone.View.extend({
             'change:headers': this.updateOptions,
             'change:design': this.changeDesign,
             'change:model': this.changeModel,
-            'change:outcomeC': this.changeCovariates,
-            'change:outcomeL': this.changeCovariates,
-            'change:outcomeR': this.changeCovariates,
+            'change:outcomeC': this.changeOutcomes,
+            'change:outcomeL': this.changeOutcomes,
+            'change:outcomeR': this.changeOutcomes,
             'change:covariatesSelection': this.changeCovariateList,
             'change:covariatesArrValid': this.changeCovariatesArr,
             'change:effects': this.changeEffectsList,
@@ -391,9 +391,9 @@ appMixture.FormView = Backbone.View.extend({
                 }));
             }
         }
-        this.changeCovariates.apply(this);
+        this.changeOutcomes.apply(this);
     },
-    changeCovariates: function () {
+    changeOutcomes: function () {
         var model = this.model,
             covariatesSelection = model.get('covariatesSelection');
 
