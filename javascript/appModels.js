@@ -24,7 +24,6 @@ appMixture.FormModel = Backbone.Model.extend({
         'covariatesArr': [],
         'covariatesArrValid': true,
         'effects': [],
-        'references': [],
         'email': ""
     }
 });
@@ -44,8 +43,7 @@ appMixture.ReferencesModel = Backbone.Model.extend({
         'valid': false,
         'covariates': [],
         'uniqueValues': {},
-        'formModel': {},
-        'references': {}
+        'formModel': {}
     }
 });
 

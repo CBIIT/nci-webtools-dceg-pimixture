@@ -234,7 +234,6 @@ appMixture.FormView = Backbone.View.extend({
                 }),
                 'uniqueValues': this.model.get('uniqueValues'),
                 'formModel': this.model,
-                'references': _.extend({}, this.model.get('references'))
             })
         });
     },
@@ -403,17 +402,6 @@ appMixture.FormView = Backbone.View.extend({
             if (model.get('effects')) {
                 model.set('effects', model.get('effects').filter(function (entry) {
                     return covariatesSelection.indexOf(entry.first) > -1 && covariatesSelection.indexOf(entry.second) > -1;
-                }));
-            }
-
-            if (model.get('references')) {
-                model.set('references', model.get('references').filter(function (entry) {
-                    for (var index in entry) {
-                        if (covariatesSelection.indexOf(entry[index]) < 0) {
-                            return false;
-                        }
-                    }
-                    return true;
                 }));
             }
         }
