@@ -45,7 +45,6 @@ appMixture.FormView = Backbone.View.extend({
         this.model.on({
             'change:headers': this.updateCovariateOptions,
             'change:design': this.changeDesign,
-            'change:model': this.changeModel,
             'change:outcomeC': this.changeOutcomes,
             'change:outcomeL': this.changeOutcomes,
             'change:outcomeR': this.changeOutcomes,
@@ -491,11 +490,6 @@ appMixture.FormView = Backbone.View.extend({
             } else {
                 this.model.set('emailValidated', true);
             }
-        }
-    },
-    changeModel: function () {
-        if (this.model.get('model') === "") {
-        } else {
         }
     },
     resetGroup: function () {
