@@ -564,11 +564,9 @@ appMixture.InteractiveEffectsView = Backbone.View.extend({
         this.$modal.close();
     },
     removeEffect: function (e) {
-        var e = $(e.target)
-        model = this.model,
-            effects = model.get('effects');
-        effects.splice(e.prop('data-index'), 1);
-        model.trigger('change:effects', model);
+        var effects = this.model.get('effects');
+        effects.splice(parseInt(e.currentTarget.dataset.index), 1);
+        this.model.trigger('change:effects', this.model);
     },
     save: function (e) {
         e.preventDefault(e);
