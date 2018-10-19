@@ -740,6 +740,9 @@ appMixture.ResultsView = Backbone.View.extend({
         appMixture.models.prediction.set('serverFile', this.model.get('Rfile'));
         appMixture.models.prediction.set('jobName', this.model.get('jobName'));
         appMixture.models.prediction.set('maxTimePoint', this.model.get('maxTimePoint'));
+        if (appMixture.models.predictionResultModel) {
+            appMixture.models.predictionResultModel.clear().set(appMixture.models.predictionResultModel.defaults);
+        }
         appMixture.router.navigate('#prediction', true);
     },
     initialize: function () {
@@ -778,13 +781,13 @@ appMixture.PredictionView = Backbone.View.extend({
             'change:maxTimePoint': this.updateMaxTimePoint
         }, this);
 
-        appMixture.predictionResultModel = new appMixture.PredictionResultModel();
+        appMixture.models.predictionResultModel = new appMixture.PredictionResultModel();
     },
     render: function () {
         this.$el.html(this.template(this.model.attributes));
         this.$("[data-toggle=popover]").popover();
         this.tryEnableInputs();
-        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.predictionResultModel});
+        appMixture.predictionResultView = new appMixture.PredictionResultView({model: appMixture.models.predictionResultModel});
         this.$el.append(appMixture.predictionResultView.render().el);
         this.initializePopovers();
         return this;
@@ -875,7 +878,7 @@ appMixture.PredictionView = Backbone.View.extend({
         }
     },
     resetForm: function(e) {
-        appMixture.predictionResultModel.clear({silent: true}).set(appMixture.predictionResultModel.defaults, {silent: true});
+        appMixture.models.predictionResultModel.clear({silent: true}).set(appMixture.models.predictionResultModel.defaults, {silent: true});
         this.model.clear({silent: true}).set(this.model.defaults, {silent: true});
         this.render();
     },
@@ -922,10 +925,10 @@ appMixture.PredictionView = Backbone.View.extend({
         formData.append('jsonData', JSON.stringify(jsonData));
 
         this.$('#error-message').html('');
-        appMixture.predictionResultModel.clear({silent: true}).set(appMixture.predictionResultModel.defaults, {silent: true});
+        appMixture.models.predictionResultModel.clear({silent: true}).set(appMixture.models.predictionResultModel.defaults, {silent: true});
         appMixture.predictionResultView.render();
         this.startSpinner();
-        appMixture.predictionResultModel.fetch({
+        appMixture.models.predictionResultModel.fetch({
             data: formData,
             cache: false,
             contentType: false,
