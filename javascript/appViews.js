@@ -43,7 +43,7 @@ appMixture.FormView = Backbone.View.extend({
         });
         var $that = this;
         this.model.on({
-            'change:headers': this.updateOptions,
+            'change:headers': this.updateCovariateOptions,
             'change:design': this.changeDesign,
             'change:model': this.changeModel,
             'change:outcomeC': this.changeOutcomes,
@@ -74,7 +74,7 @@ appMixture.FormView = Backbone.View.extend({
             sortField: 'order'
         });
         this.$("[data-toggle=popover]").popover();
-        this.updateOptions();
+        this.updateCovariateOptions();
         this.updateCovariates();
         this.initializePopovers();
         return this;
@@ -331,7 +331,7 @@ appMixture.FormView = Backbone.View.extend({
         }
 
         this.model.set(name, val);
-        this.updateOptions();
+        this.updateCovariateOptions();
 
         if (appMixture.variables.indexOf(name) != -1) {
             this.checkMutuallyExclusive();
@@ -501,18 +501,8 @@ appMixture.FormView = Backbone.View.extend({
     resetGroup: function () {
         this.model.set('groupValue', []);
     },
-    updateOptions: function () {
+    updateCovariateOptions: function () {
         var headers = this.model.get('headers');
-        if (headers) {
-        } else {
-            for (var i = 0; i < appMixture.variables.length; ++i) {
-                this.$el.find('[name="' + appMixture.variables[i] + '"]').html('');
-            }
-            var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
-            covariatesSelection.clearOptions();
-            return;
-        }
-        if (headers === null) return;
         var selected = [];
         var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
         for (var i = 0; i < appMixture.variables.length; ++i) {
