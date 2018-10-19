@@ -397,15 +397,11 @@ appMixture.FormView = Backbone.View.extend({
             model.set('covariatesArrValid', true);
         }
 
-        if (covariatesSelectionSplit.length > 1) {
-            model.set('effects', []);
-        } else {
-            if (model.get('effects')) {
-                model.set('effects', model.get('effects').filter(function (entry) {
-                    return covariatesSelection.indexOf(entry.first) > -1 && covariatesSelection.indexOf(entry.second) > -1;
-                }));
-            }
-        }
+        var effects = this.model.get('effects').filter(function(effect) {
+            return covariatesSelectionSplit.indexOf(effect.first) !== -1 &&
+                covariatesSelectionSplit.indexOf(effect.second) !== -1;
+        });
+        this.model.set('effects', effects);
 
         this.updateCovariateBtnsStatus(covariatesSelectionSplit);
     },
