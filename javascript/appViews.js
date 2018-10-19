@@ -453,6 +453,8 @@ appMixture.FormView = Backbone.View.extend({
         if (!status) {
             this.model.unset('strata', {silent: true});
             this.model.unset('weight', {silent: true});
+            this.$('[name="strata"] option:selected').prop('selected', false);
+            this.$('[name="weight"] option:selected').prop('selected', false);
             this.checkMutuallyExclusive();
         }
         this.$('#Strata, #Weight').prop('hidden', !status);
