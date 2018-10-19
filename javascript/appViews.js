@@ -48,6 +48,8 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeC': this.changeOutcomes,
             'change:outcomeL': this.changeOutcomes,
             'change:outcomeR': this.changeOutcomes,
+            'change:weight': this.changeOutcomes,
+            'change:strata': this.changeOutcomes,
             'change:covariatesSelection': this.changeCovariateList,
             'change:covariatesArrValid': this.changeCovariatesArrValid,
             'change:effects': this.changeEffectsList,
@@ -329,7 +331,6 @@ appMixture.FormView = Backbone.View.extend({
         }
 
         this.model.set(name, val);
-        this.updateCovariateOptions();
 
         if (appMixture.variables.indexOf(name) != -1) {
             this.checkMutuallyExclusive();
