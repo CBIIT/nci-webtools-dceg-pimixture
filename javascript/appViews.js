@@ -49,7 +49,7 @@ appMixture.FormView = Backbone.View.extend({
             'change:outcomeL': this.changeOutcomes,
             'change:outcomeR': this.changeOutcomes,
             'change:covariatesSelection': this.changeCovariateList,
-            'change:covariatesArrValid': this.changeCovariatesArr,
+            'change:covariatesArrValid': this.changeCovariatesArrValid,
             'change:effects': this.changeEffectsList,
             'change:sendToQueue': this.changeQueueStatus,
             'change:email': this.validateEmail
@@ -439,7 +439,7 @@ appMixture.FormView = Backbone.View.extend({
             }
         }
     },
-    changeCovariatesArr: function() {
+    changeCovariatesArrValid: function() {
         if (this.model.get('covariatesArrValid')) {
             this.$('#covariates-error').html('');
         }
