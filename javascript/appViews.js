@@ -76,7 +76,7 @@ appMixture.FormView = Backbone.View.extend({
         });
         this.$("[data-toggle=popover]").popover();
         this.updateCovariateOptions();
-        this.updateCovariates();
+        this.initializeCovariates();
         this.initializePopovers();
         return this;
     },
@@ -109,7 +109,7 @@ appMixture.FormView = Backbone.View.extend({
         this.$('#queuePopover').popover({title: "Queue", content: 'A job sent to queue will run in background, and send you an email when the computation finishes.',  trigger:"focus", container:"body", html: true});
         this.$('#emailPopover').popover({title: "Email", content: 'A valid email is needed for a job sent to queue.',  trigger:"focus", container:"body", html: true});
     },
-    updateCovariates: function(){
+    initializeCovariates: function(){
         covariatesSelection = this.$('[name="covariatesSelection"]')[0].selectize;
         var covariates = this.model.get('covariatesSelection');
         if (covariates) {
