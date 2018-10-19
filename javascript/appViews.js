@@ -367,35 +367,7 @@ appMixture.FormView = Backbone.View.extend({
     changeCovariateList: function () {
         var model = this.model,
             covariatesSelection = this.model.get('covariatesSelection');
-        var numCovariates = covariatesSelection.split(',').length;
         this.checkQueueThresholds();
-        if (covariatesSelection && numCovariates > 1) {
-            model.set('effects', []);
-        } else {
-            if (model.get('effects')) {
-                model.set('effects', model.get('effects').filter(function (entry) {
-                    return covariatesSelection.indexOf(entry.first) > -1 && covariatesSelection.indexOf(entry.second) > -1;
-                }));
-            }
-
-            if (model.get('references')) {
-                model.set('references', model.get('references').filter(function (entry) {
-                    for (var index in entry) {
-                        if (covariatesSelection.indexOf(entry[index]) < 0) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }));
-            }
-        }
-        this.changeOutcomes.apply(this);
-    },
-    changeOutcomes: function () {
-        var model = this.model,
-            covariatesSelection = model.get('covariatesSelection');
-
-        this.updateSelectize.apply(this);
         var covariatesSelectionSplit = [];
         if (covariatesSelection && covariatesSelection !== "") {
             covariatesSelectionSplit = covariatesSelection.split(',');
@@ -417,13 +389,35 @@ appMixture.FormView = Backbone.View.extend({
                 }
             });
             model.set('covariatesArr', covariatesArrNew);
-            if (_.difference(covariatesArrNew, covariatesArr).length) { // only do this when covariatesArrNew has new variables
+            if (_.difference(covariatesArrNew, covariatesArr).length) {
                 model.set('covariatesArrValid', false);
             }
         } else {
             model.set('covariatesArr', []);
             model.set('covariatesArrValid', true);
         }
+
+        if (covariatesSelectionSplit.length > 1) {
+            model.set('effects', []);
+        } else {
+            if (model.get('effects')) {
+                model.set('effects', model.get('effects').filter(function (entry) {
+                    return covariatesSelection.indexOf(entry.first) > -1 && covariatesSelection.indexOf(entry.second) > -1;
+                }));
+            }
+
+            if (model.get('references')) {
+                model.set('references', model.get('references').filter(function (entry) {
+                    for (var index in entry) {
+                        if (covariatesSelection.indexOf(entry[index]) < 0) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }));
+            }
+        }
+
         this.updateCovariateBtnsStatus(covariatesSelectionSplit);
     },
     updateCovariateBtnsStatus: function(covList) {
@@ -526,7 +520,7 @@ appMixture.FormView = Backbone.View.extend({
         }
         return optionsList;
     },
-    updateSelectize: function() {
+    changeOutcomes: function() {
         var covariatesSelection = this.$el.find('[name="covariatesSelection"]')[0].selectize;
         var selected = [];
         for (var i = 0; i < appMixture.variables.length; ++i) {
