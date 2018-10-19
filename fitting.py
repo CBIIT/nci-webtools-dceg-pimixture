@@ -29,79 +29,8 @@ def fitting(parameters, outputCSVFileName):
 
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']
-        with open(outputCSVFileName, 'w') as outputCSVFile:
-            writer = csv.writer(outputCSVFile, dialect='excel')
-            writer.writerow(['Job Parameters'])
-            writer.writerow(['Name', 'Value'])
-            savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
-                                {'field': 'inputCSVFile', 'name': 'Input File'},
-                                {'field': 'design', 'name': 'Sample Design'},
-                                {'field': 'model', 'name': 'Regression Model'},
-                                {'field': 'strata', 'name': 'Strata'},
-                                {'field': 'weight', 'name': 'Weight'},
-                                {'field': 'outcomeC', 'name': 'C'},
-                                {'field': 'outcomeL', 'name': 'L'},
-                                {'field': 'outcomeR', 'name': 'R'},
-                                {'field': 'covariatesSelection', 'name': 'Covariates'},
-                                {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
-                                {'field': 'effects', 'name': 'Interactive Effects'},
-                                {'field': 'email', 'name': 'Email'}
-                                ]
 
-            for param in savedParameters:
-                key = param['field']
-                name = param['name']
-                if key in parameters:
-                    val = parameters[key]
-                    if hasattr(val, 'filename'):
-                        writer.writerow([name, val.filename])
-                    elif key == 'covariatesArr':
-                        writer.writerow(['Covariate Configuaration'])
-                        writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
-                        for cov in val:
-                            writer.writerow(['', cov['text'], cov['type'], cov['category']])
-                    elif key == 'covariatesSelection':
-                        writer.writerow([name, ' + '.join(val)])
-                    elif key == 'design':
-                        val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
-                        writer.writerow([name, val])
-                    elif key == 'model':
-                        val = 'Parametric' if val == 'logistic-Weibull' else val
-                        writer.writerow([name, val])
-                    elif val:
-                        writer.writerow([name, val])
-
-            writer.writerow([])
-            writer.writerow(['Data Summary'])
-            writer.writerow(['Label', 'Number of the cases'])
-            for key, val in results['data.summary'].items():
-                writer.writerow([key, val])
-
-            writer.writerow([])
-            fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'exp(Coef.)': 'OR'}
-            writeResults(writer, 'Regression coefficient estimates', results['regression.coefficient'],
-                         ['Model', 'Label', 'Coef.'], fieldNamesMapping)
-
-            writer.writerow([])
-            if parameters['model'] == 'logistic-Weibull':
-                writer.writerow(['Prevalence Odds Ratio (OR)'])
-                writer.writerow(['Model', 'Label', 'OR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
-                for val in results['odds.ratio']:
-                    writer.writerow(['', ''] + val)
-            else:
-                writeResults(writer, 'Prevalence Odds Ratio (OR)', results['odds.ratio'],
-                         ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
-
-            writer.writerow([])
-            if parameters['model'] == 'logistic-Weibull':
-                writer.writerow(['Incidence Hazard Ration (HR)'])
-                writer.writerow(['Model', 'Label', 'HR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
-                for val in results['hazard.ratio']:
-                    writer.writerow(['', ''] + val)
-            else:
-                fieldNamesMapping['exp(Coef.)'] = 'HR'
-                writeResults(writer, 'Incidence Hazard Ration (HR)', results['hazard.ratio'],
-                             ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+        writeToCSVFile(outputCSVFileName, parameters, results)
         return {'status': True, 'results': results}
     except Exception as e:
         if not rOutput:
@@ -118,6 +47,82 @@ def fitting(parameters, outputCSVFileName):
         else:
             log.error(rOutput)
             return {"status": False, "message": 'R output:<br>{}'.format(rOutput)}
+
+def writeToCSVFile(filename, parameters, results):
+    with open(filename, 'w') as outputCSVFile:
+        writer = csv.writer(outputCSVFile, dialect='excel')
+        writer.writerow(['Job Parameters'])
+        writer.writerow(['Name', 'Value'])
+        savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
+                            {'field': 'inputCSVFile', 'name': 'Input File'},
+                            {'field': 'design', 'name': 'Sample Design'},
+                            {'field': 'model', 'name': 'Regression Model'},
+                            {'field': 'strata', 'name': 'Strata'},
+                            {'field': 'weight', 'name': 'Weight'},
+                            {'field': 'outcomeC', 'name': 'C'},
+                            {'field': 'outcomeL', 'name': 'L'},
+                            {'field': 'outcomeR', 'name': 'R'},
+                            {'field': 'covariatesSelection', 'name': 'Covariates'},
+                            {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
+                            {'field': 'effects', 'name': 'Interactive Effects'},
+                            {'field': 'email', 'name': 'Email'}
+                            ]
+
+        for param in savedParameters:
+            key = param['field']
+            name = param['name']
+            if key in parameters:
+                val = parameters[key]
+                if hasattr(val, 'filename'):
+                    writer.writerow([name, val.filename])
+                elif key == 'covariatesArr':
+                    writer.writerow(['Covariate Configuaration'])
+                    writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
+                    for cov in val:
+                        writer.writerow(['', cov['text'], cov['type'], cov['category']])
+                elif key == 'covariatesSelection':
+                    writer.writerow([name, ' + '.join(val)])
+                elif key == 'design':
+                    val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
+                    writer.writerow([name, val])
+                elif key == 'model':
+                    val = 'Parametric' if val == 'logistic-Weibull' else val
+                    writer.writerow([name, val])
+                elif val:
+                    writer.writerow([name, val])
+
+        writer.writerow([])
+        writer.writerow(['Data Summary'])
+        writer.writerow(['Label', 'Number of the cases'])
+        for key, val in results['data.summary'].items():
+            writer.writerow([key, val])
+
+        writer.writerow([])
+        fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'exp(Coef.)': 'OR'}
+        writeResults(writer, 'Regression coefficient estimates', results['regression.coefficient'],
+                     ['Model', 'Label', 'Coef.'], fieldNamesMapping)
+
+        writer.writerow([])
+        if parameters['model'] == 'logistic-Weibull':
+            writer.writerow(['Prevalence Odds Ratio (OR)'])
+            writer.writerow(['Model', 'Label', 'OR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
+            for val in results['odds.ratio']:
+                writer.writerow(['', ''] + val)
+        else:
+            writeResults(writer, 'Prevalence Odds Ratio (OR)', results['odds.ratio'],
+                         ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+
+        writer.writerow([])
+        if parameters['model'] == 'logistic-Weibull':
+            writer.writerow(['Incidence Hazard Ration (HR)'])
+            writer.writerow(['Model', 'Label', 'HR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
+            for val in results['hazard.ratio']:
+                writer.writerow(['', ''] + val)
+        else:
+            fieldNamesMapping['exp(Coef.)'] = 'HR'
+            writeResults(writer, 'Incidence Hazard Ration (HR)', results['hazard.ratio'],
+                         ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+    pass
 
 def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
     if len(results) > 0:
