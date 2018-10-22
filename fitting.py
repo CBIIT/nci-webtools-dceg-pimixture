@@ -3,8 +3,10 @@ import json
 import os, sys
 import linecache
 import csv
-from openpyxl import Workbook
 from util import *
+
+if SS_FILE_TYPE == EXCEL_FORMAT:
+    from openpyxl import Workbook
 
 def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
     try:
