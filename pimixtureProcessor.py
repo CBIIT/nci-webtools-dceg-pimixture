@@ -14,7 +14,7 @@ def sendResults(jobName, email, results):
     content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
     content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_SUFFIX)
-    content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SUFFIX, extensionMap[fileType], fileType)
+    content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                         parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
 
                         outputRdsFileName = getOutputFilePath(id, '.rds')
-                        outputSSFileName = getOutputFilePath(id, extensionMap[fileType])
+                        outputSSFileName = getOutputFilePath(id, extensionMap[SS_FILE_TYPE])
                         outputFileName = getOutputFilePath(id, '.out')
                         parameters['outputRdsFilename'] = outputRdsFileName
                         parameters['outputFilename'] = outputFileName
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                         jobName = jobName if jobName else 'PIMixture'
 
                         extender.start()
-                        fittingResult = fitting(parameters, outputSSFileName, fileType)
+                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
                             outputRdsFileKey = getOutputFileName(id, '.rds')
@@ -71,12 +71,12 @@ if __name__ == '__main__':
                                 sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileName(id, extensionMap[fileType]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SUFFIX, extensionMap[fileType]))
+                            object = outputBucket.uploadFile(getOutputFileName(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE]))
                             os.remove(outputSSFileName)
                             if object:
                                 fittingResult['results']['ssFile'] = object
                             else:
-                                sendErrors(jobName, parameters['email'], 'Upload result {} file failed!'.format(fileType))
+                                sendErrors(jobName, parameters['email'], 'Upload result {} file failed!'.format(SS_FILE_TYPE))
                                 outputBucket.deleteFile(outputRdsFileKey)
                                 continue
 

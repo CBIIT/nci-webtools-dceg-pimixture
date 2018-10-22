@@ -60,7 +60,7 @@ QUEUE_LONG_PULL_TIME = config.get('sqs', 'queue_long_pull_time')
 QUEUE_MESSAGE_GROUP_ID = config.get('sqs', 'queue_message_group_id')
 
 # Output settings
-fileType = config.get('output', 'file_type')
+SS_FILE_TYPE = config.get('output', 'file_type')
 
 # Constants
 IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
