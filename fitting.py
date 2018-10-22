@@ -3,7 +3,7 @@ import json
 import os, sys
 import linecache
 import csv
-
+from openpyxl import Workbook
 from util import *
 
 def fitting(parameters, outputCSVFileName):
@@ -48,25 +48,26 @@ def fitting(parameters, outputCSVFileName):
             log.error(rOutput)
             return {"status": False, "message": 'R output:<br>{}'.format(rOutput)}
 
+savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
+                    {'field': 'inputCSVFile', 'name': 'Input File'},
+                    {'field': 'design', 'name': 'Sample Design'},
+                    {'field': 'model', 'name': 'Regression Model'},
+                    {'field': 'strata', 'name': 'Strata'},
+                    {'field': 'weight', 'name': 'Weight'},
+                    {'field': 'outcomeC', 'name': 'C'},
+                    {'field': 'outcomeL', 'name': 'L'},
+                    {'field': 'outcomeR', 'name': 'R'},
+                    {'field': 'covariatesSelection', 'name': 'Covariates'},
+                    {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
+                    {'field': 'effects', 'name': 'Interactive Effects'},
+                    {'field': 'email', 'name': 'Email'}
+                    ]
+
 def writeToCSVFile(filename, parameters, results):
     with open(filename, 'w') as outputCSVFile:
         writer = csv.writer(outputCSVFile, dialect='excel')
         writer.writerow(['Job Parameters'])
         writer.writerow(['Name', 'Value'])
-        savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
-                            {'field': 'inputCSVFile', 'name': 'Input File'},
-                            {'field': 'design', 'name': 'Sample Design'},
-                            {'field': 'model', 'name': 'Regression Model'},
-                            {'field': 'strata', 'name': 'Strata'},
-                            {'field': 'weight', 'name': 'Weight'},
-                            {'field': 'outcomeC', 'name': 'C'},
-                            {'field': 'outcomeL', 'name': 'L'},
-                            {'field': 'outcomeR', 'name': 'R'},
-                            {'field': 'covariatesSelection', 'name': 'Covariates'},
-                            {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
-                            {'field': 'effects', 'name': 'Interactive Effects'},
-                            {'field': 'email', 'name': 'Email'}
-                            ]
 
         for param in savedParameters:
             key = param['field']
@@ -122,7 +123,6 @@ def writeToCSVFile(filename, parameters, results):
             fieldNamesMapping['exp(Coef.)'] = 'HR'
             writeResults(writer, 'Incidence Hazard Ration (HR)', results['hazard.ratio'],
                          ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
-    pass
 
 def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
     if len(results) > 0:
@@ -133,7 +133,69 @@ def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
         if '95%UL' in results[0]:
             fieldNames.append('95%UL')
 
-    writer.writerow([subtitle])
-    writer.writerow([fieldNamesMapping[field] for field in fieldNames])
+    writeRow = getattr(writer, 'writerow', None)
+    if not callable(writeRow):
+        writeRow = getattr(writer, 'append')
+    if subtitle:
+        writeRow([subtitle])
+    writeRow([fieldNamesMapping[field] for field in fieldNames])
     for val in results:
-        writer.writerow([val[field] for field in fieldNames])
+        writeRow([val[field] for field in fieldNames])
+
+def writeToXLSXFile(filename, parameters, results):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Job Parameters'
+    ws.append(['Name', 'Value'])
+
+    for param in savedParameters:
+        key = param['field']
+        name = param['name']
+        if key in parameters:
+            val = parameters[key]
+            if hasattr(val, 'filename'):
+                ws.append([name, val.filename])
+            elif key == 'covariatesArr':
+                ws.append(['Covariate Configuaration'])
+                ws.append(['', 'Covariate', 'Variable Type', 'Reference Level'])
+                for cov in val:
+                    ws.append(['', cov['text'], cov['type'], cov['category']])
+            elif key == 'covariatesSelection':
+                ws.append([name, ' + '.join(val)])
+            elif key == 'design':
+                val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
+                ws.append([name, val])
+            elif key == 'model':
+                val = 'Parametric' if val == 'logistic-Weibull' else val
+                ws.append([name, val])
+            elif val:
+                ws.append([name, val])
+
+    ws2 = wb.create_sheet(title='Data Summary')
+    ws2.append(['Label', 'Number of the cases'])
+    for key, val in results['data.summary'].items():
+        ws2.append([key, val])
+
+    fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'exp(Coef.)': 'OR'}
+    ws3 = wb.create_sheet(title='Regression coefficients')
+    writeResults(ws3, None, results['regression.coefficient'], ['Model', 'Label', 'Coef.'], fieldNamesMapping)
+
+    ws4 = wb.create_sheet(title='Prevalence Odds Ratio (OR)')
+    if parameters['model'] == 'logistic-Weibull':
+        ws4.append(['Model', 'Label', 'OR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
+        for val in results['odds.ratio']:
+            ws4.append(['', ''] + val)
+    else:
+        writeResults(ws4, None, results['odds.ratio'], ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+
+    ws5 = wb.create_sheet(title='Incidence Hazard Ration (HR)')
+    if parameters['model'] == 'logistic-Weibull':
+        ws5.append(['Model', 'Label', 'HR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
+        for val in results['hazard.ratio']:
+            ws5.append(['', ''] + val)
+    else:
+        fieldNamesMapping['exp(Coef.)'] = 'HR'
+        writeResults(ws5, None, results['hazard.ratio'], ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+
+    wb.save(filename)
+
