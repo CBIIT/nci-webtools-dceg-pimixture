@@ -71,7 +71,7 @@ def runModel():
                     log.error(message)
                     return buildFailure(message, 500)
                 outputRdsFileName = getOutputFilePath(id, '.rds')
-                outputCSVFileName = getOutputFilePath(id, '.csv')
+                outputSSFileName = getOutputFilePath(id, extensionMap[fileType])
                 outputFileName = getOutputFilePath(id, '.out')
                 parameters['filename'] = inputFileName
                 parameters['outputRdsFilename'] = outputRdsFileName
@@ -113,7 +113,7 @@ def runModel():
                 'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
             })
         else:
-            fittingResult = fitting(parameters, outputCSVFileName, CSV_FORMAT)
+            fittingResult = fitting(parameters, outputSSFileName, fileType)
             if fittingResult['status']:
                 return buildSuccess(fittingResult['results'])
             else:

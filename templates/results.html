@@ -144,7 +144,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="btn" href="<%= data['Rfile'] %>"  download="<%= data.jobName ? data.jobName : 'PIMixture' %><%= data['suffix'] %>.rds">RDS file</a></li>
-                        <li><a class="btn" href="<%= data['csvFile'] %>" download="<%= data.jobName ? data.jobName : 'PIMixture' %><%= data['suffix'] %>.csv">CSV file</a></li>
+                        <li><a class="btn" href="<%= data['ssFile'] %>" download="<%= data.jobName ? data.jobName : 'PIMixture' %><%= data['suffix'] %><%= data.extension %>"><%= data.fileType %> file</a></li>
                     </ul>
                 </div>
             </div>

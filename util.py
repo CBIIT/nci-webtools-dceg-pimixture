@@ -59,10 +59,18 @@ VISIBILITY_TIMEOUT = int(config.get('sqs', 'visibility_timeout'))
 QUEUE_LONG_PULL_TIME = config.get('sqs', 'queue_long_pull_time')
 QUEUE_MESSAGE_GROUP_ID = config.get('sqs', 'queue_message_group_id')
 
+# Output settings
+fileType = config.get('output', 'file_type')
+
 # Constants
 IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
 CSV_FORMAT = 'CSV'
 EXCEL_FORMAT = 'EXCEL'
+
+extensionMap = {
+    CSV_FORMAT: '.csv',
+    EXCEL_FORMAT: '.xlsx'
+}
 
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)

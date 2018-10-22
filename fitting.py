@@ -24,7 +24,9 @@ def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
         os.remove(returnFile)
         os.remove(parameters['filename'])
         results['prediction.results'] = None
-        results['csvFile'] = outputSSFileName
+        results['ssFile'] = outputSSFileName
+        results['extension'] = extensionMap[fileType]
+        results['fileType'] = fileType
         results['suffix'] = FITTING_SUFFIX
 
         if 'jobName' in parameters:
