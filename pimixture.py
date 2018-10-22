@@ -113,7 +113,7 @@ def runModel():
                 'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
             })
         else:
-            fittingResult = fitting(parameters, outputCSVFileName)
+            fittingResult = fitting(parameters, outputCSVFileName, CSV_FORMAT)
             if fittingResult['status']:
                 return buildSuccess(fittingResult['results'])
             else:

@@ -6,7 +6,7 @@ import csv
 from openpyxl import Workbook
 from util import *
 
-def fitting(parameters, outputCSVFileName):
+def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
     try:
         rOutput = None
         r = pr.R()
@@ -24,13 +24,19 @@ def fitting(parameters, outputCSVFileName):
         os.remove(returnFile)
         os.remove(parameters['filename'])
         results['prediction.results'] = None
-        results['csvFile'] = outputCSVFileName
+        results['csvFile'] = outputSSFileName
         results['suffix'] = FITTING_SUFFIX
 
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']
 
-        writeToCSVFile(outputCSVFileName, parameters, results)
+        if fileType == EXCEL_FORMAT:
+            writeToXLSXFile(outputSSFileName, parameters, results)
+        elif fileType == CSV_FORMAT:
+            writeToCSVFile(outputSSFileName, parameters, results)
+        else:
+            log.error('Unknow output filetype: {}'.format(fileType))
+
         return {'status': True, 'results': results}
     except Exception as e:
         if not rOutput:

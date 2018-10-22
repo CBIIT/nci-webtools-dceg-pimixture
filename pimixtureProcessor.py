@@ -60,7 +60,7 @@ if __name__ == '__main__':
                         jobName = jobName if jobName else 'PIMixture'
 
                         extender.start()
-                        fittingResult = fitting(parameters, outputCSVFileName)
+                        fittingResult = fitting(parameters, outputCSVFileName, CSV_FORMAT)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
                             outputRdsFileKey = getOutputFileName(id, '.rds')
