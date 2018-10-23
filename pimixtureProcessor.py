@@ -6,6 +6,7 @@ from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 import os, sys
 from urllib import urlencode
+import argparse
 
 from util import *
 from fitting import *
@@ -30,6 +31,11 @@ def sendErrors(jobName, email, errors):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
+    args = parser.parse_args()
+    if (args.debug):
+        addStreamHandler()
     try:
         sqs = Queue()
         while True:

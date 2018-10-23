@@ -24,6 +24,7 @@ def buildSuccess(message):
 
 @app.route('/templateList', methods=["GET"])
 def templates():
+    log.info("GET /templateList")
     templateSet = {}
     path = os.path.join(os.getcwd(),'templates')
     for fileName in [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.html')]:
@@ -33,6 +34,7 @@ def templates():
 
 @app.route('/run', methods=["POST"])
 def runModel():
+    log.info('POST /run')
     try:
         if request.form and request.form['jsonData']:
             parameters = json.loads(request.form['jsonData'])
@@ -131,6 +133,7 @@ def runModel():
 
 @app.route('/predict', methods=["POST"])
 def runPredict():
+    log.info('POST /predict')
     try:
         rOutput = None
         if request.form and request.form['jsonData']:
@@ -276,6 +279,7 @@ def runPredict():
 
 @app.route('/uploadModel', methods=["POST"])
 def uploadModelFile():
+    log.info('POST /uploadModel')
     try:
         rOutput = None
         if len(request.files) > 0 and 'rdsFile' in request.files:
@@ -332,6 +336,7 @@ def uploadModelFile():
 
 @app.route('/numMessages', methods=["GET"])
 def getNumMessages():
+    log.info('GET /numMessages')
     try:
         sqs = Queue()
         numMessages = sqs.getApproximateNumberOfMessages()
@@ -352,6 +357,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
     args = parser.parse_args()
     if (args.debug):
+        addStreamHandler()
         @app.route('/common/<path:path>')
         def common_folder(path):
             return send_from_directory("common",path)

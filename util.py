@@ -4,27 +4,32 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from ConfigParser import SafeConfigParser
-import logging as log
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 config = SafeConfigParser()
 config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
 config.read(config_file)
 
 logLevel = config.get('log', 'log_level')
-numericLevel = getattr(log, logLevel.upper(), None)
+numericLevel = getattr(logging, logLevel.upper(), None)
 if not isinstance(numericLevel, int):
     raise ValueError('Invalid log level: %s' % logLevel)
 
-log.basicConfig(level=numericLevel, format='%(asctime)s [%(levelname)s] %(module)s - %(message)s')
+log = logging.getLogger('pimixture')
+log.setLevel(numericLevel)
+stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(message)s')
 
-# log = logging.getLogger('pimixture')
-# stdHandler = logging.StreamHandler(sys.stdout)
-# stdHandler.setLevel(logging.INFO)
-# stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(message)s')
-# stdHandler.setFormatter(stdFormatter)
-# log.addHandler(stdHandler)
+logFolder = config.get('log', 'log_folder')
+logFileName = config.get('log', 'log_file_name')
+if logFolder and not os.path.isdir(logFolder):
+    os.makedirs(logFolder)
+logFileName = os.path.join(logFolder, logFileName)
+fileHandler = TimedRotatingFileHandler(logFileName, when='midnight', interval=1, backupCount=60)
+fileHandler.setFormatter(stdFormatter)
+log.addHandler(fileHandler)
 
-# Mail setttings
+# Mail settings
 HOST = config.get('mail', 'host')
 SENDER = config.get('mail', 'sender')
 
@@ -73,6 +78,11 @@ extensionMap = {
     CSV_FORMAT: '.csv',
     EXCEL_FORMAT: '.xlsx'
 }
+
+def addStreamHandler():
+    stdHandler = logging.StreamHandler()
+    stdHandler.setFormatter(stdFormatter)
+    log.addHandler(stdHandler)
 
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)
