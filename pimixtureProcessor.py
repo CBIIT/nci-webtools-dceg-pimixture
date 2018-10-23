@@ -66,7 +66,7 @@ if __name__ == '__main__':
                         fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
-                            outputRdsFileKey = getOutputFileName(id, '.rds')
+                            outputRdsFileKey = getOutputFileKey(id, '.rds')
                             object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_SUFFIX))
                             os.remove(outputRdsFileName)
                             if object:
@@ -75,7 +75,7 @@ if __name__ == '__main__':
                                 sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileName(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE]))
+                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE]))
                             os.remove(outputSSFileName)
                             if object:
                                 fittingResult['results']['ssFile'] = object

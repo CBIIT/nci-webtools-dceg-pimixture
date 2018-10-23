@@ -50,7 +50,7 @@ def runModel():
             ext = os.path.splitext(inputCSVFile.filename)[1]
             if sendToQueue:
                 bucket = S3Bucket(INPUT_BUCKET)
-                object = bucket.uploadFileObj('{}{}'.format(id, ext), inputCSVFile)
+                object = bucket.uploadFileObj(getInputFileKey(id, ext), inputCSVFile)
                 if object:
                     parameters['inputCSVFile'] = {
                         'originalName': inputCSVFile.filename,

@@ -51,6 +51,8 @@ PREDICTION_SUFFIX = config.get('suffixes', 'prediction_suffix')
 INPUT_BUCKET = config.get('s3', 'input_bucket')
 OUTPUT_BUCKET = config.get('s3', 'output_bucket')
 URL_EXPIRE_TIME = int(config.get('s3', 'url_expire_time'))
+S3_INPUT_FOLDER = config.get('s3', 'input_folder')
+S3_OUTPUT_FOLDER = config.get('s3', 'output_folder')
 
 # SQS settings
 QUEUE_NAME = config.get('sqs', 'queue_name')
@@ -78,8 +80,11 @@ def getInputFilePath(id, extention):
 def getOutputFilePath(id, extention):
     return getFilePath(OUTPUT_DATA_PATH, OUTPUT_FILE_PREFIX, id, extention)
 
-def getOutputFileName(id, extension):
-    return getFileName(OUTPUT_FILE_PREFIX, id, extension)
+def getInputFileKey(id, extension):
+    return getFileName(S3_INPUT_FOLDER + OUTPUT_FILE_PREFIX, id, extension)
+    
+def getOutputFileKey(id, extension):
+    return getFileName(S3_OUTPUT_FOLDER + OUTPUT_FILE_PREFIX, id, extension)
 
 def getFilePath(path, prefix, id, extension):
     filename = getFileName(prefix, id, extension)
