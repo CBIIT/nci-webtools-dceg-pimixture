@@ -5,6 +5,7 @@ from pprint import pprint
 from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 import os, sys
+from urllib import urlencode
 
 from util import *
 from fitting import *
@@ -15,6 +16,9 @@ def sendResults(jobName, email, results):
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
     content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_SUFFIX)
     content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
+    query = urlencode({"remoteRFile": results['Rfile'],
+                       "fileName": '{}{}.rds'.format(jobName, FITTING_SUFFIX)})
+    content += '<p><a href="http://localhost:8000/#prediction?{}">Run Prediction</a></p>'.format(query)
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):

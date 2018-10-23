@@ -786,6 +786,7 @@ appMixture.PredictionView = Backbone.View.extend({
         appMixture.models.predictionResultModel = new appMixture.PredictionResultModel();
     },
     render: function () {
+        this.checkRemoteRFile();
         this.$el.html(this.template(this.model.attributes));
         this.$("[data-toggle=popover]").popover();
         this.tryEnableInputs();
@@ -793,6 +794,21 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$el.append(appMixture.predictionResultView.render().el);
         this.initializePopovers();
         return this;
+    },
+    checkRemoteRFile: function() {
+        $that = this;
+        var remoteRFileName = this.model.get('remoteRFile');
+        var fileName = this.model.get('fileName');
+        if (remoteRFileName) {
+            fetch(remoteRFileName).then(function(res){
+               res.blob().then(function(blob){
+                   var file = new File([blob], fileName);
+                   $that.model.set('rdsFile', file);
+                   $that.model.unset('remoteRFile');
+                   $that.selectModelFile();//upload remote file to server
+               });
+            });
+        }
     },
     initializePopovers: function() {
         this.$('#testDataPopover').popover({title: "Prediction", content: 'Based on the regression parameters and/or cumulative hazard function, we can predict prevalence and incidence using an independent data (called test data) including the predictors used for estimating the parameters and cumulative hazard function. For prediction, users need to upload fitted model, test data and input time points. When time point=0, predicted probabilities mean the prevalences of subgroups characterized by specific predictors; when time point=t>0, predicted cumulative risk up to time t includes prevalence too. Test data should include the same variables used for fitting the model.',  trigger:"focus", container:"body", html: true});
@@ -805,7 +821,10 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     selectModelFile: function(e) {
         var $that = this;
-        var file = e.target.files[0];
+        var file = this.model.get('rdsFile');
+        if (e) {
+            file = e.target.files[0];
+        }
         if (file) {
             var formData = new FormData();
             formData.append('rdsFile', file);
@@ -822,7 +841,7 @@ appMixture.PredictionView = Backbone.View.extend({
                     console.log(res.responseText);
                     $that.$('#error-message').html(res.responseText)
                 }
-            })
+            });
             this.model.set('rdsFile', file);
             this.$('#modelFileName').html(file.name);
             this.$('#modelFileBtn').prop('disabled', true);
@@ -1163,6 +1182,7 @@ appMixture.Router = Backbone.Router.extend({
         '': 'home',
         'help': 'help',
         'fitting': 'fitting',
+        'prediction?remoteRFile=:remoteRFile&fileName=:fileName': 'prediction',
         'prediction': 'prediction'
     },
     menus: ['home', 'help', 'fitting', 'prediction'],
@@ -1176,8 +1196,14 @@ appMixture.Router = Backbone.Router.extend({
         appMixture.showView(appMixture.views.help);
         console.log('Help page!');
     },
-    prediction: function(rdsFile) {
+    prediction: function(remoteRFile, fileName) {
         this.activeMenu('prediction');
+        if (remoteRFile) {
+            appMixture.models.prediction.set('remoteRFile', remoteRFile);
+        }
+        if(fileName) {
+            appMixture.models.prediction.set('fileName', fileName);
+        }
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {
