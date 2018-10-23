@@ -122,9 +122,9 @@
     </fieldset>
     <fieldSet id="emailSet" class="well">
         <div class="form-group">
-            <div class="checkbox col-md-8">
+            <div class="checkbox col-md-12">
                 <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>
-                    <%= data.sendToQueue ? 'checked' : '' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a>
+                    <%= data.sendToQueue ? 'checked' : '' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a><span id="numMessages"></span>
             </div>
         </div>
         <div id="email-error" class=""></div>

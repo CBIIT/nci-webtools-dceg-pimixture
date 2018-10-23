@@ -26,6 +26,9 @@ class Queue:
     def receiveMsgs(self, visibilityTimeOut):
         return self.queue.receive_messages(VisibilityTimeout = visibilityTimeOut)
 
+    def getApproximateNumberOfMessages(self):
+        return self.queue.attributes.get('ApproximateNumberOfMessages', -1)
+
 # Automatically extend visibility timeout every timeOutValue/2 seconds
 class VisibilityExtender:
     def __init__(self, msg, timeOutValue):

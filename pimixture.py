@@ -330,6 +330,19 @@ def uploadModelFile():
             log.error(rOutput)
             return buildFailure(rOutput, 500)
 
+@app.route('/numMessages', methods=["GET"])
+def getNumMessages():
+    try:
+        sqs = Queue()
+        numMessages = sqs.getApproximateNumberOfMessages()
+        if numMessages != -1:
+            return buildSuccess({'numMessages': numMessages})
+        else:
+            return buildFailure("Couldn't retrieve number of messages enqueued!")
+    except Exception as e:
+        log.exception("Exception occurred")
+        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()

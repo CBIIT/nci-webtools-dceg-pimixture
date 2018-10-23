@@ -78,7 +78,20 @@ appMixture.FormView = Backbone.View.extend({
         this.updateCovariateOptions();
         this.initializeCovariates();
         this.initializePopovers();
+        this.getNumMessages();
         return this;
+    },
+    getNumMessages: function(){
+        $that = this;
+        fetch('numMessages').then(function(res){
+            res.json().then(function(data){
+                if (data.numMessages) {
+                    $that.$('#numMessages').html('(Jobs currently enqueued: ' + data.numMessages + ')');
+                }
+            });
+        }).catch(function(err){
+            console.error(err);
+        });
     },
     initializePopovers: function() {
         this.$('#jobNamePopover').popover({title: "Job Name", content:"Optional job name will be prepend to result file names, if not entered, default name will be 'PIMixture'", container:"body",trigger: "focus", container: "body", html: true});
