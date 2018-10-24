@@ -374,12 +374,6 @@ input[type=file] {
     padding-left: 10px;
 }
 
-#help-page table th,
-#help-page table td
-{
-    width: 25%;
-}
-
 #help-page table thead th {
     background-color: #f0f0f0;
 }
@@ -397,6 +391,28 @@ input[type=file] {
 #help-page h4,
 #help-page h3 {
     color: #4A6E9B;
+}
+
+#help-page table thead tr th{
+    background-color: #4676c0;
+    color: white;
+}
+#model-table tr th:nth-child(2),
+#model-table tr td:nth-child(2) {
+    width: 12.5%;
+}
+
+#model-table tr th:nth-child(3),
+#model-table tr td:nth-child(3) {
+    width: 17.5%;
+}
+
+#model-table tr th:first-child{
+    width: 35%;
+}
+
+#model-table tr th:last-child{
+    width: 35%;
 }
 
 #numMessages {
