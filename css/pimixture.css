@@ -368,6 +368,12 @@ input[type=file] {
     font-size: 80%;
 }
 
+#home-panel {
+    border: thin solid lightgray;
+    height: 800px;
+    padding-left: 10px;
+}
+
 #help-page table th,
 #help-page table td
 {
