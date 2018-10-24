@@ -103,7 +103,9 @@ def runModel():
 
         if sendToQueue:
             parameters['hostURL'] = re.sub(r'run$', '', request.base_url)
-            log.info('Host address: {}'.format(parameters['hostURL']))
+            log.info('Host address from base_url: {}'.format(parameters['hostURL']))
+            parameters['hostURL'] = re.sub(r'run$', '', request.url)
+            log.info('Host address from url: {}'.format(parameters['hostURL']))
             # Send parameters to queue
             sqs = Queue()
             sqs.sendMsgToQueue({
