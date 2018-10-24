@@ -165,6 +165,7 @@ appMixture.FormView = Backbone.View.extend({
         }
         formData.append('csvFile', params.csvFile);
         delete params.csvFile;
+        params.hostURL = window.location.href.split('#')[0];
         formData.append('jsonData', JSON.stringify(params));
         this.startSpinner();
         $that.$('#error-message').html('');
