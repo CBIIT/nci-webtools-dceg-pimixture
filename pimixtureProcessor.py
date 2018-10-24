@@ -11,7 +11,7 @@ import argparse
 from util import *
 from fitting import *
 
-def sendResults(jobName, email, results):
+def sendResults(jobName, email, hostURL, results):
     subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
     content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
@@ -19,7 +19,7 @@ def sendResults(jobName, email, results):
     content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
     query = urlencode({"remoteRFile": results['Rfile'],
                        "fileName": '{}{}.rds'.format(jobName, FITTING_SUFFIX)})
-    content += '<p><a href="http://localhost:8000/#prediction?{}">Run Prediction</a></p>'.format(query)
+    content += '<p><a href="{}#prediction?{}">Run Prediction</a></p>'.format(hostURL, query)
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                                 outputBucket.deleteFile(outputRdsFileKey)
                                 continue
 
-                            if not sendResults(jobName, parameters['email'], fittingResult['results']):
+                            if not sendResults(jobName, parameters['email'], parameters['hostURL'], fittingResult['results']):
                                 log.error("An error happened when trying to send result email")
                                 continue
                         else:

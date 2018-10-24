@@ -101,6 +101,7 @@ def runModel():
         parameters['columns'] = columns
 
         if sendToQueue:
+            parameters['hostURL'] = request.host_url
             # Send parameters to queue
             sqs = Queue()
             sqs.sendMsgToQueue({
