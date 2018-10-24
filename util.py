@@ -22,7 +22,7 @@ stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(mes
 
 logFolder = config.get('log', 'log_folder')
 logFileName = config.get('log', 'log_file_name')
-if logFolder and not os.path.isdir(logFolder):
+if logFolder and not os.path.exists(logFolder):
     os.makedirs(logFolder)
 logFileName = os.path.join(logFolder, logFileName)
 fileHandler = TimedRotatingFileHandler(logFileName, when='midnight', interval=1, backupCount=60)
@@ -36,12 +36,12 @@ SENDER = config.get('mail', 'sender')
 # Folder settings
 INPUT_DATA_PATH = config.get('folders', 'input_data_path')
 log.info('INPUT_DATA_PATH: {}'.format(INPUT_DATA_PATH))
-if not os.path.isdir(INPUT_DATA_PATH):
+if not os.path.exists(INPUT_DATA_PATH):
     os.makedirs(INPUT_DATA_PATH)
 
 OUTPUT_DATA_PATH = config.get('folders', 'output_data_path')
 log.info('OUTPUT_DATA_PATH: {}'.format(OUTPUT_DATA_PATH))
-if not os.path.isdir(OUTPUT_DATA_PATH):
+if not os.path.exists(OUTPUT_DATA_PATH):
     os.makedirs(OUTPUT_DATA_PATH)
 
 # Prefix settings
