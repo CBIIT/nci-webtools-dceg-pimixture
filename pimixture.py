@@ -5,6 +5,7 @@ import pyper as pr
 import csv
 import uuid
 import codecs
+import re
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
@@ -101,7 +102,8 @@ def runModel():
         parameters['columns'] = columns
 
         if sendToQueue:
-            parameters['hostURL'] = request.host_url
+            parameters['hostURL'] = re.sub(r'run$', '', request.base_url)
+            log.info('Host address: {}'.format(parameters['hostURL']))
             # Send parameters to queue
             sqs = Queue()
             sqs.sendMsgToQueue({
