@@ -266,9 +266,10 @@ h2.stage-header {
   color: red;
 }
 
+#designAndModelSet,
 fieldset.well {
-    margin-left: -15px;
-    margin-right: -15px;
+    margin-left: -5px;
+    margin-right: -5px;
     padding: 10px 15px 10px 15px;
 }
 
@@ -393,7 +394,7 @@ input[type=file] {
 }
 
 #numMessages {
-    font-size: 0.9em;
+    font-size: 0.8em;
     margin-left: 10px;
 }
 
