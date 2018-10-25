@@ -25,18 +25,18 @@
     <script type="text/javascript" src="javascript/appModels.js"></script>
 </head>
 <body>
-    <div style="display: none">
-        <span id="home"></span>
-        <span id="fitting"></span>
-        <span id="prediction"></span>
-        <span id="help"></span>
-    </div>
-    <div class="container">
-        <a href="http://dceg.cancer.gov/" target="_blank">
-            <img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo">
-        </a>
-    </div>
-    <div id="mainbody">
+    <header>
+        <div>
+            <span id="home"></span>
+            <span id="fitting"></span>
+            <span id="prediction"></span>
+            <span id="help"></span>
+        </div>
+        <div class="container">
+            <a href="http://dceg.cancer.gov/" target="_blank">
+                <img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo">
+            </a>
+        </div>
         <div id="title-bar">
             <div class="container">
                 <h1 id="title"><span class="highlighted-title">P</span>revalence-<span class="highlighted-title">I</span>ncidence <span class="highlighted-title">Mixture</span> Risk Models</h1>
@@ -52,18 +52,18 @@
                 </ul>
             </div>
         </nav>
-        <div class="container">
-            <div id="home-page" class="row">
-            </div>
-            <div id="main-tool" class="row">
-            </div>
-            <div id="prediction-tool" class="row">
-            </div>
-            <div id="help-tool" class="row">
-            </div>
+    </header>
+    <main id="mainbody" class="container">
+        <div id="home-page" class="row">
         </div>
-    </div>
-    <div class="container-fluid footer">
+        <div id="main-tool" class="row">
+        </div>
+        <div id="prediction-tool" class="row">
+        </div>
+        <div id="help-tool" class="row">
+        </div>
+    </main>
+    <footer class="container-fluid footer">
       <div class="center-block">
         <ul class="list-inline">
           <li><a target="_blank" href="http://www.cancer.gov/">Home</a></li>
@@ -89,6 +89,6 @@
         </ul>
         <div class="text-center"><span>NIH ... Turning Discovery Into Health</span><sup>®</sup></div>
       </div>
-    </div>
+    </footer>
 </body>
 </html>

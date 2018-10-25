@@ -1,6 +1,10 @@
 body {
     font-size: 15px;
 }
+
+header {
+    margin-top: 0;
+}
 .division-logo {
     max-width: 600px;
 }
