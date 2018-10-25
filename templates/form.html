@@ -1,19 +1,19 @@
 <form id="calculationForm" class="well form-horizontal" method="POST">
-    <fieldset id="fileSet" class="well">
+    <div id="fileSet" class="well fieldset">
         <div class="form-group">
-            <label class="control-label col-md-4">Job Name <a id="jobNamePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4"><label class="control-label" for="jobName">Job Name </label> <a id="jobNamePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="job name tooltip"></a></div>
             <div class="col-md-8">
-                <input type="text" name="jobName" placeholder="PIMixture" class="form-control" value="<%= data.jobName %>">
+                <input type="text" id="jobName" name="jobName" placeholder="PIMixture" class="form-control" value="<%= data.jobName %>">
             </div>
         </div>
         <div class="form-group">
-            <label id="csvFileLabel" class="col-md-4 control-label">Input File <span class="text-danger">*</span> <a id="inputFilePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4"><label id="csvFileLabel" class="control-label" for="csvFile">Input File <span class="text-danger">*</span></label> <a id="inputFilePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="input file tooltip"></a></div>
             <div class="col-md-8 sampleDownloadContainer">
                 <a href="bd.mock.data.csv" download="PIMixtureSample.csv" class="sampleDownload">Download Sample</a>
             </div>
         </div>
         <div class="form-group" style="margin-bottom: 5px;">
-            <div class="col-md-3" style="padding-left: 0;">
+            <div class="col-md-3">
                 <input id="csvFile" name="csvFile" type="file" accept=".csv" style="display:none;">
                 <button id="csvFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('csvFile').click();" <%= data.csvFile.name ? 'disabled' : '' %>>Choose File</button>
             </div>
@@ -21,12 +21,14 @@
                 <div id="csvFileName"><%= data.csvFile.name %></div>
             </div>
         </div>
-    </fieldset>
-    <fieldset id="designAndModelSet" class="well form-group">
+    </div>
+    <div id="designAndModelSet" class="fieldset well form-group">
         <div class="form-group">
-            <label id="designLabel" class="control-label col-md-6">Sample Design <span class="text-danger">*</span> <a id="designPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-6">
-                <select name="design" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
+                <label id="designLabel" class="control-label" for="design">Sample Design <span class="text-danger">*</span></label> <a id="designPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="sample design tooltip"></a>
+            </div>
+            <div class="col-md-6">
+                <select id="design" name="design" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Design---</option>
                     <option value="null" <%= data.design === null ? 'selected' : '' %>>Cohort (Unweighted)</option>
                     <option value="1" <%= data.design === 1 ? 'selected' : '' %>>Cohort (Weighted)</option>
@@ -34,9 +36,11 @@
             </div>
         </div>
         <div class="form-group">
-        <label id="modelLabel" class="control-label col-md-6">Regression Model <span class="text-danger">*</span> <a id="modelPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
             <div class="col-md-6">
-                <select name="model" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
+                <label id="modelLabel" class="control-label" for="model">Regression Model <span class="text-danger">*</span></label> <a id="modelPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="regression model tooltip"></a>
+            </div>
+            <div class="col-md-6">
+                <select id="model" name="model" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Model----</option>
                     <option <%= data.model === 'semi-parametric' ? 'selected' : '' %> value="semi-parametric">Semi-parametric</option>
                     <option <%= data.model === 'weakly-parametric' ? 'selected' : '' %> value="weakly-parametric">Weakly-parametric</option>
@@ -44,13 +48,15 @@
                 </select>
             </div>
         </div>
-    </fieldset>
-    <fieldset id="covariatesSet" class="well">
+    </div>
+    <div id="covariatesSet" class="fieldset well">
         <div id="mutex-error" class=""></div>
         <div id="Strata" class="form-group" <%= data.design !== 1 ? 'hidden' : '' %>>
-            <label class="control-label col-md-4">Strata <span class="text-danger">*</span> <a id="strataPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4">
+                <label class="control-label" for="strata-input">Strata <span class="text-danger">*</span></label> <a id="strataPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="strata tooltip"></a>
+            </div>
             <div class="col-md-8">
-                <select name="strata" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="strata-input" name="strata" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
                         <option value="">----Select Strata----</option>
                     <% for (var field of data.headers) { %>
                         <option <%= data.strata === field ? 'selected' : ''%>><%= field %></option>
@@ -59,9 +65,11 @@
             </div>
         </div>
         <div id="Weight" class="form-group" <%= data.design !== 1 ? 'hidden' : '' %>>
-            <label class="control-label col-md-4">Weight <span class="text-danger">*</span> <a id="weightPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4">
+                <label class="control-label" for="weight-input">Weight <span class="text-danger">*</span></label> <a id="weightPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="weight tooltip"></a>
+            </div>
             <div class="col-md-8">
-                <select name="weight" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="weight-input" name="weight" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Weight----</option>
                 <% for (var field of data.headers) { %>
                     <option <%= data.strata === field ? 'selected' : ''%>><%= field %></option>
@@ -70,9 +78,11 @@
             </div>
         </div>
         <div id="outcomeC" class="form-group">
-            <label class="control-label col-md-4">C <span class="text-danger">*</span> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4">
+                <label class="control-label" for="outcomeC-input">C <span class="text-danger">*</span></label> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign" aria-label="C tooltip"></a>
+            </div>
             <div class="col-md-8">
-                <select name="outcomeC" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="outcomeC-input" name="outcomeC" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select outcomeC----</option>
                     <% for (var outcome of data.headers) { %>
                         <option <%= data.outcomeC === outcome ? 'selected' : ''%>><%= outcome %></option>
@@ -81,9 +91,11 @@
             </div>
         </div>
         <div id="outcomeL" class="form-group">
-            <label class="control-label col-md-4">L <span class="text-danger">*</span> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4">
+                <label class="control-label" for="outcomeL-input">L <span class="text-danger">*</span></label> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign" aria-label="L tooltip"></a>
+            </div>
             <div class="col-md-8">
-                <select name="outcomeL" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="outcomeL-input" name="outcomeL" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select outcomeL----</option>
                     <% for (var outcome of data.headers) { %>
                         <option <%= data.outcomeL === outcome ? 'selected' : ''%>><%= outcome %></option>
@@ -92,9 +104,11 @@
             </div>
         </div>
         <div id="outcomeR" class="form-group">
-            <label class="control-label col-md-4">R <span class="text-danger">*</span> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4">
+                <label class="control-label" for="outcomeR-input">R <span class="text-danger">*</span></label> <a role="button" tabindex="0" class="outcomePopover glyphicon glyphicon-question-sign" aria-label="R tooltip"></a>
+            </div>
             <div class="col-md-8">
-                <select name="outcomeR" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="outcomeR-input" name="outcomeR" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select outcomeR----</option>
                     <% for (var outcome of data.headers) { %>
                         <option <%= data.outcomeR === outcome ? 'selected' : ''%>><%= outcome %></option>
@@ -103,9 +117,11 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-md-4">Covariates <a id="covariatePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-4">
+                <label class="control-label" for="covariates">Covariates</label> <a id="covariatePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="covariates tooltip"></a>
+            </div>
             <div class="col-md-8">
-                <input type="text" name="covariatesSelection" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                <input id="covariates" type="text" name="covariatesSelection" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
             </div>
         </div>
         <div id="covariates-error" class=""></div>
@@ -119,24 +135,26 @@
                 <button id="effectsButton" class="btn btn-default form-control" disabled>Edit Interactive Effects</button>
             </div>
         </div>
-    </fieldset>
-    <fieldSet id="emailSet" class="well">
+    </div>
+    <div id="emailSet" class="fieldset well">
         <div class="form-group">
             <div class="checkbox col-md-12">
-                <label><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>
-                    <%= data.sendToQueue ? 'checked' : '' %>>Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a><span id="numMessages"></span>
+                <label class="control-label"><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>
+                    <%= data.sendToQueue ? 'checked' : '' %> style="position:static; margin-left:0"> Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="send to queue tooltip"></a><span id="numMessages"></span>
             </div>
         </div>
         <div id="email-error" class=""></div>
         <div class="form-group">
-            <label class="control-label col-md-3">Email <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+            <div class="col-md-3">
+                <label class="control-label" for="email">Email</label> <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="email tooltip"></a>
+            </div>
             <div class="col-md-9">
-                <input type="text" name="email" class="form-control"  value="<%= data.email %>" <%= data.sendToQueue ? '' : 'disabled' %>>
+                <input id="email" type="text" name="email" class="form-control"  value="<%= data.email %>" <%= data.sendToQueue ? '' : 'disabled' %>>
             </div>
         </div>
         <div id="queueMessage">Note: if sending to queue, when computation is completed, a notification will be sent to the e-mail entered above.</div>
-    </fieldset>
-    <fieldset id="submitSet" class="form-group">
+    </div>
+    <div id="submitSet" class="fieldset form-group">
         <div class="col-md-3 col-md-offset-6">
             <button id="run" type="submit" class="btn btn-primary form-control" <%= data.csvFile.name ? '' : 'disabled' %> style="position: relative;">Submit</button>
         </div>
@@ -145,5 +163,5 @@
         </div>
         <div id="error-message">
         </div>
-    </fieldset>
+    </div>
 </form>

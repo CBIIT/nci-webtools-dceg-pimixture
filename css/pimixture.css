@@ -76,9 +76,20 @@ header {
 #input label ~ [type="checkbox"] {
     width: auto;
 }
-#input fieldset:last-child {
+
+#input .fieldset:last-child {
     margin-top: 20px;
 }
+.fieldset.well .form-group {
+    margin-bottom: 10px;
+}
+#designAndModelSet,
+.fieldset.well {
+    margin-left: -5px;
+    margin-right: -5px;
+    padding: 10px 15px 10px 15px;
+}
+
 #effectsSet [type="checkbox"]:not(:checked) ~ button,
 #referencesSet [type="checkbox"]:not(:checked) ~ button {
     display: none;
@@ -298,17 +309,6 @@ h2.stage-header {
 #error-message,
 #mutex-error {
   color: red;
-}
-
-#designAndModelSet,
-fieldset.well {
-    margin-left: -5px;
-    margin-right: -5px;
-    padding: 10px 15px 10px 15px;
-}
-
-fieldset.well .form-group {
-    margin: 0 0 10px 0;
 }
 
 .modal-header {
