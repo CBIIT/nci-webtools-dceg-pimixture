@@ -10,7 +10,7 @@ body {
     display: block;
 }
 #title-bar {
-    background-color: #2A71A5;
+    background-color: #2971A5;
 }
 
 #title {
@@ -20,6 +20,41 @@ body {
     margin-top: 10px;
     margin-bottom: 10px;
     padding-left: 15px;
+}
+.highlighted-title {
+    color: #FFC90E
+}
+
+.navbar {
+    border: none;
+}
+
+.navbar li a {
+    background-image: none;
+}
+
+#navigation-bar {
+    background-image: none;
+    background-color: #2A303F;
+    margin-bottom: 20px;
+    width: 100%;
+    font-weight: bold;
+    border-radius: 0;
+}
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-default .navbar-nav>li>a:focus,
+.navbar-default .navbar-nav>li>a {
+    color: white;
+    text-transform: uppercase;
+}
+
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus,
+.navbar-default .navbar-nav > .active > a {
+    background-image: none;
+    background-color: #FFC90E;
+    color: #00143E;
+    text-transform: uppercase;
 }
 
 .well {
@@ -238,13 +273,6 @@ h2.stage-header {
   padding:0px;
   margin-top:-15px;
   font-size: 14px;
-}
-
-#navigation-bar {
-    background-color: lightgray;
-    margin-bottom: 20px;
-    width: 100%;
-    font-weight: bold;
 }
 
 #result-buttons {
