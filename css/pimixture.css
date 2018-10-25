@@ -402,6 +402,11 @@ input[type=file] {
     border: thin solid lightgray;
     height: 800px;
     padding-left: 10px;
+    padding-top: 10px;
+}
+
+#home-panel h2 {
+    font-size: 24px;
 }
 
 #help-page table thead th {

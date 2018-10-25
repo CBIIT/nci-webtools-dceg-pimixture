@@ -1180,7 +1180,7 @@ appMixture.HomeView = Backbone.View.extend({
 });
 
 appMixture.HelpView = Backbone.View.extend({
-    el: '#help-page',
+    el: '#help-tool',
     initialize: function() {
         this.template = _.template(appMixture.templates.get('help'), {
             'variable': 'data'
