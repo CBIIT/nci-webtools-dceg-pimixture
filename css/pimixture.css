@@ -11,6 +11,7 @@ body {
 }
 #title-bar {
     background-color: #2971A5;
+    letter-spacing: 1px;
 }
 
 #title {
@@ -40,6 +41,7 @@ body {
     width: 100%;
     font-weight: bold;
     border-radius: 0;
+    letter-spacing: 1px;
 }
 .navbar-default .navbar-nav>li>a:hover,
 .navbar-default .navbar-nav>li>a:focus,
