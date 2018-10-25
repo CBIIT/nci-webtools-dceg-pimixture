@@ -1,6 +1,6 @@
 <div id="help-page">
     <div>
-        <h3><span >Introduction</span>    </h3>
+        <h2><span >Introduction</span>    </h2>
 
         <p >The webtool, PIMixture estimates the absolute risk of
             asymptomatic disease or disease precursors. Because asymptomatic disease/disease
@@ -41,7 +41,7 @@
             models to electronic health records data as compared to existing methods has
             been done by Landy et al. 2018.</p>
 
-        <p  style='line-height:150%'><span><img width=704 id="Picture 1" src="images/image001.jpg"></span></p>
+        <p  style='line-height:150%'><span><img width=704 id="Picture 1" src="images/image001.jpg" alt="Screening data from EHRs"></span></p>
 
         <p ><span style='font-size:10.0pt;line-height:107%;font-family:
 "Arial",sans-serif'>Figure 1: Screening data (obtained from electronic health
@@ -54,47 +54,47 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Models</span></h3>
+        <h2><span >Models</span></h2>
 
         <p >PIMixture employs logistic regression models for prevalence
             and proportional hazards models for incidence and allows including multiple
             predictors or no predictor. For example, we consider a logistic regression
-            model and a proportional hazards model including one predictor, <span><img src="images/image002.png"></span>.</p>
+            model and a proportional hazards model including one predictor, <span><img src="images/image002.png" alt="x"></span>.</p>
 
-        <p > Logistic regression model:<span><img src="images/image003.png"></span></p>
+        <p > Logistic regression model:<span><img src="images/image003.png" alt="equation 1"></span></p>
 
-        <p >where <span><img src="images/image004.png"></span>=probability of disease presence at
-            baseline and 0&lt;<span><img src="images/image005.png"></span> &lt;1; <span><img src="images/image006.png"></span> is the intercept, <span><img src="images/image007.png"></span> is the odds ratio for disease presence
+        <p >where <span><img src="images/image005.png" alt="p"></span>=probability of disease presence at
+            baseline and 0&lt;<span><img src="images/image005.png" alt="p"></span> &lt;1; <span><img src="images/image006.png" alt="beta 0"></span> is the intercept, <span><img src="images/image007.png" alt="e^beta1"></span> is the odds ratio for disease presence
             when x=0 to when x=1.</p>
 
-        <p >Proportional hazards model: <span><img src="images/image008.png"></span> </p>
+        <p >Proportional hazards model: <span><img src="images/image008.png" alt="equation 2"></span> </p>
 
-        <p >where <span><img src="images/image009.png"></span> is a baseline hazard function for
-            disease occurrence; <span><img src="images/image010.png"></span>is the hazards ratio for disease
-            incidence when x=0 to when x=1; The baseline hazard function <span><img src="images/image009.png"></span> is the instantaneous rate at which a
+        <p >where <span><img src="images/image009.png" alt="lambda0(t)"></span> is a baseline hazard function for
+            disease occurrence; <span><img src="images/image010.png" alt="e^gama1"></span>is the hazards ratio for disease
+            incidence when x=0 to when x=1; The baseline hazard function <span><img src="images/image009.png" alt="lambda0(t)"></span> is the instantaneous rate at which a
             disease occurs to a subject, given that the subject has been disease-free up to
             time t. </p>
 
-        <p >For incidence estimation, we need to estimate <span><img src="images/image011.png"></span>as well as <span><img src="images/image009.png"></span> (or a cumulative baseline hazard
-            function <span><img src="images/image012.png"></span>, and there are three options in
-            PIMixture to estimate <span><img src="images/image009.png"></span>, “parametric”, “weakly-parametric” and
-            ”semiparametric” methods. Once we estimate <span><img src="images/image009.png"></span> or <span><img src="images/image013.png"></span> and <span><img src="images/image011.png"></span>, we can estimate survival function, <span><img src="images/image014.png"></span>.</p>
+        <p >For incidence estimation, we need to estimate <span><img src="images/image011.png" alt="gama 1"></span>as well as <span><img src="images/image009.png" alt="lambda0(t)"></span> (or a cumulative baseline hazard
+            function <span><img src="images/image012.png" alt="equation 3"></span>, and there are three options in
+            PIMixture to estimate <span><img src="images/image009.png" alt="lambda0(t)"></span>, “parametric”, “weakly-parametric” and
+            ”semiparametric” methods. Once we estimate <span><img src="images/image009.png" alt="lambda0(t)"></span> or <span><img src="images/image013.png" alt="equation"></span> and <span><img src="images/image011.png" alt="gama 1"></span>, we can estimate survival function, <span><img src="images/image014.png" alt="equation 4"></span>.</p>
 
         <p style="margin-left: 60px; text-indent: -25px">1. &nbsp; Parametric model: we assume the baseline hazard function is generated from a Weibull
-            distribution, and accordingly, <span><img src="images/image015.png"></span><b> , </b>for <span><img src="images/image016.png"></span> and <span><img src="images/image017.png"></span> . Weibull distributions are determined
-            by two parameters <span><img src="images/image018.png"></span> and <span><img src="images/image019.png"></span>. Hence, if the distribution assumption
+            distribution, and accordingly, <span><img src="images/image015.png" alt="equation 5"></span><b> , </b>for <span><img src="images/image016.png" alt="t >= 0"></span> and <span><img src="images/image017.png" alt="alpha 1, alpha 2 > 0"></span> . Weibull distributions are determined
+            by two parameters <span><img src="images/image018.png" alt="alpha 1"></span> and <span><img src="images/image019.png" alt="alpha 2"></span>. Hence, if the distribution assumption
             is correct, parametric models are the most efficient.</p>
 
         <p style="margin-left: 60px; text-indent: -25px">2. &nbsp; Weakly-parametric
             model: Like piecewise constant hazard functions, we approximate the cumulative
-            hazard function <span><img src="images/image020.png"></span>, using integrated cubic B-splines <span><img src="images/image021.png"></span>’s and the piecewise intervals are
+            hazard function <span><img src="images/image020.png" alt="equation 6"></span>, using integrated cubic B-splines <span><img src="images/image021.png" alt="B_k(t)"></span>’s and the piecewise intervals are
             determined by quantiles of observation times. The weakly-parametric method of
-            PIMixture needs to estimate total 7 parameters <span><img src="images/image022.png"></span>’s by default. </p>
+            PIMixture needs to estimate total 7 parameters <span><img src="images/image022.png" alt="alpha_k"></span>’s by default. </p>
 
-        <p style="margin-left: 60px; text-indent: -25px">3. &nbsp; Semiparametric model: we assume  <span><img src="images/image023.png"></span> is a step function with jumps at unique
+        <p style="margin-left: 60px; text-indent: -25px">3. &nbsp; Semiparametric model: we assume  <span><img src="images/image023.png" alt="equation 7"></span> is a step function with jumps at unique
             observation times at most. Hence as the number of unique observation times
-            increases, the number of parameters for  <span><img src="images/image023.png"></span> increases. The iterative convex
-            algorithm is employed to nonparametrically estimate <span><img src="images/image023.png"></span>.</p>
+            increases, the number of parameters for  <span><img src="images/image023.png" alt="eqation 7"></span> increases. The iterative convex
+            algorithm is employed to nonparametrically estimate <span><img src="images/image023.png" alt="equation 7"></span>.</p>
 
         <p style="margin-top: 20px">The assumptions are strong in the order of “Parametric” &gt;
             ”Weakly-parametric” &gt; ”Semiparametric”, whereas if data satisfies the
@@ -105,7 +105,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Sampling Design</span></h3>
+        <h2><span >Sampling Design</span></h2>
 
         <p >PIMixture provides two options for unweighted and weighted
             data. Specifically, unweighted data represents a simple random sample or an
@@ -122,7 +122,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <table id="model-table" class="table table-bordered">
             <thead>
                 <tr>
-                    <th></th>
+                    <th><span class="empty-cell">-empty-</span></th>
                     <th>Parametric models* </th>
                     <th>Weakly-parametric models**</th>
                     <th>Semiparametric models**</th>
@@ -148,7 +148,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Data</span></h3>
+        <h2><span >Data</span></h2>
 
         <p >This section explains what types of data should be included
             in an input dataset and coding rules. The file format of Comma Separate Value
@@ -156,7 +156,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h4><span >Outcome (necessary information)</span></h4>
+        <h3><span >Outcome (necessary information)</span></h3>
 
         <p >The outcome of interest is the time of clinically-detectable
             disease onset, and three variables for the outcome should be included in the
@@ -183,7 +183,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
 
         <p  style='margin-left: 60px; text-indent: -30px'>(4)<span
                 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>For right censoring,
-            R=Inf, where Inf means infinity, <span><img src="images/image024.png"></span>.</p>
+            R=Inf, where Inf means infinity, <span><img src="images/image024.png" alt="infinity "></span>.</p>
 
         <p  style='margin-left: 60px; text-indent: -30px'>(5)<span
                 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>L should not be equal
@@ -191,7 +191,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
             However, if data includes exact event times, users can use a trick, adding a
             very small interval to the exact event times to define “L” and “R”.</p>
 
-        <p  style='page-break-after:avoid'><img id="Diagram 3" src="images/image025.png"></p>
+        <p  style='page-break-after:avoid'><img id="Diagram 3" src="images/image025.png" alt="All possible cases we may observe"></p>
 
         <p >Figure 1 All possible cases we may observe</p>
 
@@ -246,7 +246,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h4><span >Predictors (optional information)</span></h4>
+        <h3><span >Predictors (optional information)</span></h3>
 
         <p >In PIMixture, it is optional to include predictors in
             logistic and proportional hazards models. When included, relative risks are
@@ -260,7 +260,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h4><span >Continuous Predictor</span></h4>
+        <h3><span >Continuous Predictor</span></h3>
 
         <p >Continuous predictor values should be numerical:</p>
 
@@ -312,7 +312,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
 
         <p >&nbsp;</p>
 
-        <p >The logistic and proportional hazards models are <span><img src="images/image026.png"></span>, <span><img src="images/image027.png"></span> </p>
+        <p >The logistic and proportional hazards models are <span><img src="images/image026.png" alt="equation 8"></span>, <span><img src="images/image027.png" alt="equation 9"></span> </p>
 
         <p >A reference level (or group) for continuous predictors is 0
             by default; however, users can set the reference level to be another level
@@ -368,7 +368,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h4><span >Categorical Predictor</span></h4>
+        <h3><span >Categorical Predictor</span></h3>
 
         <p >Categorical predictors allow two types of data, numerical
             and characteristic levels:</p>
@@ -380,7 +380,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
                 <th>L</th>
                 <th>R</th>
                 <th>BMI</th>
-                <th style="background-color: white;border: none"></th>
+                <th style="background-color: white;border: none"><span class="empty-cell">-empty-</span></th>
                 <th>C</th>
                 <th>L</th>
                 <th>R</th>
@@ -449,7 +449,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
             predictors. For example, when we set a reference level for BMI to be 2 (or
             “normal’), the logistic and proportional hazards models are</p>
 
-        <p ><span><img src="images/image028.png"></span>, <span><img src="images/image029.png"></span> </p>
+        <p ><span><img src="images/image028.png" alt="equation 10"></span>, <span><img src="images/image029.png" alt="equation 11"></span> </p>
 
         <p >where I(BMI=a)=1 if BMI=a; 0 otherwise. </p>
 
@@ -460,7 +460,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Prediction</span></h3>
+        <h2><span >Prediction</span></h2>
 
         <p >Based on the regression parameters and/or cumulative hazard
             function, we can predict prevalence and incidence using an independent data
@@ -475,7 +475,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Tips for handling errors</span></h3>
+        <h2><span >Tips for handling errors</span></h2>
 
         <ul>
             <li >The general coding rules described in Section 4.1 are one of
@@ -488,7 +488,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-         <h3>References</h3>
+         <h2>References</h2>
         <ol>
             <li> Cheung LC, Pan Q, Hyun N, Schiffman M, Fetterman B, Castle PE, Katki HA.  Mixture models for left-censored and irregularly interval-censored data: Application to a cancer screening cohort assembled from electronic health records.  Stat Med. 2017 Sep 30; 36(22):3583-95.</li>
             <li> Hyun N, Cheung LC, Pan Q, Schiffman M, Katki HA.  Flexible risk prediction models for left or interval-censored data from electronic health records. Ann Appl Stat. 2017 Jun;11(2): 1063-84.</li>

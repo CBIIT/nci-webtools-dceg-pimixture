@@ -427,14 +427,25 @@ input[type=file] {
     margin-top: 40px;
 }
 
-#help-page h4,
+#help-page h2,
 #help-page h3 {
     color: #4A6E9B;
+}
+
+#help-page h2 {
+    font-size: 24px;
+}
+#help-page h3 {
+    font-size: 18px;
 }
 
 #help-page table thead tr th{
     background-color: #4676c0;
     color: white;
+}
+
+#help-page .empty-cell {
+    display: none;
 }
 #model-table tr th:nth-child(2),
 #model-table tr td:nth-child(2) {
