@@ -39,7 +39,7 @@
             </div>
         </div>
         <fieldset id="timePointsWell" class="well" disabled>
-            <div class="form-group">
+            <fieldset class="form-group" role="group">
                 <legend id="timePointsLegend" class="col-md-4">Time points <a id="timePointTypePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="time point tooltip"></a></legend>
                 <div class="col-md-4">
                     <label class="radio-inline"><input type="radio" name="timePointType" id="timePointRange" value="Range" <%= data.timePointType === 'Range' ? 'checked' : '' %>>Range</label>
@@ -47,7 +47,7 @@
                 <div class="col-md-4">
                     <label class="radio-inline"><input type="radio" name="timePointType" id="timePointList" value="List" <%= data.timePointType === 'List' ? 'checked' : '' %>>Discrete</label>
                 </div>
-            </div>
+            </fieldset>
             <div id="timePointsRangeGroup" <%= data.timePointType === 'Range' ? '' : 'hidden' %>>
                 <div class="form-group">
                     <div class="col-md-4">
