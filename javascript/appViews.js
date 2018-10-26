@@ -69,10 +69,14 @@ appMixture.FormView = Backbone.View.extend({
         'submit #calculationForm': 'runCalculation'
     },
     render: function() {
+        that = this;
         this.$el.html(this.template(this.model.attributes));
         this.$('[name="covariatesSelection"]').selectize({
             plugins: ['remove_button'],
-            sortField: 'order'
+            sortField: 'order',
+            onInitialize: function(arg) {
+                that.$('#selectized .selectize-input input').attr('id', 'covariate-selectized');
+            }
         });
         this.$("[data-toggle=popover]").popover();
         this.updateCovariateOptions();

@@ -120,13 +120,16 @@
             <div class="col-md-4">
                 <label class="control-label" for="covariates">Covariates</label> <a id="covariatePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="covariates tooltip"></a>
             </div>
-            <div class="col-md-8">
+            <div id="selectized" class="col-md-8">
                 <input id="covariates" type="text" name="covariatesSelection" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
             </div>
         </div>
         <div id="covariates-error" class=""></div>
         <div id="categoricalGroups" class="form-group">
-            <div class="col-md-8 col-md-offset-4">
+            <div class="col-md-4">
+                <label id="covariates-selectize-label" for="covariate-selectized">Covariates Select</label>
+            </div>
+            <div class="col-md-8">
                 <button id="referencesButton" class="btn btn-default form-control" disabled>Configure Covariates</button>
             </div>
         </div>
