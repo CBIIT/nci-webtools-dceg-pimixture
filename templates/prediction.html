@@ -1,31 +1,35 @@
 <div id="prediction-input" class="col-md-4">
     <form id="predictionForm" class="form-horizontal well" enctype="multipart/form-data" method="POST">
-        <fieldset id="fileSet" class="well">
+        <div id="fileSet" class="fieldset well">
             <div class="form-group">
-            <label class="control-label">Model file <span class="text-danger">*</span> <a id="modelFilePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
-        </div>
-        <div class="form-group">
-            <% if (data['serverFile']) { %>
-                <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
-                <div id="serverFileName" style="margin-left: 5px"><%= data.jobName ? data.jobName : 'PIMixture' %>_fitting.rds</div>
-            <% } else { %>
-                <div class="col-md-3" style="padding-left: 0">
-                    <input id="rdsFile" name="rdsFile" type="file" accept=".rds" style="display: none;">
-                    <button id="modelFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('rdsFile').click();" <%= data.rdsFile.name ? 'disabled' : '' %>>Choose File</button>
-                </div>
-                <div class="col-md-9">
-                    <div id="modelFileName"><%= data.rdsFile.name %></div>
-                </div>
-            <% } %>
-        </div>
-        <div class="form-group">
-            <label class="col-md-4 control-label">Test Data <span class="text-danger">*</span> <a id="testDataPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
-                <div class="col-md-8 sampleDownloadContainer">
-                    <a class="sampleDownload" href="testData.csv" download="PIMixtureSampleTestData.csv">Download Sample</a>
+                <div class="col-md-12">
+                    <label class="control-label" for="rdsFile">Model file <span class="text-danger">*</span></label> <a id="modelFilePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="model file tooltip"></a>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-md-3" style="padding-left: 0;">
+                <% if (data['serverFile']) { %>
+                    <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
+                    <div id="serverFileName" style="margin-left: 5px"><%= data.jobName ? data.jobName : 'PIMixture' %>_fitting.rds</div>
+                <% } else { %>
+                    <div class="col-md-3">
+                        <input id="rdsFile" name="rdsFile" type="file" accept=".rds" style="display: none;">
+                        <button id="modelFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('rdsFile').click();" <%= data.rdsFile.name ? 'disabled' : '' %>>Choose File</button>
+                    </div>
+                    <div class="col-md-9">
+                        <div id="modelFileName"><%= data.rdsFile.name %></div>
+                    </div>
+                <% } %>
+            </div>
+        <div class="form-group">
+            <div class="col-md-4">
+                <label class="control-label" for="testDataFile">Test Data <span class="text-danger">*</span></label> <a id="testDataPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="test data file tooltip"></a>
+            </div>
+            <div class="col-md-8 sampleDownloadContainer">
+                <a class="sampleDownload" href="testData.csv" download="PIMixtureSampleTestData.csv">Download Sample</a>
+            </div>
+        </div>
+            <div class="form-group">
+                <div class="col-md-3">
                     <input id="testDataFile" name="testDataFile" type="file" accept=".csv" style="display: none;">
                     <button id="testDataFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('testDataFile').click();" <%= data.testDataFile.name ? 'disabled' : '' %>>Choose File</button>
                 </div>
@@ -33,10 +37,10 @@
                     <div id="testDataFileName"><%= data.testDataFile.name %></div>
                 </div>
             </div>
-        </fieldset>
+        </div>
         <fieldset id="timePointsWell" class="well" disabled>
             <div class="form-group">
-                <label class="control-label col-md-4">Time points <a id="timePointTypePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+                <legend id="timePointsLegend" class="col-md-4">Time points <a id="timePointTypePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="time point tooltip"></a></legend>
                 <div class="col-md-4">
                     <label class="radio-inline"><input type="radio" name="timePointType" id="timePointRange" value="Range" <%= data.timePointType === 'Range' ? 'checked' : '' %>>Range</label>
                 </div>
@@ -46,39 +50,47 @@
             </div>
             <div id="timePointsRangeGroup" <%= data.timePointType === 'Range' ? '' : 'hidden' %>>
                 <div class="form-group">
-                    <label class="control-label col-md-4">Begin <span class="text-danger">*</span> <a id="beginPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+                    <div class="col-md-4">
+                        <label class="control-label" for="begin">Begin <span class="text-danger">*</span></label> <a id="beginPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="begin tooltip"></a>
+                    </div>
                     <div class="col-md-8">
                         <input type="number" name="begin" id="begin" class="form-control" value="<%= data.begin %>" required/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-md-4">End <span class="text-danger">*</span> <a id="endPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+                    <div class="col-md-4">
+                        <label class="control-label" for="end">End <span class="text-danger">*</span></label> <a id="endPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="end tooltip"></a>
+                    </div>
                     <div class="col-md-8">
                         <input type="number" name="end" id="end" class="form-control" value="<%= data.end %>" max="<%= data.maxTimePoint %>" required/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-md-4">Step Size <span class="text-danger">*</span> <a id="stepSizePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
+                    <div class="col-md-4">
+                        <label class="control-label" for="stepSize">Step Size <span class="text-danger">*</span></label> <a id="stepSizePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="step size tooltip"></a>
+                    </div>
                     <div class="col-md-8">
                         <input type="number" name="stepSize" id="stepSize" class="form-control"  value="<%= data.stepSize %>" required/>
                     </div>
                 </div>
             </div>
             <div class="form-group" id="timePointsListGroup" <%= data.timePointType === 'List' ? '' : 'hidden' %>>
-                <label class="control-label col-md-2">Points <span class="text-danger">*</span> <a id="timePointsPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign"></a></label>
-                <div class="col-md-10">
+                <div class="col-md-3" style="padding-right:0">
+                    <label class="control-label" for="timePoints">Points <span class="text-danger">*</span></label> <a id="timePointsPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="time points list tooltip"></a>
+                </div>
+                <div class="col-md-9">
                     <input type="text" name="timePoints" id="timePoints" value="<%= data.timePoints %>" placeholder="1,2,3..." class="form-control"/>
                 </div>
             </div>
         </fieldset>
-        <fieldset id="buttonSet" class="form-group submitButtons">
+        <div id="buttonSet" class="fieldset form-group submitButtons">
             <div class="col-md-3 col-md-offset-6">
                 <button id="runPredict" type="submit" class="btn btn-primary" disabled style="position: relative;">Submit</button>
             </div>
             <div class="col-md-3">
                 <button type="reset" id="reset" class="btn btn-default" <%= data['serverFile'] ? '' : 'disabled'%> >Reset</button>
             </div>
-        </fieldset>
+        </div>
         <div id="error-message">
         </div>
     </form>

@@ -84,6 +84,7 @@ header {
     margin-bottom: 10px;
 }
 #designAndModelSet,
+fieldset.well,
 .fieldset.well {
     margin-left: -5px;
     margin-right: -5px;
@@ -106,6 +107,18 @@ header {
 
 #predictionForm {
     height: 967px;
+}
+
+#timePointsLegend {
+    display: inline-block;
+    border: none;
+    text-align: left;
+    font-size: 15px;
+    vertical-align: bottom;
+    font-weight: bold;
+    padding-top: 7px;
+    padding-left: 20px;
+    margin-bottom: 0;
 }
 
 #fittingResultPanel,
