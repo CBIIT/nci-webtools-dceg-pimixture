@@ -35,7 +35,7 @@ const QUEUE_COVARIATES_THRESHOLD = 20;
 
 appMixture.FormView = Backbone.View.extend({
     tagName: 'div',
-    className: 'col-md-4',
+    className: 'col-lg-4',
     id: 'input',
     initialize: function () {
         this.template = _.template(appMixture.templates.get('form'), {
@@ -749,7 +749,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
 
 appMixture.ResultsView = Backbone.View.extend({
     tagName: 'div',
-    className: 'col-md-8',
+    className: 'col-lg-8',
     id: 'output',
     events: {
         'click #runPredictionBtn': 'navigateToPrediction'
@@ -1049,7 +1049,7 @@ appMixture.PredictionView = Backbone.View.extend({
 appMixture.PredictionResultView = Backbone.View.extend({
     tagName: 'div',
     id: 'results',
-    className: 'col-md-8',
+    className: 'col-lg-8',
     events: {
         'input #pageSize': 'changePageSize',
         'click .sortByColumn': 'sort',
