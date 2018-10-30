@@ -27,7 +27,7 @@
             <div class="col-lg-6">
                 <label id="designLabel" class="control-label" for="design">Sample Design <span class="text-danger">*</span></label> <a id="designPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="sample design tooltip"></a>
             </div>
-            <div class="col-lg-6">
+            <div class="design-model-input col-lg-6">
                 <select id="design" name="design" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Design---</option>
                     <option value="null" <%= data.design === null ? 'selected' : '' %>>Cohort (Unweighted)</option>
@@ -39,7 +39,7 @@
             <div class="col-lg-6" id="model-label">
                 <label id="modelLabel" class="control-label" for="model">Regression Model <span class="text-danger">*</span></label> <a id="modelPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="regression model tooltip"></a>
             </div>
-            <div class="col-lg-6">
+            <div class="design-model-input col-lg-6">
                 <select id="model" name="model" class="form-control" required <%= data.csvFile.name ? '' : 'disabled' %>>
                     <option value="">----Select Model----</option>
                     <option <%= data.model === 'semi-parametric' ? 'selected' : '' %> value="semi-parametric">Semi-parametric</option>
