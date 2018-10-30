@@ -2,7 +2,7 @@
     <div class="panel panel-default">
         <div id="prediction-results" class="panel-body">
             <div class="download-buttons row">
-                <div class="col-md-8">
+                <div class="col-lg-8">
                     Show
                     <select id="pageSize" name="pageSize">
                         <% for(var pageSize of data.pageSizeChoices) { %>
@@ -22,7 +22,7 @@
                     <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= Math.min(data.pageNum +1, data.pages) %>" class="glyphicon glyphicon-chevron-right"></span></a>
                     <a class="<%= data.pageNum >= data.pages ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum >= data.pages ? 'disabled' : '' %>><span data-page-num="<%= data.pages %>" class="glyphicon glyphicon-step-forward"></span></a>
                 </div>
-                <div class="col-md-4 text-right">
+                <div class="col-lg-4 text-right">
                     <a href="<%= data.results.csvFile %>" class="btn btn-success" download="<%= data.jobName ? data.jobName : 'PIMixture' %><%= data.results.suffix %>.csv">Download result (.csv) file</a>
                 </div>
             </div>

@@ -9,7 +9,7 @@
             <div class="form-group">
                 <% if (data['serverFile']) { %>
                     <input name="serverFile" disabled class="form-control" value="<%= data['serverFile'] %>" style="display: none;">
-                    <div id="serverFileName" style="margin-left: 5px"><%= data.jobName ? data.jobName : 'PIMixture' %>_fitting.rds</div>
+                    <div id="serverFileName"><%= data.jobName ? data.jobName : 'PIMixture' %>_fitting.rds</div>
                 <% } else { %>
                     <div class="col-lg-3">
                         <input id="rdsFile" name="rdsFile" type="file" accept=".rds" style="display: none;">
@@ -75,10 +75,10 @@
                 </div>
             </div>
             <div class="form-group" id="timePointsListGroup" <%= data.timePointType === 'List' ? '' : 'hidden' %>>
-                <div class="col-lg-3" style="padding-right:0">
+                <div id="timePointsLabel" class="col-lg-3">
                     <label class="control-label" for="timePoints">Points <span class="text-danger">*</span></label> <a id="timePointsPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="time points list tooltip"></a>
                 </div>
-                <div class="col-lg-9">
+                <div id="timpPointsInput" class="col-lg-9">
                     <input type="text" name="timePoints" id="timePoints" value="<%= data.timePoints %>" placeholder="1,2,3..." class="form-control"/>
                 </div>
             </div>
