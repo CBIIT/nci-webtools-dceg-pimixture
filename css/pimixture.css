@@ -326,8 +326,8 @@ h2.stage-header {
 }
 
 #timePointsError {
-    margin-left: 20px;
     padding-top: 7px;
+    padding-left: 20px;
 }
 
 #covariates-selectize-label {
