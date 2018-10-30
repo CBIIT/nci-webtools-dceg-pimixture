@@ -436,6 +436,11 @@ input[type=file] {
     font-size: 24px;
 }
 
+#help-page {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 #help-page table thead th {
     background-color: #f0f0f0;
 }
@@ -622,5 +627,12 @@ input[type=file] {
 
     #main-tool #model-label {
         padding-left: 12px;
+    }
+}
+
+@media (max-width: 840px) {
+    #help-page table,
+    #help-page img {
+        max-width: 100%;
     }
 }
