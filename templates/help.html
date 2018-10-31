@@ -211,7 +211,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
                 <td>1</td>
                 <td>-999</td>
                 <td>-999</td>
-                <td>case 1</td>
+                <td>case 1: the subject has disease present at baseline</td>
             </tr>
             <tr>
                 <td>0</td>
@@ -240,7 +240,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
                 <td>0</td>
                 <td>Inf
                 </td>
-                <td>case 5</td>
+                <td>case 5: the subject is uninformative for risk estimation</td>
             </tr>
         </table>
     </div>
@@ -260,7 +260,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Continuous Predictor</span></h3>
+        <h4><span >Continuous Predictor</span></h4>
 
         <p >Continuous predictor values should be numerical:</p>
 
@@ -368,7 +368,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Categorical Predictor</span></h3>
+        <h4><span >Categorical Predictor</span></h4>
 
         <p >Categorical predictors allow two types of data, numerical
             and characteristic levels:</p>
@@ -456,6 +456,16 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <p >Please note that the number of parameters for continuous and
             categorical variables are 1 and the total levels-1 in logistic and proportional
             hazards models.</p>
+
+    </div>
+
+    <div>
+        <h4>Interaction Effects</h4>
+        <p>Let us consider two factors, sex (binary) and BMI (categorical) and interaction effects between two factors. Then the logistic and proportional hazards models are as following:
+            <span><img src="images/image030.png" alt="equation 12"></span>
+            <span><img src="images/image031.png" alt="equation 13"></span>
+        </p>
+
 
     </div>
 

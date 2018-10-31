@@ -455,6 +455,7 @@ input[type=file] {
 }
 
 #home-page h2,
+#help-page h4,
 #help-page h2,
 #help-page h3 {
     color: #4A6E9B;
@@ -465,6 +466,9 @@ input[type=file] {
 }
 #help-page h3 {
     font-size: 18px;
+}
+#help-page h4 {
+    font-size: 16px;
 }
 
 #help-page table thead tr th{
