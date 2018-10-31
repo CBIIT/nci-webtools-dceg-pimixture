@@ -5,6 +5,7 @@ import pyper as pr
 import csv
 import uuid
 import codecs
+import re
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
@@ -24,6 +25,7 @@ def buildSuccess(message):
 
 @app.route('/templateList', methods=["GET"])
 def templates():
+    log.info("GET /templateList")
     templateSet = {}
     path = os.path.join(os.getcwd(),'templates')
     for fileName in [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.html')]:
@@ -33,6 +35,7 @@ def templates():
 
 @app.route('/run', methods=["POST"])
 def runModel():
+    log.info('POST /run')
     try:
         if request.form and request.form['jsonData']:
             parameters = json.loads(request.form['jsonData'])
@@ -50,7 +53,7 @@ def runModel():
             ext = os.path.splitext(inputCSVFile.filename)[1]
             if sendToQueue:
                 bucket = S3Bucket(INPUT_BUCKET)
-                object = bucket.uploadFileObj('{}{}'.format(id, ext), inputCSVFile)
+                object = bucket.uploadFileObj(getInputFileKey(id, ext), inputCSVFile)
                 if object:
                     parameters['inputCSVFile'] = {
                         'originalName': inputCSVFile.filename,
@@ -71,7 +74,7 @@ def runModel():
                     log.error(message)
                     return buildFailure(message, 500)
                 outputRdsFileName = getOutputFilePath(id, '.rds')
-                outputCSVFileName = getOutputFilePath(id, '.csv')
+                outputSSFileName = getOutputFilePath(id, extensionMap[SS_FILE_TYPE])
                 outputFileName = getOutputFilePath(id, '.out')
                 parameters['filename'] = inputFileName
                 parameters['outputRdsFilename'] = outputRdsFileName
@@ -113,7 +116,7 @@ def runModel():
                 'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
             })
         else:
-            fittingResult = fitting(parameters, outputCSVFileName)
+            fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
             if fittingResult['status']:
                 return buildSuccess(fittingResult['results'])
             else:
@@ -131,6 +134,7 @@ def runModel():
 
 @app.route('/predict', methods=["POST"])
 def runPredict():
+    log.info('POST /predict')
     try:
         rOutput = None
         if request.form and request.form['jsonData']:
@@ -244,7 +248,8 @@ def runPredict():
             'results': {
                 'prediction': results,
                 'model': model,
-                'csvFile': csvFileName
+                'csvFile': csvFileName,
+                'suffix': PREDICTION_SUFFIX
             }
         }
         if 'jobName' in parameters:
@@ -275,6 +280,7 @@ def runPredict():
 
 @app.route('/uploadModel', methods=["POST"])
 def uploadModelFile():
+    log.info('POST /uploadModel')
     try:
         rOutput = None
         if len(request.files) > 0 and 'rdsFile' in request.files:
@@ -329,6 +335,20 @@ def uploadModelFile():
             log.error(rOutput)
             return buildFailure(rOutput, 500)
 
+@app.route('/numMessages', methods=["GET"])
+def getNumMessages():
+    log.info('GET /numMessages')
+    try:
+        sqs = Queue()
+        numMessages = sqs.getApproximateNumberOfMessages()
+        if numMessages != -1:
+            return buildSuccess({'numMessages': numMessages})
+        else:
+            return buildFailure("Couldn't retrieve number of messages enqueued!")
+    except Exception as e:
+        log.exception("Exception occurred")
+        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
@@ -338,6 +358,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
     args = parser.parse_args()
     if (args.debug):
+        addStreamHandler()
         @app.route('/common/<path:path>')
         def common_folder(path):
             return send_from_directory("common",path)

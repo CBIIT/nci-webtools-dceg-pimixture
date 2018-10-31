@@ -25,52 +25,58 @@
     <script type="text/javascript" src="javascript/appModels.js"></script>
 </head>
 <body>
-    <div class="container">
-        <a href="http://dceg.cancer.gov/" target="_blank">
-            <img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo">
-        </a>
-    </div>
-    <div id="mainbody">
+    <header>
+        <div>
+            <span id="home"></span>
+            <span id="fitting"></span>
+            <span id="prediction"></span>
+            <span id="help"></span>
+        </div>
+        <div class="container">
+            <a href="http://dceg.cancer.gov/" target="_blank">
+                <img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo">
+            </a>
+        </div>
         <div id="title-bar">
             <div class="container">
-                <h1 id="title">Prevalence-Incidence Mixture Risk Models</h1>
+                <h1 id="title"><span class="highlighted-title">P</span>revalence-<span class="highlighted-title">I</span>ncidence <span class="highlighted-title">Mixture</span> Risk Models</h1>
             </div>
         </div>
         <nav id="navigation-bar" class="navbar navbar-default">
             <div class="container">
                 <ul class="nav navbar-nav">
-                    <li id="home-li"><a alt="Home" href="#">Home</a></li>
-                    <li id="fitting-li"><a alt="Fitting" href="#fitting">Fitting</a></li>
-                    <li id="prediction-li"><a alt="Prediction" href="#prediction">Prediction</a></li>
-                    <li id="help-li"><a alt="Help" href="#help">Help</a></li>
+                    <li id="home-li"><a href="#">Home</a></li>
+                    <li id="fitting-li"><a href="#fitting">Fitting</a></li>
+                    <li id="prediction-li"><a href="#prediction">Prediction</a></li>
+                    <li id="help-li"><a href="#help">Help</a></li>
                 </ul>
             </div>
         </nav>
-        <div class="container">
-            <div id="home-page" class="row">
-            </div>
-            <div id="main-tool" class="row">
-            </div>
-            <div id="prediction-tool" class="row">
-            </div>
-            <div id="help-page" class="row">
-            </div>
+    </header>
+    <main id="mainbody" class="container">
+        <div id="home-page" class="row">
         </div>
-    </div>
-    <div class="container-fluid footer">
+        <div id="main-tool" class="row">
+        </div>
+        <div id="prediction-tool" class="row">
+        </div>
+        <div id="help-tool" class="row">
+        </div>
+    </main>
+    <footer class="container-fluid footer">
       <div class="center-block">
         <ul class="list-inline">
-          <li><a target="_blank" title="Home" href="http://www.cancer.gov/">Home</a></li>
+          <li><a target="_blank" href="http://www.cancer.gov/">Home</a></li>
           <li>|</li>
-          <li><a target="_top" title="Support" href="mailto:NCIPIMixtureWebAdmin@mail.nih.gov?subject=PIMixture">Support</a></li>
+          <li><a target="_top" href="mailto:NCIPIMixtureWebAdmin@mail.nih.gov?subject=PIMixture">Support</a></li>
           <li>|</li>
-          <li><a target="_blank" title="Policies" href="http://www.cancer.gov/global/web/policies">Policies</a></li>
+          <li><a target="_blank" href="http://www.cancer.gov/global/web/policies">Policies</a></li>
           <li>|</li>
-          <li><a target="_blank" title="Accessibility" href="http://www.cancer.gov/global/web/policies/accessibility">Accessibility</a></li>
+          <li><a target="_blank" href="http://www.cancer.gov/global/web/policies/accessibility">Accessibility</a></li>
           <li>|</li>
-          <li><a target="_blank" title="Viewing Files" href="http://cancer.gov/global/viewing-files">Viewing Files</a></li>
+          <li><a target="_blank" href="http://cancer.gov/global/viewing-files">Viewing Files</a></li>
           <li>|</li>
-          <li><a target="_blank" title="FOIA" href="http://www.cancer.gov/global/web/policies/foia">FOIA</a></li>
+          <li><a target="_blank" href="http://www.cancer.gov/global/web/policies/foia">FOIA</a></li>
         </ul>
         <ul class="list-inline">
           <li><a target="_blank" href="http://www.hhs.gov/">U.S. Department of Health and Human Services</a></li>
@@ -83,6 +89,6 @@
         </ul>
         <div class="text-center"><span>NIH ... Turning Discovery Into Health</span><sup>®</sup></div>
       </div>
-    </div>
+    </footer>
 </body>
 </html>

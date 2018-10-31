@@ -1,6 +1,6 @@
 <div id="help-page">
     <div>
-        <h3><span >Introduction</span>    </h3>
+        <h2><span >Introduction</span>    </h2>
 
         <p >The webtool, PIMixture estimates the absolute risk of
             asymptomatic disease or disease precursors. Because asymptomatic disease/disease
@@ -41,7 +41,7 @@
             models to electronic health records data as compared to existing methods has
             been done by Landy et al. 2018.</p>
 
-        <p  style='line-height:150%'><span><img width=704 id="Picture 1" src="images/image001.jpg"></span></p>
+        <p  style='line-height:150%'><span><img width=704 id="Picture 1" src="images/image001.jpg" alt="Screening data from EHRs"></span></p>
 
         <p ><span style='font-size:10.0pt;line-height:107%;font-family:
 "Arial",sans-serif'>Figure 1: Screening data (obtained from electronic health
@@ -54,47 +54,47 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Models</span></h3>
+        <h2><span >Models</span></h2>
 
         <p >PIMixture employs logistic regression models for prevalence
             and proportional hazards models for incidence and allows including multiple
             predictors or no predictor. For example, we consider a logistic regression
-            model and a proportional hazards model including one predictor, <span><img src="images/image002.png"></span>.</p>
+            model and a proportional hazards model including one predictor, <span><img src="images/image002.png" alt="x"></span>.</p>
 
-        <p > Logistic regression model:<span><img src="images/image003.png"></span></p>
+        <p > Logistic regression model:<span><img src="images/image003.png" alt="equation 1"></span></p>
 
-        <p >where <span><img src="images/image004.png"></span>=probability of disease presence at
-            baseline and 0&lt;<span><img src="images/image005.png"></span> &lt;1; <span><img src="images/image006.png"></span> is the intercept, <span><img src="images/image007.png"></span> is the odds ratio for disease presence
+        <p >where <span><img src="images/image005.png" alt="p"></span>=probability of disease presence at
+            baseline and 0&lt;<span><img src="images/image005.png" alt="p"></span> &lt;1; <span><img src="images/image006.png" alt="beta 0"></span> is the intercept, <span><img src="images/image007.png" alt="e^beta1"></span> is the odds ratio for disease presence
             when x=0 to when x=1.</p>
 
-        <p >Proportional hazards model: <span><img src="images/image008.png"></span> </p>
+        <p >Proportional hazards model: <span><img src="images/image008.png" alt="equation 2"></span> </p>
 
-        <p >where <span><img src="images/image009.png"></span> is a baseline hazard function for
-            disease occurrence; <span><img src="images/image010.png"></span>is the hazards ratio for disease
-            incidence when x=0 to when x=1; The baseline hazard function <span><img src="images/image009.png"></span> is the instantaneous rate at which a
+        <p >where <span><img src="images/image009.png" alt="lambda0(t)"></span> is a baseline hazard function for
+            disease occurrence; <span><img src="images/image010.png" alt="e^gama1"></span>is the hazards ratio for disease
+            incidence when x=0 to when x=1; The baseline hazard function <span><img src="images/image009.png" alt="lambda0(t)"></span> is the instantaneous rate at which a
             disease occurs to a subject, given that the subject has been disease-free up to
             time t. </p>
 
-        <p >For incidence estimation, we need to estimate <span><img src="images/image011.png"></span>as well as <span><img src="images/image009.png"></span> (or a cumulative baseline hazard
-            function <span><img src="images/image012.png"></span>, and there are three options in
-            PIMixture to estimate <span><img src="images/image009.png"></span>, “parametric”, “weakly-parametric” and
-            ”semiparametric” methods. Once we estimate <span><img src="images/image009.png"></span> or <span><img src="images/image013.png"></span> and <span><img src="images/image011.png"></span>, we can estimate survival function, <span><img src="images/image014.png"></span>.</p>
+        <p >For incidence estimation, we need to estimate <span><img src="images/image011.png" alt="gama 1"></span>as well as <span><img src="images/image009.png" alt="lambda0(t)"></span> (or a cumulative baseline hazard
+            function <span><img src="images/image012.png" alt="equation 3"></span>, and there are three options in
+            PIMixture to estimate <span><img src="images/image009.png" alt="lambda0(t)"></span>, “parametric”, “weakly-parametric” and
+            ”semiparametric” methods. Once we estimate <span><img src="images/image009.png" alt="lambda0(t)"></span> or <span><img src="images/image013.png" alt="equation"></span> and <span><img src="images/image011.png" alt="gama 1"></span>, we can estimate survival function, <span><img src="images/image014.png" alt="equation 4"></span>.</p>
 
         <p style="margin-left: 60px; text-indent: -25px">1. &nbsp; Parametric model: we assume the baseline hazard function is generated from a Weibull
-            distribution, and accordingly, <span><img src="images/image015.png"></span><b> , </b>for <span><img src="images/image016.png"></span> and <span><img src="images/image017.png"></span> . Weibull distributions are determined
-            by two parameters <span><img src="images/image018.png"></span> and <span><img src="images/image019.png"></span>. Hence, if the distribution assumption
+            distribution, and accordingly, <span><img src="images/image015.png" alt="equation 5"></span><b> , </b>for <span><img src="images/image016.png" alt="t >= 0"></span> and <span><img src="images/image017.png" alt="alpha 1, alpha 2 > 0"></span> . Weibull distributions are determined
+            by two parameters <span><img src="images/image018.png" alt="alpha 1"></span> and <span><img src="images/image019.png" alt="alpha 2"></span>. Hence, if the distribution assumption
             is correct, parametric models are the most efficient.</p>
 
         <p style="margin-left: 60px; text-indent: -25px">2. &nbsp; Weakly-parametric
             model: Like piecewise constant hazard functions, we approximate the cumulative
-            hazard function <span><img src="images/image020.png"></span>, using integrated cubic B-splines <span><img src="images/image021.png"></span>’s and the piecewise intervals are
+            hazard function <span><img src="images/image020.png" alt="equation 6"></span>, using integrated cubic B-splines <span><img src="images/image021.png" alt="B_k(t)"></span>’s and the piecewise intervals are
             determined by quantiles of observation times. The weakly-parametric method of
-            PIMixture needs to estimate total 7 parameters <span><img src="images/image022.png"></span>’s by default. </p>
+            PIMixture needs to estimate total 7 parameters <span><img src="images/image022.png" alt="alpha_k"></span>’s by default. </p>
 
-        <p style="margin-left: 60px; text-indent: -25px">3. &nbsp; Semiparametric model: we assume  <span><img src="images/image023.png"></span> is a step function with jumps at unique
+        <p style="margin-left: 60px; text-indent: -25px">3. &nbsp; Semiparametric model: we assume  <span><img src="images/image023.png" alt="equation 7"></span> is a step function with jumps at unique
             observation times at most. Hence as the number of unique observation times
-            increases, the number of parameters for  <span><img src="images/image023.png"></span> increases. The iterative convex
-            algorithm is employed to nonparametrically estimate <span><img src="images/image023.png"></span>.</p>
+            increases, the number of parameters for  <span><img src="images/image023.png" alt="eqation 7"></span> increases. The iterative convex
+            algorithm is employed to nonparametrically estimate <span><img src="images/image023.png" alt="equation 7"></span>.</p>
 
         <p style="margin-top: 20px">The assumptions are strong in the order of “Parametric” &gt;
             ”Weakly-parametric” &gt; ”Semiparametric”, whereas if data satisfies the
@@ -105,7 +105,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Sampling Design</span></h3>
+        <h2><span >Sampling Design</span></h2>
 
         <p >PIMixture provides two options for unweighted and weighted
             data. Specifically, unweighted data represents a simple random sample or an
@@ -119,87 +119,36 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <p  style='page-break-after:avoid'>Table 1 Available options of
             PIMixture</p>
 
-        <table  border=1 cellspacing=0 cellpadding=0
-               style='border-collapse:collapse;border:none'>
-            <tr>
-                <td width=156 valign=top style='width:116.85pt;border:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
-                </td>
-                <td width=156 valign=top style='width:116.85pt;border:solid #5B9BD5 1.5pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Parametric models*</p>
-                </td>
-                <td width=156 valign=top style='width:116.9pt;border:solid #5B9BD5 1.5pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Weakly-parametric models**</p>
-                </td>
-                <td width=156 valign=top style='width:116.9pt;border:solid #5B9BD5 1.5pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Semiparametric models**</p>
-                </td>
-            </tr>
-            <tr>
-                <td width=156 valign=top style='width:116.85pt;border:solid #5B9BD5 1.5pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Unweighted data (a simple random sample or a cohort)</p>
-                </td>
-                <td width=156 valign=top style='width:116.85pt;border-top:none;border-left:
-  none;border-bottom:solid #5B9BD5 1.5pt;border-right:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Available</p>
-                </td>
-                <td width=156 valign=top style='width:116.9pt;border-top:none;border-left:
-  none;border-bottom:solid #5B9BD5 1.5pt;border-right:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Available</p>
-                </td>
-                <td width=156 valign=top style='width:116.9pt;border-top:none;border-left:
-  none;border-bottom:solid #5B9BD5 1.5pt;border-right:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Available (standard error and confidence interval are not available)</p>
-                </td>
-            </tr>
-            <tr>
-                <td width=156 valign=top style='width:116.85pt;border:solid #5B9BD5 1.5pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Weighted data (stratified random sample with known sample weights)</p>
-                </td>
-                <td width=156 valign=top style='width:116.85pt;border-top:none;border-left:
-  none;border-bottom:solid #5B9BD5 1.5pt;border-right:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Not available</p>
-                </td>
-                <td width=156 valign=top style='width:116.9pt;border-top:none;border-left:
-  none;border-bottom:solid #5B9BD5 1.5pt;border-right:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Available</p>
-                </td>
-                <td width=156 valign=top style='width:116.9pt;border-top:none;border-left:
-  none;border-bottom:solid #5B9BD5 1.5pt;border-right:solid #5B9BD5 1.5pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Available (standard error and confidence interval are not available)</p>
-                </td>
-            </tr>
+        <table id="model-table" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th><span class="empty-cell">-empty-</span></th>
+                    <th>Parametric models* </th>
+                    <th>Weakly-parametric models**</th>
+                    <th>Semiparametric models**</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Unweighted data (a simple random sample or a cohort)</td>
+                    <td>Available</td>
+                    <td>Available</td>
+                    <td>Available (standard error and confidence interval are not available)</td>
+                </tr>
+                <tr>
+                    <td>Weighted data (stratified random sample with known sample weights)</td>
+                    <td>Not available</td>
+                    <td>Available</td>
+                    <td>Available (standard error and confidence interval are not available)</td>
+                </tr>
+            </tbody>
         </table>
 
         <p >* Cheung et al. 2017; ** Hyun et al. 2017.</p>
     </div>
 
     <div>
-        <h3><span >Data</span></h3>
+        <h2><span >Data</span></h2>
 
         <p >This section explains what types of data should be included
             in an input dataset and coding rules. The file format of Comma Separate Value
@@ -207,7 +156,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h4><span >Outcome (necessary information)</span></h4>
+        <h3><span >Outcome (necessary information)</span></h3>
 
         <p >The outcome of interest is the time of clinically-detectable
             disease onset, and three variables for the outcome should be included in the
@@ -234,7 +183,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
 
         <p  style='margin-left: 60px; text-indent: -30px'>(4)<span
                 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>For right censoring,
-            R=Inf, where Inf means infinity, <span><img src="images/image024.png"></span>.</p>
+            R=Inf, where Inf means infinity, <span><img src="images/image024.png" alt="infinity "></span>.</p>
 
         <p  style='margin-left: 60px; text-indent: -30px'>(5)<span
                 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>L should not be equal
@@ -242,170 +191,62 @@ represent known diseased status). EHR=electronic health records.</span></p>
             However, if data includes exact event times, users can use a trick, adding a
             very small interval to the exact event times to define “L” and “R”.</p>
 
-        <p  style='page-break-after:avoid'><img id="Diagram 3" src="images/image025.png"></p>
+        <p  style='page-break-after:avoid'><img id="Diagram 3" src="images/image025.png" alt="All possible cases we may observe"></p>
 
         <p >Figure 1 All possible cases we may observe</p>
 
         <p  style='page-break-after:avoid'>Table 2 Example of input
             data (description column is not necessary).</p>
 
-        <table >
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>C</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>L</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>R</span></p>
-                </td>
-                <td width=390 nowrap valign=bottom style='width:292.25pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'>Description</span></p>
-                </td>
+        <table class="table table-bordered" style="width: 75%">
+            <thead>
+            <tr>
+                <th>C</th>
+                <th>L</th>
+                <th>R</th>
+                <th>Description</th>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=390 nowrap valign=bottom style='width:292.25pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'> case 1</span></p>
-                </td>
+            </thead>
+            <tr>
+                <td>1</td>
+                <td>-999</td>
+                <td>-999</td>
+                <td>case 1: the subject has disease present at baseline</td>
             </tr>
-            <tr style='height:30.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:30.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:30.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>180</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:30.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>365</span></p>
-                </td>
-                <td width=390 valign=bottom style='width:292.25pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:30.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'> case 2: the subject had been disease -free
+            <tr>
+                <td>0</td>
+                <td>180</td>
+                <td>365</td>
+                <td>case 2: the subject had been disease -free
   at visit 1 (180 days since baseline) and was diagnosed with a disease at
-  visit 2 (365 days)</span></p>
-                </td>
+  visit 2 (365 days)</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1825</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=390 nowrap valign=bottom style='width:292.25pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'>case 3: the last follow-up is 1825 days
-  since baseline and no incidence is observed.</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>1825</td>
+                <td>Inf</td>
+                <td>case 3: the last follow-up is 1825 days
+  since baseline and no incidence is observed. </td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>730</span></p>
-                </td>
-                <td width=390 nowrap valign=bottom style='width:292.25pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'>case 4: baseline status is not observed and
-  at visit 1 (730 days) disease is observed.</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>730</td>
+                <td>case 4: baseline status is not observed and
+  at visit 1 (730 days) disease is observed.</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>Inf
                 </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=390 nowrap valign=bottom style='width:292.25pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'>case 5</span></p>
-                </td>
+                <td>case 5: the subject is uninformative for risk estimation</td>
             </tr>
         </table>
     </div>
 
     <div>
-        <h4><span >Predictors (optional information)</span></h4>
+        <h3><span >Predictors (optional information)</span></h3>
 
         <p >In PIMixture, it is optional to include predictors in
             logistic and proportional hazards models. When included, relative risks are
@@ -426,315 +267,100 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <p  style='page-break-after:avoid'>Table 3 Example of data
             including continuous BMI as a predictor</p>
 
-        <table  border=0 cellspacing=0 cellpadding=0 width=256
-               style='width:192.0pt;border-collapse:collapse'>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>C</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>L</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>R</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>BMI</span></p>
-                </td>
+        <table class="table table-bordered" style="width:34.2%;">
+            <thead>
+                <tr>
+                    <th>C</th>
+                    <th>L</th>
+                    <th>R</th>
+                    <th>BMI</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>-999</td>
+                <td>-999</td>
+                <td>17</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>17</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>180</td>
+                <td>365</td>
+                <td>19</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>180</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>365</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>19</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>1825</td>
+                <td>Inf</td>
+                <td>27</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1825</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>27</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>730</td>
+                <td>24</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>730</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>24</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>Inf</td>
+                <td>31</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>31</span></p>
-                </td>
-            </tr>
+            </tbody>
         </table>
 
         <p >&nbsp;</p>
 
-        <p >The logistic and proportional hazards models are <span><img src="images/image026.png"></span>, <span><img src="images/image027.png"></span> </p>
+        <p >The logistic and proportional hazards models are <span><img src="images/image026.png" alt="equation 8"></span>, <span><img src="images/image027.png" alt="equation 9"></span> </p>
 
         <p >A reference level (or group) for continuous predictors is 0
             by default; however, users can set the reference level to be another level
             rather than 0; when users set a reference level for BMI to be “20”. Then it
             shifts BMI levels to be centered at 20.</p>
 
-        <table  border=0 cellspacing=0 cellpadding=0 width=256
-               style='width:192.0pt;border-collapse:collapse'>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>C</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>L</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>R</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>BMI</span></p>
-                </td>
+        <table class="table table-bordered" style="width: 34.2%">
+            <thead>
+                <tr>
+                    <th>C</th>
+                    <th>L</th>
+                    <th>R</th>
+                    <th>BMI</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>-999</td>
+                <td>-999</td>
+                <td>-3</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-3</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>180</td>
+                <td>365</td>
+                <td>-1</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>180</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>365</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-1</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>1825</td>
+                <td>Inf</td>
+                <td>7</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1825</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>7</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>730</td>
+                <td>4</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>730</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>4</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>Inf</td>
+                <td>11</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>11</span></p>
-                </td>
-            </tr>
+
+            </tbody>
         </table>
 
         <p >&nbsp;</p>
@@ -747,310 +373,73 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <p >Categorical predictors allow two types of data, numerical
             and characteristic levels:</p>
 
-        <table  border=0 cellspacing=0 cellpadding=0 width=591
-               style='width:443.0pt;border-collapse:collapse'>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>C</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>L</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>R</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>BMI</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;padding:0in 5.4pt 0in 5.4pt;
-  height:15.0pt'></td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>C</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>L</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>R</span></p>
-                </td>
-                <td width=79 nowrap valign=bottom style='width:59.0pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>BMI</span></p>
-                </td>
+        <table class="table table-bordered" style="border-bottom: none; border-top: none; width: 75%">
+            <thead>
+            <tr>
+                <th>C</th>
+                <th>L</th>
+                <th>R</th>
+                <th>BMI</th>
+                <th style="background-color: white;border: none"><span class="empty-cell">-empty-</span></th>
+                <th>C</th>
+                <th>L</th>
+                <th>R</th>
+                <th style="width: 12%;">BMI</th>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;padding:0in 5.4pt 0in 5.4pt;
-  height:15.0pt'></td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=79 nowrap valign=bottom style='width:59.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;text-align:
-  justify;text-justify:inter-ideograph;line-height:normal'><span
-                            style='color:black'>low</span></p>
-                </td>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>-999</td>
+                <td>-999</td>
+                <td>1</td>
+                <td rowspan="5" style="border: none;vertical-align:middle;text-align: center">or</td>
+                <td>1</td>
+                <td>-999</td>
+                <td>-999</td>
+                <td>low</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>180</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>365</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>2</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;padding:0in 5.4pt 0in 5.4pt;
-  height:15.0pt'></td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>180</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>365</span></p>
-                </td>
-                <td width=79 nowrap valign=bottom style='width:59.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;text-align:
-  justify;text-justify:inter-ideograph;line-height:normal'><span
-                            style='color:black'>normal</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>180</td>
+                <td>365</td>
+                <td>2</td>
+                <td>0</td>
+                <td>180</td>
+                <td>365</td>
+                <td>normal</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1825</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>3</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;padding:0in 5.4pt 0in 5.4pt;
-  height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span style='color:black'>or</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>1825</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=79 nowrap valign=bottom style='width:59.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;text-align:
-  justify;text-justify:inter-ideograph;line-height:normal'><span
-                            style='color:black'>overweight</span></p>
-                </td>
+            <tr>
+                <td>0</td>
+                <td>1825</td>
+                <td>Inf</td>
+                <td>3</td>
+                <td>0</td>
+                <td>1825</td>
+                <td>Inf</td>
+                <td>overweight</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>730</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>2</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;padding:0in 5.4pt 0in 5.4pt;
-  height:15.0pt'></td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>730</span></p>
-                </td>
-                <td width=79 nowrap valign=bottom style='width:59.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;text-align:
-  justify;text-justify:inter-ideograph;line-height:normal'><span
-                            style='color:black'>normal</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>730</td>
+                <td>2</td>
+                <td>-999</td>
+                <td>0</td>
+                <td>730</td>
+                <td>normal</td>
             </tr>
-            <tr style='height:15.0pt'>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>4</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;padding:0in 5.4pt 0in 5.4pt;
-  height:15.0pt'></td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border:solid windowtext 1.0pt;
-  border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>-999</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>0</span></p>
-                </td>
-                <td width=64 nowrap valign=bottom style='width:48.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  align=right style='margin-bottom:0in;margin-bottom:.0001pt;
-  text-align:right;line-height:normal'><span style='color:black'>Inf</span></p>
-                </td>
-                <td width=79 nowrap valign=bottom style='width:59.0pt;border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>
-                    <p  style='margin-bottom:0in;margin-bottom:.0001pt;text-align:
-  justify;text-justify:inter-ideograph;line-height:normal'><span
-                            style='color:black'>obese</span></p>
-                </td>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>Inf</td>
+                <td>4</td>
+                <td>-999</td>
+                <td>0</td>
+                <td>Inf</td>
+                <td>obese</td>
             </tr>
+            </tbody>
         </table>
 
         <p  style='margin-left:.75in'><span
@@ -1060,7 +449,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
             predictors. For example, when we set a reference level for BMI to be 2 (or
             “normal’), the logistic and proportional hazards models are</p>
 
-        <p ><span><img src="images/image028.png"></span>, <span><img src="images/image029.png"></span> </p>
+        <p ><span><img src="images/image028.png" alt="equation 10"></span>, <span><img src="images/image029.png" alt="equation 11"></span> </p>
 
         <p >where I(BMI=a)=1 if BMI=a; 0 otherwise. </p>
 
@@ -1071,7 +460,17 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Prediction</span></h3>
+        <h4>Interaction Effects</h4>
+        <p>Let us consider two factors, sex (binary) and BMI (categorical) and interaction effects between two factors. Then the logistic and proportional hazards models are as following:
+            <span><img src="images/image030.png" alt="equation 12"></span>
+            <span><img src="images/image031.png" alt="equation 13"></span>
+        </p>
+
+
+    </div>
+
+    <div>
+        <h2><span >Prediction</span></h2>
 
         <p >Based on the regression parameters and/or cumulative hazard
             function, we can predict prevalence and incidence using an independent data
@@ -1086,7 +485,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-        <h3><span >Tips for handling errors</span></h3>
+        <h2><span >Tips for handling errors</span></h2>
 
         <ul>
             <li >The general coding rules described in Section 4.1 are one of
@@ -1099,7 +498,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
     </div>
 
     <div>
-         <h3>References</h3>
+         <h2>References</h2>
         <ol>
             <li> Cheung LC, Pan Q, Hyun N, Schiffman M, Fetterman B, Castle PE, Katki HA.  Mixture models for left-censored and irregularly interval-censored data: Application to a cancer screening cohort assembled from electronic health records.  Stat Med. 2017 Sep 30; 36(22):3583-95.</li>
             <li> Hyun N, Cheung LC, Pan Q, Schiffman M, Katki HA.  Flexible risk prediction models for left or interval-censored data from electronic health records. Ann Appl Stat. 2017 Jun;11(2): 1063-84.</li>

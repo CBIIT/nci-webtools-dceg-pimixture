@@ -5,16 +5,21 @@ from pprint import pprint
 from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 import os, sys
+from urllib import urlencode
+import argparse
 
 from util import *
 from fitting import *
 
-def sendResults(jobName, email, results):
+def sendResults(jobName, email, hostURL, results):
     subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
     content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
-    content += '<p><a href="{}" download="{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName)
-    content += '<p><a href="{}" download="{}.csv">Download CSV file</a></p>'.format(results['csvFile'], jobName)
+    content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_SUFFIX)
+    content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
+    query = urlencode({"remoteRFile": results['Rfile'],
+                       "fileName": '{}{}.rds'.format(jobName, FITTING_SUFFIX)})
+    content += '<p><a href="{}#prediction?{}">Run Prediction</a></p>'.format(hostURL, query)
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):
@@ -25,8 +30,12 @@ def sendErrors(jobName, email, errors):
     return send_mail(SENDER, email, subject, content)
 
 
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
+    args = parser.parse_args()
+    if (args.debug):
+        addStreamHandler()
     try:
         sqs = Queue()
         while True:
@@ -52,7 +61,7 @@ if __name__ == '__main__':
                         parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
 
                         outputRdsFileName = getOutputFilePath(id, '.rds')
-                        outputCSVFileName = getOutputFilePath(id, '.csv')
+                        outputSSFileName = getOutputFilePath(id, extensionMap[SS_FILE_TYPE])
                         outputFileName = getOutputFilePath(id, '.out')
                         parameters['outputRdsFilename'] = outputRdsFileName
                         parameters['outputFilename'] = outputFileName
@@ -60,11 +69,11 @@ if __name__ == '__main__':
                         jobName = jobName if jobName else 'PIMixture'
 
                         extender.start()
-                        fittingResult = fitting(parameters, outputCSVFileName)
+                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
-                            outputRdsFileKey = getOutputFileName(id, '.rds')
-                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}.rds'.format(jobName))
+                            outputRdsFileKey = getOutputFileKey(id, '.rds')
+                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_SUFFIX))
                             os.remove(outputRdsFileName)
                             if object:
                                 fittingResult['results']['Rfile'] = object
@@ -72,16 +81,16 @@ if __name__ == '__main__':
                                 sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileName(id, '.csv'), outputCSVFileName, '{}.csv'.format(jobName))
-                            os.remove(outputCSVFileName)
+                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE]))
+                            os.remove(outputSSFileName)
                             if object:
-                                fittingResult['results']['csvFile'] = object
+                                fittingResult['results']['ssFile'] = object
                             else:
-                                sendErrors(jobName, parameters['email'], 'Upload result CSV file failed!')
+                                sendErrors(jobName, parameters['email'], 'Upload result {} file failed!'.format(SS_FILE_TYPE))
                                 outputBucket.deleteFile(outputRdsFileKey)
                                 continue
 
-                            if not sendResults(jobName, parameters['email'], fittingResult['results']):
+                            if not sendResults(jobName, parameters['email'], parameters['hostURL'], fittingResult['results']):
                                 log.error("An error happened when trying to send result email")
                                 continue
                         else:
