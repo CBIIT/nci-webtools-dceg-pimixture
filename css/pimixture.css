@@ -640,3 +640,15 @@ input[type=file] {
         max-width: 100%;
     }
 }
+
+@media (min-width: 1200px) and (max-width: 1350px) {
+    .sampleDownloadContainer {
+        width: 110%;
+    }
+}
+
+@media (max-width: 474px) {
+    .sampleDownloadContainer {
+        width: 110%;
+    }
+}
