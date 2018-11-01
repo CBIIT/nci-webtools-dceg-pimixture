@@ -479,6 +479,11 @@ input[type=file] {
 #help-page .empty-cell {
     display: none;
 }
+
+#help-page #references ol li {
+    margin-top: 10px;
+}
+
 #model-table tr th:nth-child(2),
 #model-table tr td:nth-child(2) {
     width: 12.5%;
