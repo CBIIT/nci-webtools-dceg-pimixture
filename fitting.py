@@ -155,7 +155,7 @@ def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
 def writeToXLSXFile(filename, parameters, results):
     wb = Workbook()
     ws = wb.active
-    ws.title = 'Job Parameters'
+    ws.title = 'Model Parameters'
     ws.append(['Name', 'Value'])
 
     for param in savedParameters:
