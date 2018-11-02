@@ -317,6 +317,10 @@ h2.stage-header {
     display: inline-block;
 }
 
+#dropdown-button li a {
+    text-align: left;
+}
+
 #timePointsError,
 #email-error,
 #covariates-error,
