@@ -29,7 +29,8 @@ def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
         results['ssFile'] = outputSSFileName
         results['extension'] = extensionMap[fileType]
         results['fileType'] = fileType
-        results['suffix'] = FITTING_SUFFIX
+        results['rSuffix'] = FITTING_R_SUFFIX
+        results['ssSuffix'] = FITTING_SS_SUFFIX
 
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']
