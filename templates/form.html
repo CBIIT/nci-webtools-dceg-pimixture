@@ -19,7 +19,7 @@
                 <button id="csvFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('csvFile').click();" <%= data.csvFile.name ? 'disabled' : '' %>>Choose File</button>
             </div>
             <div class="col-lg-9">
-                <div id="csvFileName"><%= data.csvFile.name %></div>
+                <div id="csvFileName"><%= data.csvFile.name || 'No file is chosen'%></div>
             </div>
         </div>
     </div>

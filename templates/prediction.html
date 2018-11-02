@@ -16,7 +16,7 @@
                         <button id="modelFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('rdsFile').click();" <%= data.rdsFile.name ? 'disabled' : '' %>>Choose File</button>
                     </div>
                     <div class="col-lg-9">
-                        <div id="modelFileName"><%= data.rdsFile.name %></div>
+                        <div id="modelFileName"><%= data.rdsFile.name || 'No file is chosen' %></div>
                     </div>
                 <% } %>
             </div>
@@ -35,7 +35,7 @@
                     <button id="testDataFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('testDataFile').click();" <%= data.testDataFile.name ? 'disabled' : '' %>>Choose File</button>
                 </div>
                 <div class="col-lg-9">
-                    <div id="testDataFileName"><%= data.testDataFile.name %></div>
+                    <div id="testDataFileName"><%= data.testDataFile.name || 'No file is chosen' %></div>
                 </div>
             </div>
         </div>

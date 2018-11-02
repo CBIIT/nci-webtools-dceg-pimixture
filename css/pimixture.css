@@ -386,13 +386,14 @@ input[type=file] {
 
 #testDataFileName,
 #modelFileName,
-#modelFileName,
 #csvFileName {
     padding-top: 7px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    font-size: 0.9em;
+    color: #707070;
 }
 
 #serverFileName {
