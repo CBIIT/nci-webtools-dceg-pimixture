@@ -530,59 +530,37 @@ input[type=file] {
     z-index: 1000;
 }
 
+.sampleDownloadContainer {
+    font-style: italic;
+}
+
 /*
     Responsive design
  */
+
+
+@media (max-width: 600px) {
+    .sampleDownloadContainer .col-xs-6 {
+        width: 100%;
+    }
+}
 
 @media (max-width: 768px) {
     .time-points-radio {
         margin-left: 20px;
     }
 }
-@media (min-width: 1200px) and  (max-width: 1317px) {
-    #jobQueueBox {
-        padding-left: 10px;
-    }
-    #timpPointsInput {
-        width: 72%
-    }
-    #timePointsLabel {
-        width: 28%;
+
+@media (max-width: 840px) {
+    #help-page table,
+    #help-page img {
+        max-width: 100%;
     }
 }
 
-@media (min-width: 1200px) and  (max-width: 1302px) {
-    #jobQueueBox,
-    #numMessages {
+@media(max-width: 993px) {
+    .container {
         width: 100%;
-        padding-top: 7px;
-        padding-left: 15px;
-    }
-    #numMessages {
-        padding-left: 20px;
-    }
-}
-
-@media (min-width: 1303px) and (max-width: 1439px) {
-    #numMessages {
-        padding-left: 5px;
-        padding-top: 16px;
-    }
-
-}
-
-@media (min-width: 768px) and (max-width: 1199px){
-    .form-horizontal .control-label {
-        margin-bottom: 5px;
-    }
-    #numMessages {
-        padding-top: 16px;
-    }
-}
-
-@media (min-width: 768px) {
-    .sampleDownloadContainer {
-        padding-top: 7px;
     }
 }
 
@@ -596,12 +574,19 @@ input[type=file] {
     }
 }
 
-@media (min-width: 1440px){
-    .container {
-        width: 1440px;
-      }
+
+@media (min-width: 768px) {
+    .sampleDownloadContainer {
+        padding-top: 7px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px){
+    .form-horizontal .control-label {
+        margin-bottom: 5px;
+    }
     #numMessages {
-        padding: 16px 15px 0 5px;
+        padding-top: 16px;
     }
 }
 
@@ -609,13 +594,6 @@ input[type=file] {
 .container {
     width: 100%;
   }
-}
-
-
-@media(max-width: 993px) {
-    .container {
-        width: 100%;
-    }
 }
 
 @media (min-width: 1200px) {
@@ -637,17 +615,65 @@ input[type=file] {
     #main-tool #model-label {
         padding-left: 12px;
     }
-}
+    .sampleDownloadContainer {
+        margin-left: 15px;
+        padding-left: 0;
+    }
 
-@media (max-width: 840px) {
-    #help-page table,
-    #help-page img {
-        max-width: 100%;
+    .sampleDownloadContainer .col-xs-6 {
+        padding-left: 5px;
+        padding-right: 0;
     }
 }
 
-@media (max-width: 600px) {
+@media (min-width: 1200px) and (max-width: 1250px) {
+}
+
+@media (min-width: 1200px) and  (max-width: 1302px) {
+    #jobQueueBox,
+    #numMessages {
+        width: 100%;
+        padding-top: 7px;
+        padding-left: 15px;
+    }
+    #numMessages {
+        padding-left: 20px;
+    }
+
+    #testDataLabel,
+    #inputFileLabel {
+        padding-right: 0;
+    }
     .sampleDownloadContainer .col-xs-6 {
         width: 100%;
     }
 }
+
+@media (min-width: 1200px) and  (max-width: 1317px) {
+    #jobQueueBox {
+        padding-left: 10px;
+    }
+    #timpPointsInput {
+        width: 72%
+    }
+    #timePointsLabel {
+        width: 28%;
+    }
+}
+
+@media (min-width: 1303px) and (max-width: 1439px) {
+    #numMessages {
+        padding-left: 5px;
+        padding-top: 16px;
+    }
+}
+
+@media (min-width: 1440px){
+    .container {
+        width: 1440px;
+    }
+    #numMessages {
+        padding: 16px 15px 0 5px;
+    }
+}
+
