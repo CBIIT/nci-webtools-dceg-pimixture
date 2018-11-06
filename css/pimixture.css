@@ -65,6 +65,8 @@ header {
 
 .well {
     margin: 0px;
+    background-color: #f8f8f8;
+    background-image: none;
 }
 .well ~ .well {
     margin-top: 10px;
