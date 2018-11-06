@@ -30,13 +30,13 @@
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
                     <tr>
-                        <th class="sortByColumn" data-column="<%= 'time' %>">Time Point <span class="glyphicon"></span></th>
-                        <th class="sortByColumn" data-column="<%= 'Subgroup' %>">Subgroup <span class="glyphicon"></span></th>
-                        <th class="sortByColumn" data-column="<%= 'CR' %>">CR <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'time' %>">Time Point<span class="sort-icon"><span class="fas fa-sort"></span></span></th>
+                        <th class="sortByColumn" data-column="<%= 'Subgroup' %>">Subgroup<span class="sort-icon"><span class="fas fa-sort"></span></span></th>
+                        <th class="sortByColumn" data-column="<%= 'CR' %>">CR<span class="sort-icon"><span class="fas fa-sort"></span></span></th>
                         <% if (data.results.model !== 'semi-parametric') { %>
-                        <th class="sortByColumn" data-column="<%= 'CR.se' %>">Standard Error <span class="glyphicon"></span></th>
-                        <th class="sortByColumn" data-column="<%= 'LL95' %>">Lower Confidence Limit (95%) <span class="glyphicon"></span></th>
-                        <th class="sortByColumn" data-column="<%= 'UL95' %>">Upper Confidence Limit (95%) <span class="glyphicon"></span></th>
+                        <th class="sortByColumn" data-column="<%= 'CR.se' %>">Standard Error<span class="sort-icon"><span class="fas fa-sort"></span></span></th>
+                        <th class="sortByColumn" data-column="<%= 'LL95' %>">Lower Confidence Limit (95%)<span class="sort-icon"><span class="fas fa-sort"></span></span></th>
+                        <th class="sortByColumn" data-column="<%= 'UL95' %>">Upper Confidence Limit (95%)<span class="sort-icon"><span class="fas fa-sort"></span></span></th>
                         <% } %>
                     </tr>
                     </thead>

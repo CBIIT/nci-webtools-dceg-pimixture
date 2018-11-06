@@ -260,9 +260,14 @@ fieldset.well,
     padding-left: 18px;
 }
 
-.glyphicon {
-    top: 0px;
+#prediction-results .sort-icon {
+    margin-left: 5px;
 }
+
+.fas {
+    color: gray;
+}
+
 button[disabled],
 input[disabled],
 [disabled] {
