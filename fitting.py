@@ -29,7 +29,8 @@ def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
         results['ssFile'] = outputSSFileName
         results['extension'] = extensionMap[fileType]
         results['fileType'] = fileType
-        results['suffix'] = FITTING_SUFFIX
+        results['rSuffix'] = FITTING_R_SUFFIX
+        results['ssSuffix'] = FITTING_SS_SUFFIX
 
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']
@@ -73,6 +74,9 @@ savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
                     {'field': 'email', 'name': 'Email'}
                     ]
 
+covariateTypeMap = { 'nominal': 'Categorical',
+                     'continuous': 'Continuous'}
+
 def writeToCSVFile(filename, parameters, results):
     with open(filename, 'w') as outputCSVFile:
         writer = csv.writer(outputCSVFile, dialect='excel')
@@ -88,9 +92,8 @@ def writeToCSVFile(filename, parameters, results):
                     writer.writerow([name, val.filename])
                 elif key == 'covariatesArr':
                     writer.writerow(['Covariate Configuaration'])
-                    writer.writerow(['', 'Covariate', 'Variable Type', 'Reference Level'])
                     for cov in val:
-                        writer.writerow(['', cov['text'], cov['type'], cov['category']])
+                        writer.writerow(['', '{}: {} = {}'.format(cov['text'], covariateTypeMap[cov['type']], cov['category'])])
                 elif key == 'covariatesSelection':
                     writer.writerow([name, ' + '.join(val)])
                 elif key == 'design':
@@ -155,7 +158,7 @@ def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
 def writeToXLSXFile(filename, parameters, results):
     wb = Workbook()
     ws = wb.active
-    ws.title = 'Job Parameters'
+    ws.title = 'Model Parameters'
     ws.append(['Name', 'Value'])
 
     for param in savedParameters:
@@ -167,9 +170,8 @@ def writeToXLSXFile(filename, parameters, results):
                 ws.append([name, val.filename])
             elif key == 'covariatesArr':
                 ws.append(['Covariate Configuaration'])
-                ws.append(['', 'Covariate', 'Variable Type', 'Reference Level'])
                 for cov in val:
-                    ws.append(['', cov['text'], cov['type'], cov['category']])
+                    ws.append(['', '{}: {} = {}'.format(cov['text'], covariateTypeMap[cov['type']], cov['category'])])
             elif key == 'covariatesSelection':
                 ws.append([name, ' + '.join(val)])
             elif key == 'design':

@@ -15,10 +15,10 @@ def sendResults(jobName, email, hostURL, results):
     subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
     content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
-    content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_SUFFIX)
-    content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
+    content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_R_SUFFIX)
+    content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
     query = urlencode({"remoteRFile": results['Rfile'],
-                       "fileName": '{}{}.rds'.format(jobName, FITTING_SUFFIX)})
+                       "fileName": '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)})
     content += '<p><a href="{}#prediction?{}">Run Prediction</a></p>'.format(hostURL, query)
     return send_mail(SENDER, email, subject, content)
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET)
                             outputRdsFileKey = getOutputFileKey(id, '.rds')
-                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_SUFFIX))
+                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_R_SUFFIX))
                             os.remove(outputRdsFileName)
                             if object:
                                 fittingResult['results']['Rfile'] = object
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                                 sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SUFFIX, extensionMap[SS_FILE_TYPE]))
+                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE]))
                             os.remove(outputSSFileName)
                             if object:
                                 fittingResult['results']['ssFile'] = object

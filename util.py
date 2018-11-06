@@ -49,7 +49,8 @@ INPUT_FILE_PREFIX = config.get('prefixes', 'input_file_prefix')
 OUTPUT_FILE_PREFIX = config.get('prefixes', 'output_file_prefix')
 
 # Suffix settings
-FITTING_SUFFIX = config.get('suffixes', 'fitting_suffix')
+FITTING_R_SUFFIX = config.get('suffixes', 'fitting_r_suffix')
+FITTING_SS_SUFFIX = config.get('suffixes', 'fitting_ss_suffix')
 PREDICTION_SUFFIX = config.get('suffixes', 'prediction_suffix')
 
 # S3 settings

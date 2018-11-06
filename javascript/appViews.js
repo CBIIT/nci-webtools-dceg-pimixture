@@ -1147,9 +1147,9 @@ appMixture.PredictionResultView = Backbone.View.extend({
         this.calculateNeighborPages();
         this.$el.html(this.template(this.model.attributes));
         if (this.model.get('column')) {
-            var selecter = '[data-column="' + this.model.get('column') + '"] .glyphicon';
-            var icon = this.model.get('order') === 'asc' ? 'glyphicon-triangle-top' : 'glyphicon-triangle-bottom';
-            this.$(selecter).addClass(icon);
+            var selecter = '[data-column="' + this.model.get('column') + '"] .fas';
+            var icon = this.model.get('order') === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+            this.$(selecter).removeClass('fa-sort').addClass(icon);
             this.$(selecter).css('color', 'blue');
         }
         return this;
