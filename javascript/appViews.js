@@ -270,6 +270,7 @@ appMixture.FormView = Backbone.View.extend({
         this.$('[name="email"]').prop('required', false);
         if (numCovariates >= QUEUE_COVARIATES_THRESHOLD || numLines >= QUEUE_DATA_THRESHOLD) {
             this.model.set('sendToQueue', true);
+            this.model.set('queueMandatory', true);
             this.$('[name="sendToQueue"]').prop('checked', true);
             this.$('[name="sendToQueue"]').prop('disabled', true);
             this.$('[name="email"]').prop('disabled', false);
