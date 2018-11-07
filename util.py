@@ -116,6 +116,7 @@ def send_mail(sender, recipient, subject, contents, attachments=None):
     Keyword Arguments:
         - attachments {string[]} -- Filenames of attachments (default: {None})
     """
+    server = None
     try:
         message = MIMEMultipart()
         message['Subject'] = subject
@@ -142,4 +143,5 @@ def send_mail(sender, recipient, subject, contents, attachments=None):
         log.error(e)
         return False
     finally:
-        server.quit()
+        if server and getattr(server, 'quit'):
+            server.quit()
