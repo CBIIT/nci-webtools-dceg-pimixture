@@ -55,7 +55,7 @@
                         <label class="control-label" for="begin">Begin <span class="text-danger">*</span></label> <a id="beginPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="begin tooltip"></a>
                     </div>
                     <div class="col-lg-8">
-                        <input type="number" name="begin" id="begin" class="form-control" value="<%= data.begin %>" required/>
+                        <input type="number" name="begin" id="begin" class="form-control" value="<%= data.begin %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -63,7 +63,7 @@
                         <label class="control-label" for="end">End <span class="text-danger">*</span></label> <a id="endPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="end tooltip"></a>
                     </div>
                     <div class="col-lg-8">
-                        <input type="number" name="end" id="end" class="form-control" value="<%= data.end %>" max="<%= data.maxTimePoint %>" required/>
+                        <input type="number" name="end" id="end" class="form-control" value="<%= data.end %>" max="<%= data.maxTimePoint %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -71,7 +71,7 @@
                         <label class="control-label" for="stepSize">Step Size <span class="text-danger">*</span></label> <a id="stepSizePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="step size tooltip"></a>
                     </div>
                     <div class="col-lg-8">
-                        <input type="number" name="stepSize" id="stepSize" class="form-control"  value="<%= data.stepSize %>" required/>
+                        <input type="number" name="stepSize" id="stepSize" class="form-control"  value="<%= data.stepSize %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@
                     <label class="control-label" for="timePoints">Points <span class="text-danger">*</span></label> <a id="timePointsPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="time points list tooltip"></a>
                 </div>
                 <div id="timpPointsInput" class="col-lg-9">
-                    <input type="text" name="timePoints" id="timePoints" value="<%= data.timePoints %>" placeholder="1,2,3..." class="form-control"/>
+                    <input type="text" name="timePoints" id="timePoints" value="<%= data.timePoints %>" placeholder="1,2,3..." class="form-control" <%= data.timePointType === 'List' ? 'required' : '' %>/>
                 </div>
                 <div id="timePointsError" class="col-xs-12"><%= data.timePointsError %></div>
             </div>
