@@ -888,13 +888,13 @@ appMixture.PredictionView = Backbone.View.extend({
             var points = val.split(',').map(function(point) { return point.trim()} );
             var maxTimePoint = this.model.get('maxTimePoint');
             this.model.unset('timePointError');
-            this.$('#error-message').html('');
+            this.$('#timePointsError').html('');
             for (var point of points) {
                 if (point) {
                     var num = parseInt(point);
                     if (Number.isNaN(num)) {
                         this.model.set('timePointError', true);
-                        return this.$('#error-message').html('Invalid time point "' + point + '"');
+                        return this.$('#timePointsError').html('Invalid time point "' + point + '"');
                     } else if (num > maxTimePoint) {
                         this.model.set('timePointError', true);
                         return this.$('#timePointsError').html('Time point can\'t be greater than "' + maxTimePoint + '"');
