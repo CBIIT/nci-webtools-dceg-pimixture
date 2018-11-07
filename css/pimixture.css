@@ -331,7 +331,7 @@ h2.stage-header {
 #timePointsError,
 #email-error,
 #covariates-error,
-#error-message,
+.error-message,
 #mutex-error {
   color: red;
 }

@@ -82,7 +82,7 @@
                 <div id="timpPointsInput" class="col-lg-9">
                     <input type="text" name="timePoints" id="timePoints" value="<%= data.timePoints %>" placeholder="1,2,3..." class="form-control"/>
                 </div>
-                <div id="timePointsError" class="col-xs-12"></div>
+                <div id="timePointsError" class="col-xs-12"><%= data.timePointsError %></div>
             </div>
         </fieldset>
         <div id="buttonSet" class="fieldset form-group submitButtons">
@@ -92,8 +92,6 @@
             <div class="col-lg-3">
                 <button type="reset" id="reset" class="btn btn-default form-control" <%= data['serverFile'] ? '' : 'disabled'%> >Reset</button>
             </div>
-        </div>
-        <div id="error-message">
         </div>
     </form>
 </div>

@@ -60,6 +60,8 @@
             </div>
         </div>
     </div>
+<% } else if (data.errors) { %>
+    <p class="error-message"><%= data.errors %></p>
 <% } else { %>
     <p>Upload your model file and provide prediction configuration on the left panel. The results will be displayed here once you click on Submit button.</p>
 <% } %>
