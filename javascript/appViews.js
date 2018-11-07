@@ -181,9 +181,11 @@ appMixture.FormView = Backbone.View.extend({
             type: "POST",
             success: function(model, res, options) {
                 $that.stopSpinner();
+                $that.getNumMessages();
             },
             error: function(model, res, options) {
                 $that.stopSpinner();
+                $that.getNumMessages();
                 var result = res.responseJSON;
                 if (result) {
                     $that.$('#error-message').html(result.message);
