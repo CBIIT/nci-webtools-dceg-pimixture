@@ -143,8 +143,8 @@
     <div id="emailSet" class="fieldset well">
         <div class="form-group">
             <div id="jobQueueBox" class="checkbox col-sm-5 col-lg-7">
-                <label class="control-label"><input type="checkbox" name="sendToQueue" value="" <%= data.csvFile.name ? '' : 'disabled' %>
-                    <%= data.sendToQueue ? 'checked' : '' %> style="position:static; margin-left:0"> Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="send to queue tooltip"></a>
+                <label class="control-label"><input type="checkbox" name="sendToQueue" <%= data.csvFile.name ? '' : 'disabled' %>
+                    <%= data.sendToQueue ? 'checked' : '' %> <%= data.queueMandatory ? 'disabled' : '' %> style="position:static; margin-left:0"> Submit this job to a queue</label> <a id="queuePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="send to queue tooltip"></a>
             </div>
             <div id="numMessages" class="col-sm-7 col-lg-5"></div>
         </div>
@@ -154,7 +154,8 @@
                 <label class="control-label" for="email">Email</label> <a id="emailPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="email tooltip"></a>
             </div>
             <div class="col-lg-9">
-                <input id="email" type="text" name="email" class="form-control"  value="<%= data.email %>" <%= data.sendToQueue ? '' : 'disabled' %>>
+                <input id="email" type="text" name="email" class="form-control"  value="<%= data.email %>" <%= data.sendToQueue ? '' : 'disabled' %>
+                <%= data.sendToQueue ? 'required' : ''%> >
             </div>
         </div>
         <div id="queueMessage">Note: if sending to queue, when computation is completed, a notification will be sent to the e-mail entered above.</div>
@@ -165,8 +166,6 @@
         </div>
         <div class="col-lg-3">
             <button id="reset" type="reset" class="btn btn-default form-control" <%= data.csvFile.name ? '' : 'disabled' %>>Reset</button>
-        </div>
-        <div id="error-message">
         </div>
     </div>
 </form>

@@ -172,7 +172,6 @@ appMixture.FormView = Backbone.View.extend({
         params.hostURL = window.location.href.split('#')[0];
         formData.append('jsonData', JSON.stringify(params));
         this.startSpinner();
-        $that.$('#error-message').html('');
         appMixture.models.results.fetch({
             data: formData,
             cache: false,
@@ -181,17 +180,19 @@ appMixture.FormView = Backbone.View.extend({
             type: "POST",
             success: function(model, res, options) {
                 $that.stopSpinner();
+                $that.getNumMessages();
             },
             error: function(model, res, options) {
                 $that.stopSpinner();
+                $that.getNumMessages();
                 var result = res.responseJSON;
                 if (result) {
-                    $that.$('#error-message').html(result.message);
+                    appMixture.models.results.set('errors', result.message);
                 } else {
                     var error = res.responseText.replace(/\\n/g, '<br>');
                     error = error.replace(/^"(.*)"\n$/, '$1');
                     error = error.replace(/\\"/g, '"');
-                    $that.$('#error-message').html(error);
+                    appMixture.models.results.set('errors', error);
                 }
             }
         });
@@ -268,6 +269,7 @@ appMixture.FormView = Backbone.View.extend({
         this.$('[name="email"]').prop('required', false);
         if (numCovariates >= QUEUE_COVARIATES_THRESHOLD || numLines >= QUEUE_DATA_THRESHOLD) {
             this.model.set('sendToQueue', true);
+            this.model.set('queueMandatory', true);
             this.$('[name="sendToQueue"]').prop('checked', true);
             this.$('[name="sendToQueue"]').prop('disabled', true);
             this.$('[name="email"]').prop('disabled', false);
@@ -853,11 +855,11 @@ appMixture.PredictionView = Backbone.View.extend({
                 processData: false,
                 type: "POST",
                 success: function(model, res, options) {
-                    $that.$('#error-message').html('');
+                    appMixture.models.predictionResultModel.unset('errors');
                 },
                 error: function(model, res, options) {
                     console.log(res.responseText);
-                    $that.$('#error-message').html(res.responseText)
+                    appMixture.models.predictionResultModel.set('errors', res.responseText);
                 }
             });
             this.model.set('rdsFile', file);
@@ -882,25 +884,28 @@ appMixture.PredictionView = Backbone.View.extend({
     updateModel: function(e) {
         var val = $(e.target).val();
         var name = $(e.target).attr('name');
+        this.model.set(name, val);
         if (name === 'timePoints') {
             var points = val.split(',').map(function(point) { return point.trim()} );
             var maxTimePoint = this.model.get('maxTimePoint');
-            this.model.unset('timePointError');
-            this.$('#error-message').html('');
+            this.model.unset('timePointsError');
+            this.$('#timePointsError').html('');
             for (var point of points) {
                 if (point) {
                     var num = parseInt(point);
+                    var error = '';
                     if (Number.isNaN(num)) {
-                        this.model.set('timePointError', true);
-                        return this.$('#error-message').html('Invalid time point "' + point + '"');
+                        error = 'Invalid time point "' + point + '"';
+                        this.model.set('timePointsError', error);
+                        return this.$('#timePointsError').html(error);
                     } else if (num > maxTimePoint) {
-                        this.model.set('timePointError', true);
-                        return this.$('#timePointsError').html('Time point can\'t be greater than "' + maxTimePoint + '"');
+                        error = 'Time point can\'t be greater than "' + maxTimePoint + '"';
+                        this.model.set('timePointsError', error);
+                        return this.$('#timePointsError').html(error);
                     }
                 }
             }
         }
-        this.model.set(name, val);
     },
     tryEnableInputs: function() {
         var modelFileSelected = this.model.get('serverFile');
@@ -923,7 +928,7 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     onSubmitPredict: function (e) {
         e.preventDefault();
-        if (this.model.get('timePointError')) {
+        if (this.model.get('timePointType') === 'List' && this.model.get('timePointsError')) {
             return;
         }
         var $that = this;
@@ -943,14 +948,14 @@ appMixture.PredictionView = Backbone.View.extend({
             formData.append('rdsFile', this.model.get('rdsFile'));
             jsonData['jobName'] = this.model.get('rdsFile').name.replace(/\.rds$/, '');
         } else {
-            this.$('#error-message').html('Please choose a valid model file!');
+            appMixture.models.predictionResultModel.set('errors', 'Please choose a valid model file!');
             return;
         }
 
         if (this.model.get('testDataFile')) {
             formData.append('testDataFile', this.model.get('testDataFile'));
         } else {
-            this.$('#error-message').html('Please choose a valid test data file!');
+            appMixture.models.predictionResultModel.set('errors', 'Please choose a valid test data file!');
             return;
         }
 
@@ -963,7 +968,6 @@ appMixture.PredictionView = Backbone.View.extend({
         }
         formData.append('jsonData', JSON.stringify(jsonData));
 
-        this.$('#error-message').html('');
         appMixture.models.predictionResultModel.clear({silent: true}).set(appMixture.models.predictionResultModel.defaults, {silent: true});
         appMixture.predictionResultView.render();
         this.startSpinner();
@@ -992,7 +996,7 @@ appMixture.PredictionView = Backbone.View.extend({
                 error = error.replace(/^"(.*)"\n$/, '$1');
                 error = error.replace(/\\"/g, '"');
                 error = 'Error message from R package:<br>' + error;
-                $that.$('#error-message').html(error);
+                appMixture.models.predictionResultModel.set('errors', error);
             }
         });
     },
@@ -1060,7 +1064,7 @@ appMixture.PredictionResultView = Backbone.View.extend({
             'variable': 'data'
         });
         this.model.on({
-            'change:results change:end change:start': this.render
+            'change:results change:end change:start change:errors': this.render
         }, this);
     },
     changePageSize: function(e) {
