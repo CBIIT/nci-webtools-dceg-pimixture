@@ -910,6 +910,7 @@ appMixture.PredictionView = Backbone.View.extend({
     updateMaxTimePoint: function(e) {
         var maxTimePoint = this.model.get('maxTimePoint');
         this.$('#end').prop('max', maxTimePoint);
+        this.$('#begin').prop('max', maxTimePoint);
     },
     selectTestDataFile: function(e) {
         var file = e.target.files[0];
