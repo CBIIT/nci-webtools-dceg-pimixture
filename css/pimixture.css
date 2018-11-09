@@ -328,6 +328,8 @@ h2.stage-header {
     text-align: left;
 }
 
+#beginError,
+#endError,
 #timePointsError,
 #email-error,
 #covariates-error,
@@ -336,6 +338,8 @@ h2.stage-header {
   color: red;
 }
 
+#beginError,
+#endError,
 #timePointsError {
     padding-top: 7px;
     padding-left: 20px;

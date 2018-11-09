@@ -927,25 +927,47 @@ appMixture.PredictionView = Backbone.View.extend({
         this.model.set(name, val);
         if (name === 'timePoints') {
             var points = val.split(',').map(function(point) { return point.trim()} );
-            var maxTimePoint = this.model.get('maxTimePoint');
-            this.model.unset('timePointsError');
-            this.$('#timePointsError').html('');
             for (var point of points) {
                 if (point) {
-                    var num = parseInt(point);
-                    var error = '';
-                    if (Number.isNaN(num)) {
-                        error = 'Invalid time point "' + point + '"';
-                        this.model.set('timePointsError', error);
-                        return this.$('#timePointsError').html(error);
-                    } else if (num > maxTimePoint) {
-                        error = 'Time point can\'t be greater than "' + maxTimePoint + '"';
-                        this.model.set('timePointsError', error);
-                        return this.$('#timePointsError').html(error);
+                    if (!this.validateTimePoint(point, 'timePointsError', this.$('#timePointsError'))) {
+                        return;
                     }
                 }
             }
         }
+
+        if (name === 'begin') {
+            if (this.validateTimePoint(val, 'beginError', this.$('#beginError'))) {
+                this.$('#end').prop('min', val);
+            }
+        } else if (name === 'end') {
+            this.validateTimePoint(val, 'endError', this.$('#endError'))
+        }
+    },
+    validateTimePoint: function(point, errorField, errorElement) {
+        this.model.unset(errorField);
+        if (errorElement.html) {
+            errorElement.html('');
+        }
+        var num = parseInt(point);
+        var maxTimePoint = this.model.get('maxTimePoint');
+        var error = '';
+        if (Number.isNaN(num)) {
+            error = 'Invalid time point "' + point + '"';
+            this.model.set(errorField, error);
+            if (errorElement.html) {
+                errorElement.html(error);
+            }
+            return false;
+        } else if (num > maxTimePoint) {
+            error = 'Time point can\'t be greater than "' + maxTimePoint + '"';
+            this.model.set(errorField, error);
+            if (errorElement.html) {
+                errorElement.html(error);
+            }
+            return false;
+        }
+        return true;
     },
     tryEnableInputs: function() {
         var modelFileSelected = this.model.get('serverFile');
@@ -969,6 +991,9 @@ appMixture.PredictionView = Backbone.View.extend({
     onSubmitPredict: function (e) {
         e.preventDefault();
         if (this.model.get('timePointType') === 'List' && this.model.get('timePointsError')) {
+            return;
+        } else if (this.model.get('timePointType') === 'Range' &&
+            (this.model.get('beginError') || this.model.get('endError'))) {
             return;
         }
         var $that = this;
