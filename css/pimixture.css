@@ -615,9 +615,14 @@ input[type=file] {
         margin-right: -5px;
     }
 
-    .col-lg-3,
-    .col-lg-4,
-    .col-lg-6 {
+    #input,
+    #prediction-input,
+    #prediction-input .col-lg-3,
+    #prediction-input .col-lg-4,
+    #prediction-input .col-lg-6,
+    #input .col-lg-3,
+    #input .col-lg-4,
+    #input .col-lg-6 {
         padding-right: 0;
     }
 
