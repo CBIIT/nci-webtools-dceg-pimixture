@@ -94,7 +94,7 @@ def runModel():
                 effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
                 if effects:
                     covariates += ' + ' + ' + '.join(effects)
-                    parameters['effects'] = ' + '.join(effects)
+                    parameters['effectsString'] = ' + '.join(effects)
             parameters['covariates'] = covariates
         parameters['columns'] = columns
 

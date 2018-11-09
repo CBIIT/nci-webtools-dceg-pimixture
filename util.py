@@ -96,10 +96,11 @@ savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
                     {'field': 'covariatesSelection', 'name': 'Covariates'},
                     {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
                     {'field': 'effects', 'name': 'Interactive Effects'},
+                    {'field': 'effectsString', 'name': 'Interactive Effects'},
                     {'field': 'email', 'name': 'Email'}
                     ]
 
-excludedFields = ['inputCSVFile', 'remoteInputCSVFile', 'headers']
+excludedFields = ['inputCSVFile', 'remoteInputCSVFile', 'headers', 'effects']
 
 def addStreamHandler():
     stdHandler = logging.StreamHandler()

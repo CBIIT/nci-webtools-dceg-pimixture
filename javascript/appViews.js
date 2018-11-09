@@ -1268,6 +1268,11 @@ appMixture.Router = Backbone.Router.extend({
                 if (paramObj['remoteInputCSVFile']) {
                     console.log(paramObj['remoteInputCSVFile']);
                 }
+                if (paramObj['effects'] && paramObj['effects'].length > 0) {
+                    paramObj['effects'] = paramObj['effects'].map(function(effect){
+                       return {first: effect[0], second: effect[1]};
+                    });
+                }
 
                 appMixture.models.form.set(paramObj, {silent: true});
                 var remoteRFile = paramObj.remoteRFile;
