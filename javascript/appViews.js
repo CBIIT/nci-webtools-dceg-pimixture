@@ -69,6 +69,7 @@ appMixture.FormView = Backbone.View.extend({
         'submit #calculationForm': 'runCalculation'
     },
     render: function() {
+        this.checkRemoteInputCSVFile();
         that = this;
         this.$el.html(this.template(this.model.attributes));
         this.$('[name="covariatesSelection"]').selectize({
@@ -84,6 +85,25 @@ appMixture.FormView = Backbone.View.extend({
         this.initializePopovers();
         this.getNumMessages();
         return this;
+    },
+    checkRemoteInputCSVFile: function() {
+        if (this.model.get('csvFile').name) {
+            return;
+        }
+        $that = this;
+        var remoteCSVFileName = this.model.get('remoteInputCSVFile');
+        if (remoteCSVFileName) {
+            var fileName = this.model.get('inputCSVFile');
+            fetch(remoteCSVFileName).then(function(res){
+                res.blob().then(function(blob){
+                    var file = new File([blob], fileName);
+                    $that.model.set('csvFile', file);
+                    $that.model.unset('inputCSVFile');
+                    $that.model.set('emailValidated', true);
+                    $that.uploadFile();
+                });
+            });
+        }
     },
     getNumMessages: function(){
         $that = this;
@@ -166,6 +186,13 @@ appMixture.FormView = Backbone.View.extend({
             }
         } else {
             params.covariatesSelection = [];
+        }
+        if (params.uniqueValues) {
+            for (var field in params.uniqueValues) {
+                if (params.uniqueValues.hasOwnProperty(field)) {
+                    params.uniqueValues[field] = Array.from(params.uniqueValues[field])
+                }
+            }
         }
         formData.append('csvFile', params.csvFile);
         delete params.csvFile;
@@ -277,13 +304,20 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     uploadFile: function (e) {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         var $that = this;
         if (window.FileReader) {
-            var file = e.target.files[0],
+            var file = null,
                 reader = new window.FileReader(),
                 content = "",
                 block = "";
+            if (e) {
+                file = e.target.files[0];
+            } else if (this.model.get('csvFile').name) {
+                file = this.model.get('csvFile');
+            }
             reader.onload = function(evt) {
                 var lines = $.csv.toArrays(evt.target.result);
                 if (lines && lines.length > 0) {
@@ -307,7 +341,7 @@ appMixture.FormView = Backbone.View.extend({
                     });
 
                     $that.model.set({
-                        'csvFile': e.target.files[0],
+                        'csvFile': file,
                         'inputLines': lines.length,
                         'headers': headers.sort(),
                         'uniqueValues': uniqueValues
@@ -1204,7 +1238,7 @@ appMixture.Router = Backbone.Router.extend({
         '': 'home',
         'help': 'help',
         'fitting': 'fitting',
-        'prediction?remoteRFile=:remoteRFile&fileName=:fileName': 'prediction',
+        'prediction?parameters=:parameters': 'prediction',
         'prediction': 'prediction'
     },
     menus: ['home', 'help', 'fitting', 'prediction'],
@@ -1218,14 +1252,30 @@ appMixture.Router = Backbone.Router.extend({
         appMixture.showView(appMixture.views.help);
         console.log('Help page!');
     },
-    prediction: function(remoteRFile, fileName) {
+    prediction: function(params) {
         this.activeMenu('prediction');
-        if (remoteRFile) {
-            appMixture.models.prediction.set('remoteRFile', remoteRFile);
+        if (params) {
+            var paramObj = JSON.parse(params);
+            if(paramObj) {
+                if (paramObj['covariatesSelection']) {
+                    paramObj['covariatesSelection'] = paramObj['covariatesSelection'].join(',');
+                }
+                if (paramObj['remoteInputCSVFile']) {
+                    console.log(paramObj['remoteInputCSVFile']);
+                }
+
+                appMixture.models.form.set(paramObj)
+                var remoteRFile = paramObj.remoteRFile;
+                var fileName = paramObj.fileName;
+                if (remoteRFile) {
+                    appMixture.models.prediction.set('remoteRFile', remoteRFile);
+                }
+                if(fileName) {
+                    appMixture.models.prediction.set('fileName', fileName);
+                }
+            }
         }
-        if(fileName) {
-            appMixture.models.prediction.set('fileName', fileName);
-        }
+
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {

@@ -9,17 +9,33 @@ from urllib import urlencode
 import argparse
 
 from util import *
+import json
 from fitting import *
 
-def sendResults(jobName, email, hostURL, results):
+def copyEssentialParameters(parameters):
+    essential = [ obj['field'] for obj in savedParameters ]
+    result = {}
+    for field in parameters:
+        if field in essential:
+            result[field] = parameters[field]
+
+    return result
+
+
+def sendResults(jobName, parameters, results):
+    email = parameters['email']
+    hostURL = parameters['hostURL']
     subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
     content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
     content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
     content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_R_SUFFIX)
     content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
-    query = urlencode({"remoteRFile": results['Rfile'],
-                       "fileName": '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)})
-    content += '<p><a href="{}#prediction?{}">Run Prediction</a></p>'.format(hostURL, query)
+
+    query = copyEssentialParameters(parameters)
+    query['remoteRFile'] = results['Rfile']
+    query['fileName'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
+    queryString = urlencode({ 'parameters': json.dumps(query, separators=(',', ':')) })
+    content += '<p><a href="{}#prediction?{}">Run Prediction</a></p>'.format(hostURL, queryString)
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):
@@ -51,12 +67,13 @@ if __name__ == '__main__':
                         parameters = data['parameters']
                         id = data['jobId']
                         ext = data['extension']
-                        inputBucket = parameters['inputCSVFile']['bucket']
+                        inputBucket = parameters['inputCSVFile']['bucket_name']
                         inputFileName = parameters['inputCSVFile']['key']
 
                         downloadFileName = getInputFilePath(id, ext)
                         inputBucket = S3Bucket(inputBucket)
                         inputBucket.downloadFile(inputFileName, downloadFileName)
+                        parameters['remoteInputCSVFile'] = inputBucket.generateUrl(parameters['inputCSVFile'])
                         parameters['filename'] = downloadFileName
                         parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
 
@@ -90,7 +107,7 @@ if __name__ == '__main__':
                                 outputBucket.deleteFile(outputRdsFileKey)
                                 continue
 
-                            if not sendResults(jobName, parameters['email'], parameters['hostURL'], fittingResult['results']):
+                            if not sendResults(jobName, parameters, fittingResult['results']):
                                 log.error("An error happened when trying to send result email")
                                 continue
                         else:
@@ -99,7 +116,6 @@ if __name__ == '__main__':
                                 continue
 
                         msg.delete()
-                        inputBucket.deleteFile(inputFileName)
                     else:
                         log.debug(data)
                         log.error('Unknown message type!')

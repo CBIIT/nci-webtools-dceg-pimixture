@@ -59,21 +59,6 @@ def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
             log.error(rOutput)
             return {"status": False, "message": 'R output:<br>{}'.format(rOutput)}
 
-savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
-                    {'field': 'inputCSVFile', 'name': 'Input File'},
-                    {'field': 'design', 'name': 'Sample Design'},
-                    {'field': 'model', 'name': 'Regression Model'},
-                    {'field': 'strata', 'name': 'Strata'},
-                    {'field': 'weight', 'name': 'Weight'},
-                    {'field': 'outcomeC', 'name': 'C'},
-                    {'field': 'outcomeL', 'name': 'L'},
-                    {'field': 'outcomeR', 'name': 'R'},
-                    {'field': 'covariatesSelection', 'name': 'Covariates'},
-                    {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
-                    {'field': 'effects', 'name': 'Interactive Effects'},
-                    {'field': 'email', 'name': 'Email'}
-                    ]
-
 covariateTypeMap = { 'nominal': 'Categorical',
                      'continuous': 'Continuous'}
 
@@ -166,7 +151,9 @@ def writeToXLSXFile(filename, parameters, results):
         name = param['name']
         if key in parameters:
             val = parameters[key]
-            if hasattr(val, 'filename'):
+            if key in excludedFields:
+                continue
+            elif hasattr(val, 'filename'):
                 ws.append([name, val.filename])
             elif key == 'covariatesArr':
                 ws.append(['Covariate Configuaration'])

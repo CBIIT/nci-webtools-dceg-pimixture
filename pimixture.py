@@ -3,6 +3,9 @@ import linecache
 from flask import Flask, jsonify, request, Response, send_from_directory
 import pyper as pr
 import csv
+#!/user/bin/env python
+
+from flask import Flask, jsonify, request, send_from_directory
 import uuid
 import codecs
 import re
@@ -57,7 +60,7 @@ def runModel():
                 if object:
                     parameters['inputCSVFile'] = {
                         'originalName': inputCSVFile.filename,
-                        'bucket': object.bucket_name,
+                        'bucket_name': object.bucket_name,
                         'key': object.key
                     }
                 else:
