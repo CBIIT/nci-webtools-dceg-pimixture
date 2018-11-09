@@ -99,6 +99,7 @@ appMixture.FormView = Backbone.View.extend({
                     var file = new File([blob], fileName);
                     $that.model.set('csvFile', file);
                     $that.model.unset('inputCSVFile');
+                    $that.model.unset('remoteInputCSVFile');
                     $that.model.set('emailValidated', true);
                     $that.uploadFile();
                 });
@@ -339,6 +340,8 @@ appMixture.FormView = Backbone.View.extend({
                         plugins: ['remove_button'],
                         sortField: 'order'
                     });
+
+                    $that.model.unset('headers', {silent: true});
 
                     $that.model.set({
                         'csvFile': file,
@@ -1266,7 +1269,7 @@ appMixture.Router = Backbone.Router.extend({
                     console.log(paramObj['remoteInputCSVFile']);
                 }
 
-                appMixture.models.form.set(paramObj)
+                appMixture.models.form.set(paramObj, {silent: true});
                 var remoteRFile = paramObj.remoteRFile;
                 var fileName = paramObj.fileName;
                 if (remoteRFile) {
