@@ -511,6 +511,8 @@ appMixture.FormView = Backbone.View.extend({
             this.$('[name="weight"] option:selected').prop('selected', false);
             this.checkMutuallyExclusive();
         }
+        this.$('[name="strata"]').prop('required', status);
+        this.$('[name="weight"]').prop('required', status);
         this.$('#Strata, #Weight').prop('hidden', !status);
     },
     validateEmail: function () {
