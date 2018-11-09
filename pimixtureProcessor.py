@@ -3,6 +3,7 @@ from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 from urllib import urlencode
 import argparse
+import os, sys
 
 from util import *
 import json
