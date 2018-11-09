@@ -2,6 +2,7 @@
 
 from flask import Flask, jsonify, request, send_from_directory
 import uuid
+import os, sys
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
