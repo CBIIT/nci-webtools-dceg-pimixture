@@ -1,10 +1,6 @@
 #!/usr/bin/env python
-import boto3
-import json
-from pprint import pprint
 from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
-import os, sys
 from urllib import urlencode
 import argparse
 

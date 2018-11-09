@@ -1,6 +1,5 @@
 import pyper as pr
 import json
-import os, sys
 import linecache
 import csv
 from util import *
