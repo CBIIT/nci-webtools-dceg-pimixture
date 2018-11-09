@@ -57,7 +57,7 @@
                 <label class="control-label" for="strata-input">Strata <span class="text-danger">*</span></label> <a id="strataPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="strata tooltip"></a>
             </div>
             <div class="col-lg-8">
-                <select id="strata-input" name="strata" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="strata-input" name="strata" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %> <%= data.design === 1 ? 'required' : '' %>>
                         <option value="">----Select Strata----</option>
                     <% for (var field of data.headers) { %>
                         <option <%= data.strata === field ? 'selected' : ''%>><%= field %></option>
@@ -70,7 +70,7 @@
                 <label class="control-label" for="weight-input">Weight <span class="text-danger">*</span></label> <a id="weightPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="weight tooltip"></a>
             </div>
             <div class="col-lg-8">
-                <select id="weight-input" name="weight" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %>>
+                <select id="weight-input" name="weight" class="form-control" <%= data.csvFile.name ? '' : 'disabled' %> <%= data.design === 1 ? 'required' : '' %>>
                     <option value="">----Select Weight----</option>
                 <% for (var field of data.headers) { %>
                     <option <%= data.strata === field ? 'selected' : ''%>><%= field %></option>

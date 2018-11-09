@@ -69,6 +69,7 @@ appMixture.FormView = Backbone.View.extend({
         'submit #calculationForm': 'runCalculation'
     },
     render: function() {
+        this.checkRemoteInputCSVFile();
         that = this;
         this.$el.html(this.template(this.model.attributes));
         this.$('[name="covariatesSelection"]').selectize({
@@ -84,6 +85,26 @@ appMixture.FormView = Backbone.View.extend({
         this.initializePopovers();
         this.getNumMessages();
         return this;
+    },
+    checkRemoteInputCSVFile: function() {
+        if (this.model.get('csvFile').name) {
+            return;
+        }
+        $that = this;
+        var remoteCSVFileName = this.model.get('remoteInputCSVFile');
+        if (remoteCSVFileName) {
+            var fileName = this.model.get('inputCSVFile');
+            fetch(remoteCSVFileName).then(function(res){
+                res.blob().then(function(blob){
+                    var file = new File([blob], fileName);
+                    $that.model.set('csvFile', file);
+                    $that.model.unset('inputCSVFile');
+                    $that.model.unset('remoteInputCSVFile');
+                    $that.model.set('emailValidated', true);
+                    $that.uploadFile();
+                });
+            });
+        }
     },
     getNumMessages: function(){
         $that = this;
@@ -166,6 +187,13 @@ appMixture.FormView = Backbone.View.extend({
             }
         } else {
             params.covariatesSelection = [];
+        }
+        if (params.uniqueValues) {
+            for (var field in params.uniqueValues) {
+                if (params.uniqueValues.hasOwnProperty(field)) {
+                    params.uniqueValues[field] = Array.from(params.uniqueValues[field])
+                }
+            }
         }
         formData.append('csvFile', params.csvFile);
         delete params.csvFile;
@@ -277,13 +305,20 @@ appMixture.FormView = Backbone.View.extend({
         }
     },
     uploadFile: function (e) {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         var $that = this;
         if (window.FileReader) {
-            var file = e.target.files[0],
+            var file = null,
                 reader = new window.FileReader(),
                 content = "",
                 block = "";
+            if (e) {
+                file = e.target.files[0];
+            } else if (this.model.get('csvFile').name) {
+                file = this.model.get('csvFile');
+            }
             reader.onload = function(evt) {
                 var lines = $.csv.toArrays(evt.target.result);
                 if (lines && lines.length > 0) {
@@ -306,8 +341,10 @@ appMixture.FormView = Backbone.View.extend({
                         sortField: 'order'
                     });
 
+                    $that.model.unset('headers', {silent: true});
+
                     $that.model.set({
-                        'csvFile': e.target.files[0],
+                        'csvFile': file,
                         'inputLines': lines.length,
                         'headers': headers.sort(),
                         'uniqueValues': uniqueValues
@@ -477,6 +514,8 @@ appMixture.FormView = Backbone.View.extend({
             this.$('[name="weight"] option:selected').prop('selected', false);
             this.checkMutuallyExclusive();
         }
+        this.$('[name="strata"]').prop('required', status);
+        this.$('[name="weight"]').prop('required', status);
         this.$('#Strata, #Weight').prop('hidden', !status);
     },
     validateEmail: function () {
@@ -871,6 +910,7 @@ appMixture.PredictionView = Backbone.View.extend({
     updateMaxTimePoint: function(e) {
         var maxTimePoint = this.model.get('maxTimePoint');
         this.$('#end').prop('max', maxTimePoint);
+        this.$('#begin').prop('max', maxTimePoint);
     },
     selectTestDataFile: function(e) {
         var file = e.target.files[0];
@@ -887,25 +927,47 @@ appMixture.PredictionView = Backbone.View.extend({
         this.model.set(name, val);
         if (name === 'timePoints') {
             var points = val.split(',').map(function(point) { return point.trim()} );
-            var maxTimePoint = this.model.get('maxTimePoint');
-            this.model.unset('timePointsError');
-            this.$('#timePointsError').html('');
             for (var point of points) {
                 if (point) {
-                    var num = parseInt(point);
-                    var error = '';
-                    if (Number.isNaN(num)) {
-                        error = 'Invalid time point "' + point + '"';
-                        this.model.set('timePointsError', error);
-                        return this.$('#timePointsError').html(error);
-                    } else if (num > maxTimePoint) {
-                        error = 'Time point can\'t be greater than "' + maxTimePoint + '"';
-                        this.model.set('timePointsError', error);
-                        return this.$('#timePointsError').html(error);
+                    if (!this.validateTimePoint(point, 'timePointsError', this.$('#timePointsError'))) {
+                        return;
                     }
                 }
             }
         }
+
+        if (name === 'begin') {
+            if (this.validateTimePoint(val, 'beginError', this.$('#beginError'))) {
+                this.$('#end').prop('min', val);
+            }
+        } else if (name === 'end') {
+            this.validateTimePoint(val, 'endError', this.$('#endError'))
+        }
+    },
+    validateTimePoint: function(point, errorField, errorElement) {
+        this.model.unset(errorField);
+        if (errorElement.html) {
+            errorElement.html('');
+        }
+        var num = parseInt(point);
+        var maxTimePoint = this.model.get('maxTimePoint');
+        var error = '';
+        if (Number.isNaN(num)) {
+            error = 'Invalid time point "' + point + '"';
+            this.model.set(errorField, error);
+            if (errorElement.html) {
+                errorElement.html(error);
+            }
+            return false;
+        } else if (num > maxTimePoint) {
+            error = 'Time point can\'t be greater than "' + maxTimePoint + '"';
+            this.model.set(errorField, error);
+            if (errorElement.html) {
+                errorElement.html(error);
+            }
+            return false;
+        }
+        return true;
     },
     tryEnableInputs: function() {
         var modelFileSelected = this.model.get('serverFile');
@@ -929,6 +991,9 @@ appMixture.PredictionView = Backbone.View.extend({
     onSubmitPredict: function (e) {
         e.preventDefault();
         if (this.model.get('timePointType') === 'List' && this.model.get('timePointsError')) {
+            return;
+        } else if (this.model.get('timePointType') === 'Range' &&
+            (this.model.get('beginError') || this.model.get('endError'))) {
             return;
         }
         var $that = this;
@@ -1204,7 +1269,7 @@ appMixture.Router = Backbone.Router.extend({
         '': 'home',
         'help': 'help',
         'fitting': 'fitting',
-        'prediction?remoteRFile=:remoteRFile&fileName=:fileName': 'prediction',
+        'prediction?parameters=:parameters': 'prediction',
         'prediction': 'prediction'
     },
     menus: ['home', 'help', 'fitting', 'prediction'],
@@ -1218,14 +1283,35 @@ appMixture.Router = Backbone.Router.extend({
         appMixture.showView(appMixture.views.help);
         console.log('Help page!');
     },
-    prediction: function(remoteRFile, fileName) {
+    prediction: function(params) {
         this.activeMenu('prediction');
-        if (remoteRFile) {
-            appMixture.models.prediction.set('remoteRFile', remoteRFile);
+        if (params) {
+            var paramObj = JSON.parse(params);
+            if(paramObj) {
+                if (paramObj['covariatesSelection']) {
+                    paramObj['covariatesSelection'] = paramObj['covariatesSelection'].join(',');
+                }
+                if (paramObj['remoteInputCSVFile']) {
+                    console.log(paramObj['remoteInputCSVFile']);
+                }
+                if (paramObj['effects'] && paramObj['effects'].length > 0) {
+                    paramObj['effects'] = paramObj['effects'].map(function(effect){
+                       return {first: effect[0], second: effect[1]};
+                    });
+                }
+
+                appMixture.models.form.set(paramObj, {silent: true});
+                var remoteRFile = paramObj.remoteRFile;
+                var fileName = paramObj.fileName;
+                if (remoteRFile) {
+                    appMixture.models.prediction.set('remoteRFile', remoteRFile);
+                }
+                if(fileName) {
+                    appMixture.models.prediction.set('fileName', fileName);
+                }
+            }
         }
-        if(fileName) {
-            appMixture.models.prediction.set('fileName', fileName);
-        }
+
         appMixture.showView(appMixture.views.prediction);
     },
     fitting: function() {

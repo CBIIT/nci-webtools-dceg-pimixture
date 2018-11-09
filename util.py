@@ -1,4 +1,4 @@
-import os, sys
+import os
 import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -79,6 +79,28 @@ extensionMap = {
     CSV_FORMAT: '.csv',
     EXCEL_FORMAT: '.xlsx'
 }
+
+# Following parameters will be load to fitting page when run prediction from email
+# These parameters will also be saved to output CSV/EXCEL files, except those in excludedFields
+savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
+                    {'field': 'inputCSVFile', 'name': 'Input File Name'},
+                    {'field': 'remoteInputCSVFile', 'name': 'Remote input CSV File'},
+                    {'field': 'headers', 'name': 'Variables'},
+                    {'field': 'design', 'name': 'Sample Design'},
+                    {'field': 'model', 'name': 'Regression Model'},
+                    {'field': 'strata', 'name': 'Strata'},
+                    {'field': 'weight', 'name': 'Weight'},
+                    {'field': 'outcomeC', 'name': 'C'},
+                    {'field': 'outcomeL', 'name': 'L'},
+                    {'field': 'outcomeR', 'name': 'R'},
+                    {'field': 'covariatesSelection', 'name': 'Covariates'},
+                    {'field': 'covariatesArr', 'name': 'Covariate Configuration'},
+                    {'field': 'effects', 'name': 'Interactive Effects'},
+                    {'field': 'effectsString', 'name': 'Interactive Effects'},
+                    {'field': 'email', 'name': 'Email'}
+                    ]
+
+excludedFields = ['inputCSVFile', 'remoteInputCSVFile', 'headers', 'effects']
 
 def addStreamHandler():
     stdHandler = logging.StreamHandler()

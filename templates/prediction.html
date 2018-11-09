@@ -55,8 +55,9 @@
                         <label class="control-label" for="begin">Begin <span class="text-danger">*</span></label> <a id="beginPopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="begin tooltip"></a>
                     </div>
                     <div class="col-lg-8">
-                        <input type="number" name="begin" id="begin" class="form-control" value="<%= data.begin %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
+                        <input type="number" name="begin" id="begin" class="form-control" value="<%= data.begin %>" max="<%= data.maxTimePoint %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
                     </div>
+                    <div id="beginError"><%= data.beginError %></div>
                 </div>
                 <div class="form-group">
                     <div class="col-lg-4">
@@ -65,13 +66,14 @@
                     <div class="col-lg-8">
                         <input type="number" name="end" id="end" class="form-control" value="<%= data.end %>" max="<%= data.maxTimePoint %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
                     </div>
+                    <div id="endError"><%= data.endError %></div>
                 </div>
                 <div class="form-group">
                     <div class="col-lg-4">
                         <label class="control-label" for="stepSize">Step Size <span class="text-danger">*</span></label> <a id="stepSizePopover" role="button" tabindex="0" class="glyphicon glyphicon-question-sign" aria-label="step size tooltip"></a>
                     </div>
                     <div class="col-lg-8">
-                        <input type="number" name="stepSize" id="stepSize" class="form-control"  value="<%= data.stepSize %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
+                        <input type="number" name="stepSize" id="stepSize" class="form-control" min="1" value="<%= data.stepSize %>" <%= data.timePointType === 'Range' ? 'required' : '' %>/>
                     </div>
                 </div>
             </div>
