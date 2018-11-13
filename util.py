@@ -80,8 +80,8 @@ extensionMap = {
     EXCEL_FORMAT: '.xlsx'
 }
 
-# Following parameters will be load to fitting page when run prediction from email
-# These parameters will also be saved to output CSV/EXCEL files, except those in excludedFields
+# Following parameters will be load to fitting page when run prediction from email except those in emailExcludedFields
+# These parameters will also be saved to output CSV/EXCEL files, except those in ssExcludedFields
 savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
                     {'field': 'inputCSVFile', 'name': 'Input File Name'},
                     {'field': 'remoteInputCSVFile', 'name': 'Remote input CSV File'},
@@ -100,7 +100,8 @@ savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
                     {'field': 'email', 'name': 'Email'}
                     ]
 
-excludedFields = ['inputCSVFile', 'remoteInputCSVFile', 'headers', 'effects']
+ssExcludedFields = ['inputCSVFile', 'remoteInputCSVFile', 'headers', 'effects']
+emailExcludedFields = ['effectsString']
 
 def addStreamHandler():
     stdHandler = logging.StreamHandler()
