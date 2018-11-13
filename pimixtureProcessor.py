@@ -13,6 +13,8 @@ def copyEssentialParameters(parameters):
     essential = [ obj['field'] for obj in savedParameters ]
     result = {}
     for field in parameters:
+        if field in emailExcludedFields:
+            continue
         if field in essential:
             result[field] = parameters[field]
 

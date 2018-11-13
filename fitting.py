@@ -150,7 +150,7 @@ def writeToXLSXFile(filename, parameters, results):
         name = param['name']
         if key in parameters:
             val = parameters[key]
-            if key in excludedFields:
+            if key in ssExcludedFields:
                 continue
             elif hasattr(val, 'filename'):
                 ws.append([name, val.filename])
