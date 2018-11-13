@@ -1291,9 +1291,6 @@ appMixture.Router = Backbone.Router.extend({
                 if (paramObj['covariatesSelection']) {
                     paramObj['covariatesSelection'] = paramObj['covariatesSelection'].join(',');
                 }
-                if (paramObj['remoteInputCSVFile']) {
-                    console.log(paramObj['remoteInputCSVFile']);
-                }
                 if (paramObj['effects'] && paramObj['effects'].length > 0) {
                     paramObj['effects'] = paramObj['effects'].map(function(effect){
                        return {first: effect[0], second: effect[1]};
