@@ -30,7 +30,8 @@ def sendResults(jobName, parameters, results):
     content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_R_SUFFIX)
     content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
 
-    query = copyEssentialParameters(parameters)
+    # query = copyEssentialParameters(parameters)
+    query = {}
     query['remoteRFile'] = results['Rfile']
     query['fileName'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
     queryString = urlencode({ 'parameters': json.dumps(query, separators=(',', ':')) })

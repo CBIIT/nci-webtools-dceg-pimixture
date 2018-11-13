@@ -69,7 +69,7 @@ appMixture.FormView = Backbone.View.extend({
         'submit #calculationForm': 'runCalculation'
     },
     render: function() {
-        this.checkRemoteInputCSVFile();
+        // this.checkRemoteInputCSVFile();
         that = this;
         this.$el.html(this.template(this.model.attributes));
         this.$('[name="covariatesSelection"]').selectize({
@@ -1297,7 +1297,7 @@ appMixture.Router = Backbone.Router.extend({
                     });
                 }
 
-                appMixture.models.form.set(paramObj, {silent: true});
+                // appMixture.models.form.set(paramObj, {silent: true});
                 var remoteRFile = paramObj.remoteRFile;
                 var fileName = paramObj.fileName;
                 if (remoteRFile) {
