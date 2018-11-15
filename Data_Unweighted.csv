@@ -1,4 +1,4 @@
-C,L,R,hpv_16,hpv_18,bni,cytology,age
+C,L,R,hpv_16,hpv_18,bmi,cytology,age
 0,10,Inf,0,0,-0.202924522,ASCH+,50+
 0,10,Inf,0,1,-0.194328269,WNR,50+
 0,0,Inf,0,0,-0.24240859,WNR,30-49
