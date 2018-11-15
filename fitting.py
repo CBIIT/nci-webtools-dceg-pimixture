@@ -2,6 +2,7 @@ import pyper as pr
 import json
 import linecache
 import csv
+import time
 from util import *
 
 if SS_FILE_TYPE == EXCEL_FORMAT:
@@ -9,6 +10,7 @@ if SS_FILE_TYPE == EXCEL_FORMAT:
 
 def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
     try:
+        startTime = time.time()
         rOutput = None
         r = pr.R()
         r(IMPORT_R_WRAPPER)
@@ -30,6 +32,7 @@ def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
         results['fileType'] = fileType
         results['rSuffix'] = FITTING_R_SUFFIX
         results['ssSuffix'] = FITTING_SS_SUFFIX
+        results['execTime'] = time.time() - startTime
 
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']

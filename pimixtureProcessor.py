@@ -24,13 +24,23 @@ def copyEssentialParameters(parameters):
 def sendResults(jobName, parameters, results):
     email = parameters['email']
     hostURL = parameters['hostURL']
-    subject = 'PIMixture Fitting results for job "{}"'.format(jobName)
-    content = '<h4>Congratulations! You PIMixture Fitting job "{}" has finished!</h4>'.format(jobName)
-    content += '<p>You\'ll have 14 days to download your result files. After that, your result files will be deleted from server!</p>'
+    subject = '{} Fitting Results - PIMixture Job '.format(jobName)
+    content = '<p>Dear User,</p>'
+    content += '<p>We have processed your data using PIMixture R Package version 0.3.0.</p>'
+
+    content += '<h4 style="margin-top:20px;">Job Information</h4>'
+    content += '<p>Job Name: {}</p>'.format(jobName)
+    content += '<p>Data File: {}</p>'.format(parameters['inputCSVFile'])
+    content += '<p>Execution Time: {:.2f} Seconds</p>'.format(results['execTime'])
+
+    content += '<h4 style="margin-top:20px;">Results</h4>'
+    content += '<p>Fitting results can be downloaded through following links:</p>'
     content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_R_SUFFIX)
     content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
 
     # query = copyEssentialParameters(parameters)
+    content += '<h4 style="margin-top:20px;">Run Prediction</h4>'
+    content += '<p>You can also run prediction using the .RDS result file, by clicking the button below</p>'
     query = {}
     query['remoteRFile'] = results['Rfile']
     query['fileName'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
@@ -45,13 +55,20 @@ def sendResults(jobName, parameters, results):
     buttonStyle += 'text-decoration: none;'
     
     content += '<p><a href="{}#prediction?{}" style="{}">Run Prediction</a></p>'.format(hostURL, queryString, buttonStyle)
+
+    content += '<p style="margin-top:20px;">Please note that result links above will be available for the next 7 days.</p>'
+    content += '<br><p>Respectfully,</p>'
+    content += '<p>PIMixture Web Tool</p>'
     return send_mail(SENDER, email, subject, content)
 
 def sendErrors(jobName, email, errors):
-    subject = 'PIMixture job "{}" FAILED'.format(jobName)
-    content = '<h4>We are sorry to inform you, your PIMixture Fitting job "{}" has FAILED!</h4>'.format(jobName)
+    subject = '{} Fitting FAILED - PIMixture Job '.format(jobName)
+    content = '<p>Dear User,</p>'
+    content += '<p>We are sorry to inform you, your PIMixture Fitting job "{}" has FAILED!</p>'.format(jobName)
     content += '<p>Here is the error messages:</p>'
-    content += str(errors)
+    content += '<blockquote>{}</blockquote>'.format(str(errors))
+    content += '<br><p>Respectfully,</p>'
+    content += '<p>PIMixture Web Tool</p>'
     return send_mail(SENDER, email, subject, content)
 
 
