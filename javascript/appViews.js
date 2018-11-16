@@ -309,52 +309,54 @@ appMixture.FormView = Backbone.View.extend({
             e.preventDefault();
         }
         var $that = this;
-        if (window.FileReader) {
-            var file = null,
-                reader = new window.FileReader(),
-                content = "",
-                block = "";
+        if (Papa) {
+            var file = null;
             if (e) {
                 file = e.target.files[0];
             } else if (this.model.get('csvFile').name) {
                 file = this.model.get('csvFile');
             }
-            reader.onload = function(evt) {
-                var lines = $.csv.toArrays(evt.target.result);
-                if (lines && lines.length > 0) {
-                    var headers = lines[0];
-                    var uniqueValues = {};
-                    for (var j = 0; j < headers.length; ++j) {
-                        uniqueValues[headers[j]] = new Set();
-                    }
-                    for (var i = 1; i < lines.length; ++i) {
-                        for (var j = 0; j < headers.length; ++j) {
-                            if (uniqueValues[headers[j]].size < MAX_UNIQUE_VALUES) {
-                                uniqueValues[headers[j]].add(lines[i][j]);
-                            }
-                        }
-                    }
-                    $that.enableInputs();
-                    $that.$('[name="covariatesSelection"]')[0].selectize.destroy();
-                    $that.$('[name="covariatesSelection"]').selectize({
-                        plugins: ['remove_button'],
-                        sortField: 'order'
-                    });
-
-                    $that.model.unset('headers', {silent: true});
-
-                    $that.model.set({
-                        'csvFile': file,
-                        'inputLines': lines.length,
-                        'headers': headers.sort(),
-                        'uniqueValues': uniqueValues
-                    });
-                    $that.checkQueueThresholds();
-                }
-            };
 
             if (file) {
-                reader.readAsText(file.slice());
+                Papa.parse(file, {
+                    dynamicTyping: true,
+                    complete: function(results) {
+                        if (results.data && results.data.length > 0) {
+                            var lines = results.data;
+                            var headers = lines[0];
+                            var uniqueValues = {};
+                            for (var j = 0; j < headers.length; ++j) {
+                                uniqueValues[headers[j]] = new Set();
+                            }
+                            for (var i = 1; i < lines.length; ++i) {
+                                for (var j = 0; j < headers.length; ++j) {
+                                    if (uniqueValues[headers[j]].size < MAX_UNIQUE_VALUES) {
+                                        if (lines[i][j]) {
+                                            uniqueValues[headers[j]].add(lines[i][j]);
+                                        }
+                                    }
+                                }
+                            }
+                            $that.enableInputs();
+                            $that.$('[name="covariatesSelection"]')[0].selectize.destroy();
+                            $that.$('[name="covariatesSelection"]').selectize({
+                                plugins: ['remove_button'],
+                                sortField: 'order'
+                            });
+
+                            $that.model.unset('headers', {silent: true});
+
+                            $that.model.set({
+                                'csvFile': file,
+                                'inputLines': lines.length,
+                                'headers': headers.sort(),
+                                'uniqueValues': uniqueValues
+                            });
+                            $that.checkQueueThresholds();
+                        }
+                    }
+                });
+
                 this.$('#csvFileName').html(file.name);
             } else {
                 $that.model.set({

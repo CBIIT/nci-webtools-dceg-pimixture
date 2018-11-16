@@ -621,12 +621,12 @@ input[type=file] {
 
     #input,
     #prediction-input,
-    #prediction-input .col-lg-3,
-    #prediction-input .col-lg-4,
-    #prediction-input .col-lg-6,
-    #input .col-lg-3,
-    #input .col-lg-4,
-    #input .col-lg-6 {
+    #prediction-input .col-lg-3:first-child,
+    #prediction-input .col-lg-4:first-child,
+    #prediction-input .col-lg-6:first-child,
+    #input .col-lg-3:first-child,
+    #input .col-lg-4:first-child,
+    #input .col-lg-6:first-child {
         padding-right: 0;
     }
 
