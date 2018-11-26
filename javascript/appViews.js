@@ -1059,11 +1059,14 @@ appMixture.PredictionView = Backbone.View.extend({
                         console.log("Stay");
                     }
                 }
-                var error = res.responseText.replace(/\\n/g, '<br>');
-                error = error.replace(/^"(.*)"\n$/, '$1');
-                error = error.replace(/\\"/g, '"');
-                error = 'Error message from R package:<br>' + error;
-                appMixture.models.predictionResultModel.set('errors', error);
+
+                if (res.responseText) {
+                    var error = res.responseText.replace(/\\n/g, '<br>');
+                    error = error.replace(/^"(.*)"\n$/, '$1');
+                    error = error.replace(/\\"/g, '"');
+                    error = 'Error message from R package:<br>' + error;
+                    appMixture.models.predictionResultModel.set('errors', error);
+                }
             }
         });
     },
