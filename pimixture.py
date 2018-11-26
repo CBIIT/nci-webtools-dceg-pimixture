@@ -218,6 +218,10 @@ def runPredict():
         results = predictionResult['predict']
         model = predictionResult['model']
 
+        for result in results:
+            if 'Subgroup' not in result:
+                result['Subgroup'] = ', '.join([result[field] for field in result if field.startswith('Subgroup.')])
+
         fieldNames = ['time', 'Subgroup', 'CR']
         if len(results) > 0:
             # Parametric model prediction result has 'times' instead of 'time'
