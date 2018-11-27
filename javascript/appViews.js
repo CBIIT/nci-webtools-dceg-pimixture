@@ -319,7 +319,6 @@ appMixture.FormView = Backbone.View.extend({
 
             if (file) {
                 Papa.parse(file, {
-                    dynamicTyping: true,
                     complete: function(results) {
                         if (results.data && results.data.length > 0) {
                             var lines = results.data;
