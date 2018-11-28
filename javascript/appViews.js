@@ -189,11 +189,7 @@ appMixture.FormView = Backbone.View.extend({
             params.covariatesSelection = [];
         }
         if (params.uniqueValues) {
-            for (var field in params.uniqueValues) {
-                if (params.uniqueValues.hasOwnProperty(field)) {
-                    params.uniqueValues[field] = Array.from(params.uniqueValues[field])
-                }
-            }
+            delete params.uniqueValues;
         }
         formData.append('csvFile', params.csvFile);
         delete params.csvFile;
@@ -334,6 +330,22 @@ appMixture.FormView = Backbone.View.extend({
                                             uniqueValues[headers[j]].add(lines[i][j]);
                                         }
                                     }
+                                }
+                            }
+
+                            for (var field in uniqueValues) {
+                                if (uniqueValues.hasOwnProperty(field)) {
+                                    var allNum = true;
+                                    for (var value of uniqueValues[field]) {
+                                        if (isNaN(value) && value.toLowerCase() !== 'inf') {
+                                            allNum = false;
+                                            break;
+                                        }
+                                    }
+                                    uniqueValues[field] = {
+                                        allNum: allNum,
+                                        values: Array.from(uniqueValues[field])
+                                    };
                                 }
                             }
                             $that.enableInputs();

@@ -10,14 +10,17 @@
             </thead>
             <tbody>
             <%  _.each(covariatesArr, function(entry) {
-            var values = uniqueValues[entry.text].values();
+            var values = uniqueValues[entry.text].values;
+            var allNum = uniqueValues[entry.text].allNum;
             %>
             <tr>
                 <td><%= entry.text %></td>
                 <td>
                     <select name="<%=entry.text%>_type" class="form-control">
                         <option value="">----Select Type----</option>
-                        <option value="continuous" <%=entry.type=='continuous'?' selected="selected"':''%>>Continuous</option>
+                        <% if (allNum) { %>
+                            <option value="continuous" <%=entry.type=='continuous'?' selected="selected"':''%>>Continuous</option>
+                        <% } %>
                         <option value="nominal" <%=entry.type=='nominal'?' selected="selected"':''%>>Categorical</option>
                     </select>
                 </td>
