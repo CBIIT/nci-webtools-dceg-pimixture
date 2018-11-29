@@ -725,6 +725,7 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
         this.model.on({
             'change:covariatesArr': this.render
         }, this);
+        this.setDefaultTypes();
         this.showModal();
     },
     events: {
@@ -733,6 +734,20 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
         'change input[type="number"]': 'updateModel',
         'click .modal-footer button.save': 'save',
         'click .modal-footer button:not(.save)': 'close'
+    },
+    setDefaultTypes: function() {
+        var uniqueValues = this.model.get('uniqueValues');
+        var covariatesArr = this.model.get('covariatesArr');
+        for (var field in uniqueValues) {
+            if (uniqueValues.hasOwnProperty(field) && !uniqueValues[field].allNum) {
+                for (var cov of covariatesArr) {
+                    if (field === cov.text) {
+                        cov.type = 'nominal';
+                        break;
+                    }
+                }
+            }
+        }
     },
     close: function(e) {
         e.preventDefault(e);
