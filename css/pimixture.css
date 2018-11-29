@@ -150,6 +150,21 @@ fieldset.well,
     margin-bottom: 10px;
 }
 
+#prediction-results #pagination-bar {
+    padding-top: 12px;
+    padding-left: 20px;
+}
+
+#prediction-results .text-cell {
+    text-align: left;
+    padding-left: 10px;
+}
+
+#prediction-results .no-wrap {
+    white-space: nowrap;
+}
+
+
 #fittingResults {
     height: 790px;
     overflow-y: auto;
