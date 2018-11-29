@@ -738,14 +738,9 @@ appMixture.ReferenceGroupsView = Backbone.View.extend({
     setDefaultTypes: function() {
         var uniqueValues = this.model.get('uniqueValues');
         var covariatesArr = this.model.get('covariatesArr');
-        for (var field in uniqueValues) {
-            if (uniqueValues.hasOwnProperty(field) && !uniqueValues[field].allNum) {
-                for (var cov of covariatesArr) {
-                    if (field === cov.text) {
-                        cov.type = 'nominal';
-                        break;
-                    }
-                }
+        for (var cov of covariatesArr) {
+            if (!uniqueValues[cov.text].allNum) {
+                cov.type = 'nominal';
             }
         }
     },
