@@ -235,6 +235,12 @@ fieldset.well,
     text-align: center;
 }
 
+#fittingResultPanel .fitting-result-table .covariates {
+    text-align: left;
+    padding-left: 10px;
+}
+
+
 #interactiveTable tbody td,
 #interactiveTable tbody th,
 #covariatesTable tbody td,
