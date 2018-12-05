@@ -19,7 +19,7 @@ class Queue:
 
     def sendMsgToQueue(self, msg, id):
         response = self.queue.send_message(MessageBody=json.dumps(msg),
-                                           MessageGroupId=QUEUE_MESSAGE_GROUP_ID,
+                                           MessageGroupId=id,
                                            MessageDeduplicationId=id)
         log.debug(response.get('MessageId'))
 
@@ -31,11 +31,13 @@ class Queue:
 
 # Automatically extend visibility timeout every timeOutValue/2 seconds
 class VisibilityExtender:
-    def __init__(self, msg, timeOutValue):
+    def __init__(self, msg, jobName, jobId, timeOutValue):
         self._timeOutValue = timeOutValue if timeOutValue > 2 else 2
         self._currentTimeOut = self._timeOutValue
         self._interval = timeOutValue / 2 if timeOutValue > 2 else 1
         self._msg = msg
+        self.jobName = jobName
+        self.jobId = jobId
         self._timer = None
         self.is_running = False
         self.start()
@@ -45,7 +47,9 @@ class VisibilityExtender:
             self.is_running = False
             self.start()
             self._currentTimeOut += self._interval
+            log.info('Processing job name: "{}", id: {} ...'.format(self.jobName, self.jobId))
             self._msg.change_visibility(VisibilityTimeout = self._currentTimeOut)
+
 
     def start(self):
         if not self.is_running:

@@ -85,13 +85,14 @@ if __name__ == '__main__':
             for msg in sqs.receiveMsgs(VISIBILITY_TIMEOUT):
                 extender = None
                 try:
-                    extender = VisibilityExtender(msg, VISIBILITY_TIMEOUT)
                     data = json.loads(msg.body)
                     if data and 'jobType' in data and data['jobType'] == 'fitting':
-                        log.info('Got a job!')
-
                         parameters = data['parameters']
+                        jobName = parameters.get('jobName', 'PIMixture')
                         id = data['jobId']
+                        extender = VisibilityExtender(msg, jobName, id, VISIBILITY_TIMEOUT)
+                        log.info('Start processing job name: "{}", id: {} ...'.format(jobName, id))
+
                         ext = data['extension']
                         inputBucket = parameters['inputCSVFile']['bucket_name']
                         inputFileName = parameters['inputCSVFile']['key']
@@ -108,8 +109,6 @@ if __name__ == '__main__':
                         outputFileName = getOutputFilePath(id, '.out')
                         parameters['outputRdsFilename'] = outputRdsFileName
                         parameters['outputFilename'] = outputFileName
-                        jobName = parameters.get('jobName', 'PIMixture')
-                        jobName = jobName if jobName else 'PIMixture'
 
                         extender.start()
                         fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
@@ -142,6 +141,8 @@ if __name__ == '__main__':
                                 continue
 
                         msg.delete()
+
+                        log.info('Finish processing job name: "{}", id: {} !'.format(jobName, id))
                     else:
                         log.debug(data)
                         log.error('Unknown message type!')

@@ -65,7 +65,6 @@ QUEUE_NAME = config.get('sqs', 'queue_name')
 QUEUE_MSG_RETENTION_SECONDS = config.get('sqs', 'queue_msg_retention_seconds')
 VISIBILITY_TIMEOUT = int(config.get('sqs', 'visibility_timeout'))
 QUEUE_LONG_PULL_TIME = config.get('sqs', 'queue_long_pull_time')
-QUEUE_MESSAGE_GROUP_ID = config.get('sqs', 'queue_message_group_id')
 
 # Output settings
 SS_FILE_TYPE = config.get('output', 'file_type')
