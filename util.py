@@ -137,7 +137,7 @@ def getFilePath(path, prefix, id, extension):
 def getFileName(prefix, id, extension):
     return prefix + id + extension
 
-def send_mail(sender, recipient, subject, contents, attachments=None):
+def send_mail(sender, recipient, subject, contents, log, attachments=None):
     """Sends an email to the provided recipient
 
     Arguments:

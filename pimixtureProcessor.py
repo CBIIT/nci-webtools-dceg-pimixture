@@ -59,7 +59,7 @@ def sendResults(jobName, parameters, results):
     content += '<p style="margin-top:20px;">Please note that result links above will be available for the next 7 days.</p>'
     content += '<br><p>Respectfully,</p>'
     content += '<p>PIMixture Web Tool</p>'
-    return send_mail(SENDER, email, subject, content)
+    return send_mail(SENDER, email, subject, content, log)
 
 def sendErrors(jobName, email, errors):
     subject = '{} Fitting FAILED - PIMixture Job '.format(jobName)
@@ -69,7 +69,7 @@ def sendErrors(jobName, email, errors):
     content += '<blockquote>{}</blockquote>'.format(str(errors))
     content += '<br><p>Respectfully,</p>'
     content += '<p>PIMixture Web Tool</p>'
-    return send_mail(SENDER, email, subject, content)
+    return send_mail(SENDER, email, subject, content, log)
 
 
 if __name__ == '__main__':
