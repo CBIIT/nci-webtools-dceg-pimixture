@@ -8,7 +8,7 @@ from util import *
 if SS_FILE_TYPE == EXCEL_FORMAT:
     from openpyxl import Workbook
 
-def fitting(parameters, outputSSFileName, fileType=EXCEL_FORMAT):
+def fitting(parameters, outputSSFileName, fileType, log):
     try:
         startTime = time.time()
         rOutput = None

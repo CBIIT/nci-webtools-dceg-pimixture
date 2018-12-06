@@ -7,7 +7,8 @@ from threading import Timer
 from util import *
 
 class Queue:
-    def __init__(self, queName=QUEUE_NAME, longPullTime=QUEUE_LONG_PULL_TIME, msgRetentionTime=QUEUE_MSG_RETENTION_SECONDS):
+    def __init__(self, log, queName=QUEUE_NAME, longPullTime=QUEUE_LONG_PULL_TIME, msgRetentionTime=QUEUE_MSG_RETENTION_SECONDS):
+        self.log = log
         self.sqs = boto3.resource('sqs')
         self.queue = self.sqs.create_queue(
             QueueName=queName,
@@ -21,7 +22,7 @@ class Queue:
         response = self.queue.send_message(MessageBody=json.dumps(msg),
                                            MessageGroupId=id,
                                            MessageDeduplicationId=id)
-        log.debug(response.get('MessageId'))
+        self.log.debug(response.get('MessageId'))
 
     def receiveMsgs(self, visibilityTimeOut):
         return self.queue.receive_messages(VisibilityTimeout = visibilityTimeOut)
@@ -31,7 +32,7 @@ class Queue:
 
 # Automatically extend visibility timeout every timeOutValue/2 seconds
 class VisibilityExtender:
-    def __init__(self, msg, jobName, jobId, timeOutValue):
+    def __init__(self, msg, jobName, jobId, timeOutValue, log):
         self._timeOutValue = timeOutValue if timeOutValue > 2 else 2
         self._currentTimeOut = self._timeOutValue
         self._interval = timeOutValue / 2 if timeOutValue > 2 else 1
@@ -40,6 +41,7 @@ class VisibilityExtender:
         self.jobId = jobId
         self._timer = None
         self.is_running = False
+        self.log = log
         self.start()
 
     def _run(self):
@@ -47,7 +49,7 @@ class VisibilityExtender:
             self.is_running = False
             self.start()
             self._currentTimeOut += self._interval
-            log.info('Processing job name: "{}", id: {} ...'.format(self.jobName, self.jobId))
+            self.log.info('Processing job name: "{}", id: {} ...'.format(self.jobName, self.jobId))
             self._msg.change_visibility(VisibilityTimeout = self._currentTimeOut)
 
 

@@ -11,23 +11,10 @@ config = SafeConfigParser()
 config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
 config.read(config_file)
 
-logLevel = config.get('log', 'log_level')
-numericLevel = getattr(logging, logLevel.upper(), None)
-if not isinstance(numericLevel, int):
-    raise ValueError('Invalid log level: %s' % logLevel)
 
-log = logging.getLogger('pimixture')
-log.setLevel(numericLevel)
-stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(message)s')
-
-logFolder = config.get('log', 'log_folder')
 logFileName = config.get('log', 'log_file_name')
-if logFolder and not os.path.exists(logFolder):
-    os.makedirs(logFolder)
-logFileName = os.path.join(logFolder, logFileName)
-fileHandler = TimedRotatingFileHandler(logFileName, when='midnight', interval=1, backupCount=60)
-fileHandler.setFormatter(stdFormatter)
-log.addHandler(fileHandler)
+processorLogFileName = config.get('log', 'processor_log_file_name')
+
 
 # Mail settings
 HOST = config.get('mail', 'host')
@@ -35,12 +22,10 @@ SENDER = config.get('mail', 'sender')
 
 # Folder settings
 INPUT_DATA_PATH = config.get('folders', 'input_data_path')
-log.info('INPUT_DATA_PATH: {}'.format(INPUT_DATA_PATH))
 if not os.path.exists(INPUT_DATA_PATH):
     os.makedirs(INPUT_DATA_PATH)
 
 OUTPUT_DATA_PATH = config.get('folders', 'output_data_path')
-log.info('OUTPUT_DATA_PATH: {}'.format(OUTPUT_DATA_PATH))
 if not os.path.exists(OUTPUT_DATA_PATH):
     os.makedirs(OUTPUT_DATA_PATH)
 
@@ -102,10 +87,36 @@ savedParameters = [ {'field': 'jobName', 'name': 'Job Name'},
 ssExcludedFields = ['inputCSVFile', 'remoteInputCSVFile', 'headers', 'effects']
 emailExcludedFields = ['effectsString']
 
-def addStreamHandler():
+stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(message)s')
+miniFormatter = logging.Formatter('[%(levelname)s] %(module)s - %(message)s')
+
+def getLogger():
+    logLevel = config.get('log', 'log_level')
+    numericLevel = getattr(logging, logLevel.upper(), None)
+    if not isinstance(numericLevel, int):
+        raise ValueError('Invalid log level: %s' % logLevel)
+    log = logging.getLogger('pimixture')
+    log.setLevel(numericLevel)
+    return log
+
+def getFileLogger(fileName):
+    log = getLogger()
+    logFolder = config.get('log', 'log_folder')
+    if logFolder and not os.path.exists(logFolder):
+        os.makedirs(logFolder)
+    logFileName = os.path.join(logFolder, fileName)
+    fileHandler = TimedRotatingFileHandler(logFileName, when='midnight', interval=1, backupCount=60)
+    fileHandler.setFormatter(stdFormatter)
+    log.addHandler(fileHandler)
+    return log
+
+def getConsoleLogger(formatter):
+    log = getLogger()
     stdHandler = logging.StreamHandler()
-    stdHandler.setFormatter(stdFormatter)
+    stdHandler.setFormatter(formatter)
     log.addHandler(stdHandler)
+    return log
+
 
 def getInputFilePath(id, extention):
     return getFilePath(INPUT_DATA_PATH, INPUT_FILE_PREFIX, id, extention)

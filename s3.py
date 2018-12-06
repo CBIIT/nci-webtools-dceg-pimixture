@@ -3,10 +3,11 @@ import boto3
 from util import *
 
 class S3Bucket:
-    def __init__(self, bucket):
+    def __init__(self, bucket, log):
         self.client = boto3.client('s3')
         self.s3 = boto3.resource('s3')
         self.bucket = self.s3.create_bucket(Bucket=bucket)
+        self.log = log
 
     def uploadFileObj(self, key, data):
         return self.bucket.put_object(Key=key, Body=data)
@@ -25,7 +26,7 @@ class S3Bucket:
             }
         )
         if 'Errors' in response:
-            log.error('S3: delete file {} failed!'.format(key))
+            self.log.error('S3: delete file {} failed!'.format(key))
             return False
         else:
             return True
@@ -37,7 +38,7 @@ class S3Bucket:
                 return  self.generateUrl(object, downloadFileName)
             else:
                 message = "Upload file {} to S3 failed!".format(fileName)
-                log.error(message)
+                self.log.error(message)
                 return None
 
 

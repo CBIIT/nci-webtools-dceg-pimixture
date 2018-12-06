@@ -77,9 +77,11 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
     args = parser.parse_args()
     if (args.debug):
-        addStreamHandler()
+        log = getConsoleLogger(stdFormatter)
+    else:
+        log = getFileLogger(processorLogFileName)
     try:
-        sqs = Queue()
+        sqs = Queue(log)
         while True:
             log.info("Receiving more messages...")
             for msg in sqs.receiveMsgs(VISIBILITY_TIMEOUT):
@@ -90,7 +92,7 @@ if __name__ == '__main__':
                         parameters = data['parameters']
                         jobName = parameters.get('jobName', 'PIMixture')
                         id = data['jobId']
-                        extender = VisibilityExtender(msg, jobName, id, VISIBILITY_TIMEOUT)
+                        extender = VisibilityExtender(msg, jobName, id, VISIBILITY_TIMEOUT, log)
                         log.info('Start processing job name: "{}", id: {} ...'.format(jobName, id))
 
                         ext = data['extension']
@@ -98,7 +100,7 @@ if __name__ == '__main__':
                         inputFileName = parameters['inputCSVFile']['key']
 
                         downloadFileName = getInputFilePath(id, ext)
-                        inputBucket = S3Bucket(inputBucket)
+                        inputBucket = S3Bucket(inputBucket, log)
                         inputBucket.downloadFile(inputFileName, downloadFileName)
                         parameters['remoteInputCSVFile'] = inputBucket.generateUrl(parameters['inputCSVFile'])
                         parameters['filename'] = downloadFileName
@@ -111,9 +113,9 @@ if __name__ == '__main__':
                         parameters['outputFilename'] = outputFileName
 
                         extender.start()
-                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
+                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log)
                         if fittingResult['status']:
-                            outputBucket = S3Bucket(OUTPUT_BUCKET)
+                            outputBucket = S3Bucket(OUTPUT_BUCKET, log)
                             outputRdsFileKey = getOutputFileKey(id, '.rds')
                             object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_R_SUFFIX))
                             os.remove(outputRdsFileName)

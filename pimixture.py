@@ -49,7 +49,7 @@ def runModel():
             inputCSVFile = request.files['csvFile']
             ext = os.path.splitext(inputCSVFile.filename)[1]
             if sendToQueue:
-                bucket = S3Bucket(INPUT_BUCKET)
+                bucket = S3Bucket(INPUT_BUCKET, log)
                 object = bucket.uploadFileObj(getInputFileKey(id, ext), inputCSVFile)
                 if object:
                     parameters['inputCSVFile'] = {
@@ -100,7 +100,7 @@ def runModel():
 
         if sendToQueue:
             # Send parameters to queue
-            sqs = Queue()
+            sqs = Queue(log)
             sqs.sendMsgToQueue({
                 'parameters': parameters,
                 'jobId': id,
@@ -113,7 +113,7 @@ def runModel():
                 'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
             })
         else:
-            fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE)
+            fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log)
             if fittingResult['status']:
                 return buildSuccess(fittingResult['results'])
             else:
@@ -340,7 +340,7 @@ def uploadModelFile():
 def getNumMessages():
     log.info('GET /numMessages')
     try:
-        sqs = Queue()
+        sqs = Queue(log)
         numMessages = sqs.getApproximateNumberOfMessages()
         if numMessages != -1:
             return buildSuccess({'numMessages': numMessages})
@@ -359,7 +359,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
     args = parser.parse_args()
     if (args.debug):
-        addStreamHandler()
+        log = getConsoleLogger(stdFormatter)
         @app.route('/common/<path:path>')
         def common_folder(path):
             return send_from_directory("common",path)
@@ -376,4 +376,5 @@ if __name__ == '__main__':
 
         app.run(port = args.port, debug = args.debug, use_evalex = False)
     else:
+        log = getConsoleLogger(miniFormatter)
         app.run(host = '0.0.0.0', port = args.port, debug = False, use_evalex = False)
