@@ -8,6 +8,7 @@ from s3 import S3Bucket
 from fitting import *
 
 app = Flask(__name__)
+log = getConsoleLogger(miniFormatter)
 
 from util import *
 
@@ -376,5 +377,4 @@ if __name__ == '__main__':
 
         app.run(port = args.port, debug = args.debug, use_evalex = False)
     else:
-        log = getConsoleLogger(miniFormatter)
         app.run(host = '0.0.0.0', port = args.port, debug = False, use_evalex = False)
