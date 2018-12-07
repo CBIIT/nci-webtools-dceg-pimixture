@@ -8,7 +8,6 @@ from s3 import S3Bucket
 from fitting import *
 
 app = Flask(__name__)
-log = getConsoleLogger(miniFormatter)
 
 from util import *
 
@@ -352,6 +351,7 @@ def getNumMessages():
         return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
 
 if __name__ == '__main__':
+    log = getConsoleLogger(stdFormatter)
     import argparse
     parser = argparse.ArgumentParser()
 
@@ -360,7 +360,6 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
     args = parser.parse_args()
     if (args.debug):
-        log = getConsoleLogger(stdFormatter)
         @app.route('/common/<path:path>')
         def common_folder(path):
             return send_from_directory("common",path)
@@ -378,3 +377,6 @@ if __name__ == '__main__':
         app.run(port = args.port, debug = args.debug, use_evalex = False)
     else:
         app.run(host = '0.0.0.0', port = args.port, debug = False, use_evalex = False)
+
+else:
+    log = getConsoleLogger(miniFormatter)
