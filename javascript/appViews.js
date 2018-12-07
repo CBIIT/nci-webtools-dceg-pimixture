@@ -337,7 +337,7 @@ appMixture.FormView = Backbone.View.extend({
                                 if (uniqueValues.hasOwnProperty(field)) {
                                     var allNum = true;
                                     for (var value of uniqueValues[field]) {
-                                        if (isNaN(value) && value.toLowerCase() !== 'inf') {
+                                        if (isNaN(value) && value.toLowerCase() !== 'inf' && value.toLowerCase() !== 'na') {
                                             allNum = false;
                                             break;
                                         }
