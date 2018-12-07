@@ -3,6 +3,7 @@ import json
 import linecache
 import csv
 import time
+import sys
 from util import *
 
 if SS_FILE_TYPE == EXCEL_FORMAT:
