@@ -7,15 +7,13 @@ from threading import Timer
 from util import *
 
 class Queue:
-    def __init__(self, log, queName=QUEUE_NAME, longPullTime=QUEUE_LONG_PULL_TIME, msgRetentionTime=QUEUE_MSG_RETENTION_SECONDS):
+    def __init__(self, log, queName=QUEUE_NAME):
         self.log = log
         self.sqs = boto3.resource('sqs')
         self.queue = self.sqs.create_queue(
             QueueName=queName,
             Attributes={
-                'FifoQueue': 'true',
-                'ReceiveMessageWaitTimeSeconds': longPullTime,
-                'MessageRetentionPeriod': msgRetentionTime
+                'FifoQueue': 'true'
             })
 
     def sendMsgToQueue(self, msg, id):
@@ -25,7 +23,9 @@ class Queue:
         self.log.debug(response.get('MessageId'))
 
     def receiveMsgs(self, visibilityTimeOut):
-        return self.queue.receive_messages(VisibilityTimeout = visibilityTimeOut)
+        return self.queue.receive_messages(VisibilityTimeout = visibilityTimeOut,
+                                           WaitTimeSeconds = QUEUE_LONG_PULL_TIME,
+                                           MaxNumberOfMessages = 1)
 
     def getApproximateNumberOfMessages(self):
         return self.queue.attributes.get('ApproximateNumberOfMessages', -1)
