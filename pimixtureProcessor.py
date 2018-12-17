@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 from urllib import urlencode
@@ -20,18 +21,69 @@ def copyEssentialParameters(parameters):
 
     return result
 
+def formatTime(sec):
+    DAY = 60 * 60 * 24
+    HOUR = 60 * 60
+    MINUTE = 60
+    days = 0 if sec < DAY else sec // DAY
+    sec %= DAY
+    hours = 0 if sec < HOUR else sec // HOUR
+    sec %= HOUR
+    minutes = 0 if sec < MINUTE else sec // MINUTE
+    sec %= MINUTE
+    time = ''
+    if days > 1:
+        time += '{} days'.format(days)
+    elif days == 1:
+        time += '1 day'
+
+    if hours > 1:
+        if time:
+            time += ' '
+        time += '{} hours'.format(hours)
+    elif hours == 1:
+        if time:
+            time += ' '
+        time += ' 1 hour'
+    else:
+        if time:
+            time += ' 0 hours'
+
+    if minutes > 1:
+        if time:
+            time += ' '
+        time += '{} minutes'.format(minutes)
+    elif minutes == 1:
+        if time:
+            time += ' '
+        time += '1 minute'
+    else:
+        if time:
+            time+= ' 0 minutes'
+
+    if sec == 1:
+        if time:
+            time += ' '
+        time += '1 second'
+    else:
+        if time:
+            time += ' {:.0f} seconds'.format(sec)
+        else:
+            time += '{:.2f} seconds'.format(sec)
+    return time
+
 
 def sendResults(jobName, parameters, results):
     email = parameters['email']
     hostURL = parameters['hostURL']
-    subject = '{} Fitting Results - PIMixture Job '.format(jobName)
+    subject = 'PIMixture Fitting Results -  Job: {}'.format(jobName)
     content = '<p>Dear User,</p>'
     content += '<p>We have processed your data using PIMixture R Package version 0.3.0.</p>'
 
     content += '<h4 style="margin-top:20px;">Job Information</h4>'
     content += '<p>Job Name: {}</p>'.format(jobName)
     content += '<p>Data File: {}</p>'.format(parameters['inputCSVFile'])
-    content += '<p>Execution Time: {:.2f} Seconds</p>'.format(results['execTime'])
+    content += '<p>Execution Time: {}</p>'.format(formatTime(results['execTime']))
 
     content += '<h4 style="margin-top:20px;">Results</h4>'
     content += '<p>Fitting results can be downloaded through following links:</p>'
