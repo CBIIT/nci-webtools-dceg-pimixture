@@ -25,11 +25,11 @@ def formatTime(sec):
     DAY = 60 * 60 * 24
     HOUR = 60 * 60
     MINUTE = 60
-    days = 0 if sec < DAY else sec // DAY
+    days = 0 if sec < DAY else int(sec // DAY)
     sec %= DAY
-    hours = 0 if sec < HOUR else sec // HOUR
+    hours = 0 if sec < HOUR else int(sec // HOUR)
     sec %= HOUR
-    minutes = 0 if sec < MINUTE else sec // MINUTE
+    minutes = 0 if sec < MINUTE else int(sec // MINUTE)
     sec %= MINUTE
     time = ''
     if days > 1:
