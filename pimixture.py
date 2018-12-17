@@ -3,6 +3,7 @@
 from flask import Flask, jsonify, request, send_from_directory
 import uuid
 import os, sys
+import pyper as pr
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
@@ -349,6 +350,15 @@ def getNumMessages():
     except Exception as e:
         log.exception("Exception occurred")
         return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+
+@app.route('/ping/', strict_slashes=False)
+def ping():
+    try:
+        r = pr.R()
+        return r['"true"']
+    except Exception as e:
+        log.exception("Exception occurred")
+        return buildFailure({"status": False, "statusMessage": "Call R failed!"})
 
 if __name__ == '__main__':
     log = getConsoleLogger(stdFormatter)
