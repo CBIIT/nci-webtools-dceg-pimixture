@@ -113,7 +113,7 @@ if __name__ == '__main__':
                         parameters['outputFilename'] = outputFileName
 
                         extender.start()
-                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log)
+                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET, log)
                             outputRdsFileKey = getOutputFileKey(id, '.rds')

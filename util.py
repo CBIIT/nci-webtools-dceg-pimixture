@@ -54,6 +54,9 @@ QUEUE_LONG_PULL_TIME = int(config.get('sqs', 'queue_long_pull_time'))
 # Output settings
 SS_FILE_TYPE = config.get('output', 'file_type')
 
+# R settings
+FITTING_TIMEOUT = int(config.get('R', 'fitting_timeout'))
+
 # Constants
 IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
 CSV_FORMAT = 'CSV'

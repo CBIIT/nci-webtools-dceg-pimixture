@@ -114,7 +114,7 @@ def runModel():
                 'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
             })
         else:
-            fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log)
+            fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
             if fittingResult['status']:
                 return buildSuccess(fittingResult['results'])
             else:

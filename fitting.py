@@ -5,21 +5,39 @@ import csv
 import time
 import sys
 from util import *
+from threading import Timer
 
 if SS_FILE_TYPE == EXCEL_FORMAT:
     from openpyxl import Workbook
 
-def fitting(parameters, outputSSFileName, fileType, log):
+
+def killR(r, log):
+    log.info('Timeout reached, killing R process ...')
+    r.prog.kill()
+    r.prog = None
+    log.info('R process killed.')
+
+def fitting(parameters, outputSSFileName, fileType, log, timeout):
     try:
         startTime = time.time()
         rOutput = None
         r = pr.R()
         r(IMPORT_R_WRAPPER)
         r.assign('parameters',json.dumps(parameters))
+        timer = None
+        if timeout:
+            timer = Timer(timeout, killR, [r, log])
+            timer.start()
         rOutput = r('returnFile = runCalculation(parameters)')
+        if not r.prog:
+            del(r)
+            return {'status': False, 'message': '{} timeout reached, R program has been terminated!'.format(formatTime(timeout))}
+        elif timer:
+            log.info('Canceling the timer')
+            timer.cancel()
         log.info(rOutput)
         returnFile = r.get('returnFile')
-        del r
+        del(r)
         if not returnFile:
             return {'status': False, "message": 'R output:<br>{}'.format(rOutput)}
         rOutput = None
