@@ -21,62 +21,10 @@ def copyEssentialParameters(parameters):
 
     return result
 
-def formatTime(sec):
-    DAY = 60 * 60 * 24
-    HOUR = 60 * 60
-    MINUTE = 60
-    days = 0 if sec < DAY else int(sec // DAY)
-    sec %= DAY
-    hours = 0 if sec < HOUR else int(sec // HOUR)
-    sec %= HOUR
-    minutes = 0 if sec < MINUTE else int(sec // MINUTE)
-    sec %= MINUTE
-    time = ''
-    if days > 1:
-        time += '{} days'.format(days)
-    elif days == 1:
-        time += '1 day'
-
-    if hours > 1:
-        if time:
-            time += ' '
-        time += '{} hours'.format(hours)
-    elif hours == 1:
-        if time:
-            time += ' '
-        time += ' 1 hour'
-    else:
-        if time:
-            time += ' 0 hours'
-
-    if minutes > 1:
-        if time:
-            time += ' '
-        time += '{} minutes'.format(minutes)
-    elif minutes == 1:
-        if time:
-            time += ' '
-        time += '1 minute'
-    else:
-        if time:
-            time+= ' 0 minutes'
-
-    if sec == 1:
-        if time:
-            time += ' '
-        time += '1 second'
-    else:
-        if time:
-            time += ' {:.0f} seconds'.format(sec)
-        else:
-            time += '{:.2f} seconds'.format(sec)
-    return time
-
-
 def sendResults(jobName, parameters, results):
     email = parameters['email']
     hostURL = parameters['hostURL']
-    subject = 'PIMixture Fitting Results -  Job: {}'.format(jobName)
+    subject = 'PIMixture Fitting Results - Job: {}'.format(jobName)
     content = '<p>Dear User,</p>'
     content += '<p>We have processed your data using PIMixture R Package version 0.3.0.</p>'
 
@@ -114,7 +62,7 @@ def sendResults(jobName, parameters, results):
     return send_mail(SENDER, email, subject, content, log)
 
 def sendErrors(jobName, email, errors):
-    subject = '{} Fitting FAILED - PIMixture Job '.format(jobName)
+    subject = 'PIMixture Fitting FAILED - Job: {}'.format(jobName)
     content = '<p>Dear User,</p>'
     content += '<p>We are sorry to inform you, your PIMixture Fitting job "{}" has FAILED!</p>'.format(jobName)
     content += '<p>Here is the error messages:</p>'
