@@ -228,7 +228,11 @@ def formatTime(sec):
         time += '1 second'
     else:
         if time:
-            time += ' {:.0f} seconds'.format(sec)
+            sec = round(sec)
+            if sec == 1:
+                time += ' 1 second'
+            else:
+                time += ' {:.0f} seconds'.format(sec)
         else:
             time += '{:.2f} seconds'.format(sec)
     return time
