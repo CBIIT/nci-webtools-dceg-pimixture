@@ -360,7 +360,17 @@ appMixture.FormView = Backbone.View.extend({
                             $that.model.set({
                                 'csvFile': file,
                                 'inputLines': lines.length,
-                                'headers': headers.sort(),
+                                'headers': headers.sort(function(a, b){
+                                    var la = a.toLowerCase();
+                                    var lb = b.toLowerCase();
+                                    if (la < lb) {
+                                        return -1;
+                                    } else if (la > lb) {
+                                        return 1;
+                                    } else {
+                                        return 0;
+                                    }
+                                }),
                                 'uniqueValues': uniqueValues
                             });
                             $that.checkQueueThresholds();
