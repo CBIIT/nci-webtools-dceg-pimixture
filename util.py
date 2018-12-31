@@ -8,7 +8,8 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 
 config = SafeConfigParser()
-config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
+# config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
+config_file = 'config.ini'
 config.read(config_file)
 
 
