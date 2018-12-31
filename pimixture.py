@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import uuid
 import os, sys
 import pyper as pr
+import requests
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
@@ -280,6 +281,36 @@ def runPredict():
                 if os.path.isfile(filename):
                     os.remove(filename)
 
+
+def readModelFile(modelFileName, jobName):
+    if os.path.isfile(modelFileName):
+        r = pr.R()
+        r(IMPORT_R_WRAPPER)
+        r.assign('params', json.dumps({'rdsFile': modelFileName}))
+        rOutput = r('model <- readFromRDS(params)')
+        log.info(rOutput)
+        results = r.get('model')
+        del r
+        rOutput = None
+        if results:
+            model = json.loads(results)
+            maxTimePoint = model['maxTimePoint'][0]
+            if (len(model['jobName'])):
+                jobName = model['jobName'][0]
+            return {
+                'jobName': jobName,
+                'maxTimePoint': maxTimePoint
+                }
+        else:
+            message = "Couldn't read Time Points from RDS file!"
+            log.error(message)
+            return message
+    else:
+        message = "Model file does not exist!"
+        log.error(message)
+        return message
+
+
 @app.route('/uploadModel', methods=["POST"])
 def uploadModelFile():
     log.info('POST /uploadModel')
@@ -291,31 +322,31 @@ def uploadModelFile():
             jobName, ext = os.path.splitext(modelFile.filename)
             inputModelFileName = getInputFilePath(id, ext)
             modelFile.save(inputModelFileName)
-            if os.path.isfile(inputModelFileName):
-                r = pr.R()
-                r(IMPORT_R_WRAPPER)
-                r.assign('params', json.dumps({'rdsFile': inputModelFileName}))
-                rOutput = r('model <- readFromRDS(params)')
-                log.info(rOutput)
-                results = r.get('model')
-                del r
-                rOutput = None
-                if results:
-                    model = json.loads(results)
-                    maxTimePoint = model['maxTimePoint'][0]
-                    if (len(model['jobName'])):
-                        jobName = model['jobName'][0]
-                    return buildSuccess({
-                        'jobName': jobName,
-                        'maxTimePoint': maxTimePoint,
-                        'uploadedFile': inputModelFileName
-                        })
-                else:
-                    message = "Couldn't read Time Points from RDS file!"
-                    log.error(message)
-                    return buildFailure(message, 400)
+            rst = readModelFile(inputModelFileName, jobName)
+            if 'jobName' in rst and 'maxTimePoint' in rst:
+                rst['uploadedFile'] = inputModelFileName
+                return buildSuccess(rst)
             else:
-                message = "Upload RDS file failed!"
+                log.error(rst)
+                return buildFailure(rst, 500)
+        elif request.form['s3file']:
+            s3file = request.form['s3file']
+            id = request.form['id']
+            jobName = request.form['jobName']
+            rdsFile = requests.get(s3file)
+            if rdsFile:
+                serverFileName = getInputFilePath(id, 'rds')
+                with open(serverFileName, 'wb') as inFile:
+                    inFile.write(rdsFile.content)
+                rst = readModelFile(serverFileName, jobName)
+                if 'jobName' in rst and 'maxTimePoint' in rst:
+                    rst['serverFile'] = serverFileName
+                    return buildSuccess(rst)
+                else:
+                    log.error(rst)
+                    return buildFailure(rst, 500)
+            else:
+                message = "Can't download RDS file from S3!"
                 log.error(message)
                 return buildFailure(message, 500)
         else:

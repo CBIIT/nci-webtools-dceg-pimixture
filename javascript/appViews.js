@@ -892,14 +892,12 @@ appMixture.PredictionView = Backbone.View.extend({
         var remoteRFileName = this.model.get('remoteRFile');
         var fileName = this.model.get('fileName');
         if (remoteRFileName) {
-            fetch(remoteRFileName).then(function(res){
-               res.blob().then(function(blob){
-                   var file = new File([blob], fileName);
-                   $that.model.set('rdsFile', file);
-                   $that.model.unset('remoteRFile');
-                   $that.selectModelFile();//upload remote file to server
-               });
-            });
+            var formData = new FormData();
+            formData.append('s3file', remoteRFileName);
+            formData.append('id', this.model.get('id'));
+            formData.append('jobName', this.model.get('jobName'));
+            this.uploadModelFile(formData);
+            this.model.unset('remoteRFile');
         }
     },
     initializePopovers: function() {
@@ -911,6 +909,26 @@ appMixture.PredictionView = Backbone.View.extend({
         this.$('#stepSizePopover').popover({title: "Step Size", content: 'Step size between consecutive time points',  trigger:"focus", container:"body", html: true});
         this.$('#timePointsPopover').popover({title: "Time Points", content: 'Enter discreet time points manually',  trigger:"focus", container:"body", html: true});
     },
+    uploadModelFile: function(formData) {
+        $that = this;
+        this.model.fetch({
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: "POST",
+            success: function(model, res, options) {
+                appMixture.models.predictionResultModel.unset('errors');
+                if ($that.model.get('serverFile')) {
+                    $that.render();
+                }
+            },
+            error: function(model, res, options) {
+                console.log(res.responseText);
+                appMixture.models.predictionResultModel.set('errors', res.responseText);
+            }
+        });
+    },
     selectModelFile: function(e) {
         var $that = this;
         var file = this.model.get('rdsFile');
@@ -920,20 +938,7 @@ appMixture.PredictionView = Backbone.View.extend({
         if (file) {
             var formData = new FormData();
             formData.append('rdsFile', file);
-            this.model.fetch({
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                type: "POST",
-                success: function(model, res, options) {
-                    appMixture.models.predictionResultModel.unset('errors');
-                },
-                error: function(model, res, options) {
-                    console.log(res.responseText);
-                    appMixture.models.predictionResultModel.set('errors', res.responseText);
-                }
-            });
+            this.uploadModelFile(formData);
             this.model.set('rdsFile', file);
             this.$('#modelFileName').html(file.name);
             this.$('#modelFileBtn').prop('disabled', true);
@@ -1336,11 +1341,19 @@ appMixture.Router = Backbone.Router.extend({
                 // appMixture.models.form.set(paramObj, {silent: true});
                 var remoteRFile = paramObj.remoteRFile;
                 var fileName = paramObj.fileName;
+                var id = paramObj.id;
+                var jobName = paramObj.jobName;
                 if (remoteRFile) {
                     appMixture.models.prediction.set('remoteRFile', remoteRFile);
                 }
                 if(fileName) {
                     appMixture.models.prediction.set('fileName', fileName);
+                }
+                if(id) {
+                    appMixture.models.prediction.set('id', id);
+                }
+                if(jobName) {
+                    appMixture.models.prediction.set('jobName', jobName);
                 }
             }
         }

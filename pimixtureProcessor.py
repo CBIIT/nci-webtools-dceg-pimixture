@@ -42,6 +42,8 @@ def sendResults(jobName, parameters, results):
     content += '<h4 style="margin-top:20px;">Run Prediction</h4>'
     content += '<p>You can also run prediction using the .RDS result file, by clicking the button below</p>'
     query = {}
+    query['id'] = results['id']
+    query['jobName'] = jobName
     query['remoteRFile'] = results['Rfile']
     query['fileName'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
     queryString = urlencode({ 'parameters': json.dumps(query, separators=(',', ':')) })
@@ -114,6 +116,7 @@ if __name__ == '__main__':
 
                         extender.start()
                         fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
+                        fittingResult['results']['id'] = id
                         if fittingResult['status']:
                             outputBucket = S3Bucket(OUTPUT_BUCKET, log)
                             outputRdsFileKey = getOutputFileKey(id, '.rds')
