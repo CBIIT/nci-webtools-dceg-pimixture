@@ -161,7 +161,8 @@ def send_mail(sender, recipient, subject, contents, log, attachments=None):
         message['To'] = recipient
 
         # set text for message
-        message.attach(MIMEText(contents.encode('utf-8'), 'html', 'utf-8'))
+        contents = contents if type(contents) is str else contents.encode('utf-8')
+        message.attach(MIMEText(contents, 'html', 'utf-8'))
 
         # add attachments to message
         if attachments is not None:

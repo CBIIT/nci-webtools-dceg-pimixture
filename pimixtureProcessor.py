@@ -68,7 +68,7 @@ def sendErrors(jobName, email, errors):
     content = '<p>Dear User,</p>'
     content += '<p>We are sorry to inform you, your PIMixture Fitting job "{}" has FAILED!</p>'.format(jobName)
     content += '<p>Here is the error messages:</p>'
-    content += '<blockquote>{}</blockquote>'.format(str(errors))
+    content += '<blockquote>{}</blockquote>'.format(errors)
     content += '<br><p>Respectfully,</p>'
     content += '<p>PIMixture Web Tool</p>'
     return send_mail(SENDER, email, subject, content, log)
