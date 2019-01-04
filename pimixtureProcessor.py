@@ -116,8 +116,8 @@ if __name__ == '__main__':
 
                         extender.start()
                         fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
-                        fittingResult['results']['id'] = id
                         if fittingResult['status']:
+                            fittingResult['results']['id'] = id
                             outputBucket = S3Bucket(OUTPUT_BUCKET, log)
                             outputRdsFileKey = getOutputFileKey(id, '.rds')
                             object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_R_SUFFIX))
