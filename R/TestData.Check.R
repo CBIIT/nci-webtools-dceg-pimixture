@@ -30,11 +30,23 @@ predict.relabel<-function(test.data,time.points){
   if(nrow(test.data)>1){
     var.names<-colnames(test.data)
     relabel<-t(apply(test.data,1, function(x) paste0(var.names,"=",x)))
+    if(ncol(test.data)>1){
+      relabel1<-apply(relabel,1 ,function(x) paste0(x,collapse=","))
+      relabel<-data.frame(relabel1)
+    }
   }else if(nrow(test.data)==1){
     var.names<-names(test.data)
     relabel<-paste0(var.names,"=",test.data)
+    if(ncol(test.data)>1){
+      relabel<-paste0(relabel,collapse=",")
+    }
   }
   
-  output<-as.data.frame(lapply(data.frame(relabel), rep, length(time.points)))
+  output<-as.data.frame(lapply(data.frame(relabel), function(x) rep(x,each=length(time.points))))
+  names(output)<-"Label"
+  
+  if(nrow(test.data)>1&ncol(test.data)==1){
+    output<-data.frame(Label=as.character(as.matrix(output)))
+  }
   return(output)
 }

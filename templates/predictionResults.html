@@ -31,7 +31,7 @@
                     <thead>
                     <tr>
                         <th class="sortByColumn" data-column="<%= 'time' %>">Time <span class="no-wrap">Point<span class="sort-icon"><span class="fas fa-sort"></span></span></span></th>
-                        <th class="sortByColumn" data-column="<%= 'Subgroup' %>" style="width:70%"><span class="no-wrap">Subgroup<span class="sort-icon"><span class="fas fa-sort"></span></span></span></th>
+                        <th class="sortByColumn" data-column="<%= 'Label' %>" style="width:70%"><span class="no-wrap">Subgroup<span class="sort-icon"><span class="fas fa-sort"></span></span></span></th>
                         <th class="sortByColumn" data-column="<%= 'CR' %>"><span class="no-wrap">CR<span class="sort-icon"><span class="fas fa-sort"></span></span></span></th>
                         <% if (data.results.model !== 'semi-parametric') { %>
                         <th class="sortByColumn" data-column="<%= 'CR.se' %>">Standard <span class="no-wrap">Error<span class="sort-icon"><span class="fas fa-sort"></span></span></span></th>
@@ -46,7 +46,7 @@
                     %>
                     <tr>
                         <td><%= res.time %><br/></td>
-                        <td class="text-cell"><%= res['Subgroup']%><br/></td>
+                        <td class="text-cell"><%= res['Label']%><br/></td>
                         <td class="text-cell"><%= res.CR %><br/></td>
                         <% if (data.results.model !== 'semi-parametric') { %>
                         <td class="text-cell"><%= res['CR.se'] %></td>

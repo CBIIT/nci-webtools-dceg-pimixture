@@ -220,11 +220,7 @@ def runPredict():
         results = predictionResult['predict']
         model = predictionResult['model']
 
-        for result in results:
-            if 'Subgroup' not in result:
-                result['Subgroup'] = ', '.join([result[field] for field in result if field.startswith('Subgroup.')])
-
-        fieldNames = ['time', 'Subgroup', 'CR']
+        fieldNames = ['time', 'Label', 'CR']
         if len(results) > 0:
             # Parametric model prediction result has 'times' instead of 'time'
             if 'times' in results[0]:
@@ -238,7 +234,7 @@ def runPredict():
             if 'UL95' in results[0]:
                 fieldNames.append('UL95')
 
-        fieldNamesMapping = {'time': 'Time Point', 'Subgroup': 'Subgroup', 'CR.se': 'Standard Error', 'LL95': 'Lower Confidence Limit (95%)', 'UL95': 'Upper Confidence Limit (95%)', 'CR': 'CR'}
+        fieldNamesMapping = {'time': 'Time Point', 'Label': 'Subgroup', 'CR.se': 'Standard Error', 'LL95': 'Lower Confidence Limit (95%)', 'UL95': 'Upper Confidence Limit (95%)', 'CR': 'CR'}
 
         id = str(uuid.uuid4())
         csvFileName = getOutputFilePath(id, '.csv')
