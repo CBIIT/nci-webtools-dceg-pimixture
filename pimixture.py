@@ -26,7 +26,7 @@ def buildSuccess(message):
 def templates():
     log.info("GET /templateList")
     templateSet = {}
-    path = os.path.join(os.getcwd(),'templates')
+    path = os.path.join(os.getcwd(),'html')
     for fileName in [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.html')]:
         with open(os.path.join(path,fileName)) as file:
             templateSet[fileName[:-5]] = file.read()
