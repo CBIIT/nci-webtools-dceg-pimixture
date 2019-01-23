@@ -47,16 +47,15 @@ def sendResults(jobName, parameters, results):
     query['remoteRFile'] = results['Rfile']
     query['fileName'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
     queryString = urlencode({ 'parameters': json.dumps(query, separators=(',', ':')) })
-    buttonStyle = 'background-image: linear-gradient(to bottom,#337ab7 0,#265a88 100%);'
-    buttonStyle += 'background-repeat: repeat-x;border-color: #245580;'
+    buttonStyle = ''
     buttonStyle += 'text-shadow: 0 -1px 0 rgba(0,0,0,.2);'
-    buttonStyle += 'box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 1px rgba(0,0,0,.075);'
     buttonStyle += 'color: #fff;'
-    buttonStyle += 'display: inline-block; padding: 6px 12px; margin-bottom: 0; font-size: 14px; font-weight: 400; line-height: 1.42857143; text-align: center; white-space: nowrap; vertical-align: middle;'
-    buttonStyle += 'border: 1px solid transparent; border-radius: 4px;'
+    buttonStyle += 'display: inline-block; margin-bottom: 0; font-size: 14px; font-weight: 900; line-height: 1.42857143; text-align: center; white-space: nowrap; vertical-align: middle;'
     buttonStyle += 'text-decoration: none;'
+
+    cellStyle = 'padding: 6px 12px; background-color: #2F71AA; border: 1px solid transparent; border-radius: 4px;'
     
-    content += '<p><a href="{}#prediction?{}" style="{}">Run Prediction</a></p>'.format(hostURL, queryString, buttonStyle)
+    content += '<table><tr><td style="{0}"><a href="{1}#prediction?{2}" style="{3}">Run Prediction</a></td></tr></table>'.format(cellStyle, hostURL, queryString, buttonStyle)
 
     content += '<p style="margin-top:20px;">Please note that result links above will be available for the next 7 days.</p>'
     content += '<br><p>Respectfully,</p>'
