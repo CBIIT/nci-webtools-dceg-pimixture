@@ -102,7 +102,7 @@
                     </div>
                 </div>
                 <%  } %>
-                <%  if (data["hazard.ratio"]) { %>
+                <%  if (data["hazard.ratio"] && data["hazard.ratio"].length > 0) { %>
                 <div class="panel panel-default">
                     <div class="panel-heading" data-toggle="collapse" data-target="#hazardRatio">
                         <h2 class="panel-title">Incidence Hazard Ratio (HR)</h2>
