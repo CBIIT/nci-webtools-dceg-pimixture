@@ -17,8 +17,10 @@ processorLogFileName = config.get('log', 'processor_log_file_name')
 
 
 # Mail settings
+ADMIN = config.get('mail', 'admin')
 HOST = config.get('mail', 'host')
 SENDER = config.get('mail', 'sender')
+REPORT_URL = config.get('mail', 'report_url')
 
 # Folder settings
 INPUT_DATA_PATH = config.get('folders', 'input_data_path')
@@ -145,7 +147,7 @@ def send_mail(sender, recipient, subject, contents, log, attachments=None):
 
     Arguments:
         - sender {string} -- The sender of the email
-        - recipient {string} -- The recipient of the email
+        - recipient {string} -- The recipient of the email, can be ',' separated if multiple recipient
         - subject {string} -- The email's subject
         - contents {string} -- The email's contents
 
@@ -174,7 +176,7 @@ def send_mail(sender, recipient, subject, contents, log, attachments=None):
         host = config.get('mail', 'host')
         # send email
         server = smtplib.SMTP(host)
-        server.sendmail(sender, recipient, message.as_string())
+        server.sendmail(sender, recipient.split(','), message.as_string())
         return True
     except Exception as e:
         log.error(e)
