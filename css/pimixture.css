@@ -175,7 +175,7 @@ fieldset.well,
     overflow-y: auto;
 }
 
-#output h4 {
+#output h2{
     margin: 0;
     font-weight: bold;
 }
