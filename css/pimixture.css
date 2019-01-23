@@ -287,6 +287,11 @@ fieldset.well,
     margin-left: 5px;
 }
 
+#prediction-results #pageSizeLabel {
+    display: inline;
+    font-weight: normal;
+}
+
 .fas {
     color: gray;
 }

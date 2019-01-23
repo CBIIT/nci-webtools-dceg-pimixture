@@ -9,7 +9,7 @@
                             <option value="<%= pageSize %>" <%= pageSize == data.pageSize ? 'selected' : '' %> ><%= pageSize %></option>
                         <% } %>
                     </select>
-                    entries of <%= data.results.prediction.length %>
+                    <label for="pageSize" id="pageSizeLabel">entries</label> of <%= data.results.prediction.length %>
                     <a class="<%= data.pageNum <= 1 ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= 1 %>" class="glyphicon glyphicon-step-backward"></span></a>
                     <a class="<%= data.pageNum <= 1 ? 'disabledPageNav' : 'pageNav' %>" <%= data.pageNum <= 1 ? 'disabled' : '' %>><span data-page-num="<%= Math.max(data.pageNum -1, 1) %>" class="glyphicon glyphicon-chevron-left"></span></a>
                     <% for (var page of data.neighborPages) { %>
