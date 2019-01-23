@@ -315,9 +315,14 @@ appMixture.FormView = Backbone.View.extend({
                             }
                             $that.enableInputs();
                             $that.$('[name="covariatesSelection"]')[0].selectize.destroy();
+                            function setIdForSelectize() {
+                                $that.$('#selectized .selectize-input input').attr('id', 'covariate-selectized');
+                            }
                             $that.$('[name="covariatesSelection"]').selectize({
                                 plugins: ['remove_button'],
-                                sortField: 'order'
+                                sortField: 'order',
+                                onInitialize: setIdForSelectize,
+                                onChange: setIdForSelectize
                             });
 
                             $that.model.unset('headers', {silent: true});
