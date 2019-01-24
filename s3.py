@@ -6,7 +6,7 @@ class S3Bucket:
     def __init__(self, bucket, log):
         self.client = boto3.client('s3')
         self.s3 = boto3.resource('s3')
-        self.bucket = self.s3.create_bucket(Bucket=bucket)
+        self.bucket = self.s3.Bucket(bucket)
         self.log = log
 
     def uploadFileObj(self, key, data):

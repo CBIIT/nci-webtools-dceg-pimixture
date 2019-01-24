@@ -10,12 +10,7 @@ class Queue:
     def __init__(self, log, queName=QUEUE_NAME):
         self.log = log
         self.sqs = boto3.resource('sqs')
-        self.queue = self.sqs.create_queue(
-            QueueName=queName,
-            Attributes={
-                'FifoQueue': 'true'
-            })
-
+        self.queue = self.sqs.get_queue_by_name(QueueName=queName)
     def sendMsgToQueue(self, msg, id):
         response = self.queue.send_message(MessageBody=json.dumps(msg),
                                            MessageGroupId=id,
