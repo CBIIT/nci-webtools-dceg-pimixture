@@ -1,13 +1,17 @@
 
 appMixture.Router = Backbone.Router.extend({
     routes: {
-        '': 'home',
+        '': 'redirect_to_home',
+        'home': 'home',
         'help': 'help',
         'fitting': 'fitting',
         'prediction?parameters=:parameters': 'prediction',
         'prediction': 'prediction'
     },
     menus: ['home', 'help', 'fitting', 'prediction'],
+    redirect_to_home: function() {
+        this.navigate('home', true);
+    },
     home: function() {
         this.activeMenu('home');
         appMixture.showView(appMixture.views.home);
