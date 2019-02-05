@@ -35,8 +35,8 @@ def sendResults(jobName, parameters, results):
 
     content += '<h4 style="margin-top:20px;">Results</h4>'
     content += '<p>Fitting results can be downloaded through following links:</p>'
-    content += '<p><a href="{}" download="{}{}.rds">Download RDS file</a></p>'.format(results['Rfile'], jobName, FITTING_R_SUFFIX)
-    content += '<p><a href="{}" download="{}{}{}">Download {} file</a></p>'.format(results['ssFile'], jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
+    content += '<p><a href="{}getS3Object?{}" download="{}{}.rds">Download RDS file</a></p>'.format(hostURL, urlencode(results['Rfile']), jobName, FITTING_R_SUFFIX)
+    content += '<p><a href="{}getS3Object?{}" download="{}{}{}">Download {} file</a></p>'.format(hostURL, urlencode(results['ssFile']), jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE], SS_FILE_TYPE)
 
     # query = copyEssentialParameters(parameters)
     content += '<h4 style="margin-top:20px;">Run Prediction</h4>'
@@ -119,18 +119,20 @@ if __name__ == '__main__':
                             fittingResult['results']['id'] = id
                             outputBucket = S3Bucket(OUTPUT_BUCKET, log)
                             outputRdsFileKey = getOutputFileKey(id, '.rds')
-                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName, '{}{}.rds'.format(jobName, FITTING_R_SUFFIX))
-                            os.remove(outputRdsFileName)
+                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName)
                             if object:
+                                object['filename'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
                                 fittingResult['results']['Rfile'] = object
+                                os.remove(outputRdsFileName)
                             else:
                                 sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
                                 continue
 
-                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName, '{}{}{}'.format(jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE]))
-                            os.remove(outputSSFileName)
+                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName)
                             if object:
+                                object['filename'] = '{}{}{}'.format(jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE])
                                 fittingResult['results']['ssFile'] = object
+                                os.remove(outputSSFileName)
                             else:
                                 sendErrors(jobName, parameters['email'], 'Upload result {} file failed!'.format(SS_FILE_TYPE))
                                 outputBucket.deleteFile(outputRdsFileKey)

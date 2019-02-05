@@ -1,6 +1,6 @@
 #!/user/bin/env python
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
 import uuid
 import os, sys
 import pyper as pr
@@ -8,6 +8,7 @@ import requests
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
+import StringIO
 
 app = Flask(__name__)
 
@@ -326,14 +327,17 @@ def uploadModelFile():
                 log.error(rst)
                 return buildFailure(rst, 500)
         elif request.form['s3file']:
-            s3file = request.form['s3file']
+            s3file = json.loads(request.form['s3file'])
             id = request.form['id']
             jobName = request.form['jobName']
-            rdsFile = requests.get(s3file)
-            if rdsFile:
+            if s3file:
                 serverFileName = getInputFilePath(id, 'rds')
                 with open(serverFileName, 'wb') as inFile:
-                    inFile.write(rdsFile.content)
+                    inFile = downloadS3Object(s3file['bucket'], s3file['key'], inFile)
+                    if not inFile:
+                        msg = 'Download S3 object failed!'
+                        log.error(msg)
+                        return buildFailure(msg)
                 rst = readModelFile(serverFileName, jobName)
                 if 'jobName' in rst and 'maxTimePoint' in rst:
                     rst['serverFile'] = serverFileName
@@ -376,7 +380,56 @@ def getNumMessages():
             return buildFailure("Couldn't retrieve number of messages enqueued!")
     except Exception as e:
         log.exception("Exception occurred")
-        return buildFailure({"status": False, "statusMessage":"An unknown error occurred"})
+        log.error(e)
+        return buildFailure({"status": False, "statusMessage":"Get SQS message count failed"})
+
+# Download file from S3 and return it to user
+# Parameters: (query string)
+#   - bucket: name of S3 bucket
+#   - key: key (s3 filename) to download
+#   - filename: download file name (optional, if omit, filename will be extracted from key)
+
+@app.route('/getS3Object', methods=['GET'])
+def getS3Object():
+    log.info('GET /getS3Object')
+    try:
+        bucket_name = request.args['bucket']
+        key = request.args['key']
+        if not bucket_name or not key:
+            msg = "Can't get bucket: {}".format(bucket_name)
+            log.error(msg)
+            return buildFailure(msg)
+        filename = request.args.get('filename', os.path.basename(key))
+        s3File = StringIO.StringIO()
+        obj = downloadS3Object(bucket_name, key, s3File)
+        return send_file(obj, attachment_filename=filename, as_attachment=True)
+    except Exception as e:
+        log.exception('Exception occurred')
+        log.error(e)
+        return buildFailure({"status": False, "statusMessage": str(e)})
+
+# Download object from S3
+# Parameters:
+#   - bucket: name of S3 bucket
+#   - key: key (s3 filename) to download
+#   - obj: file like object(File or StringIO) to download into
+# Return value:
+#   - obj: if succeeded
+#   - None: if failed
+
+def downloadS3Object(bucket_name, key, obj):
+    if not bucket_name or not key:
+        msg = "Can't get bucket: {}".format(bucket_name)
+        log.error(msg)
+        return None
+    bucket = S3Bucket(bucket_name, log)
+    if not bucket:
+        msg = "Can't get bucket: {}".format(bucket_name)
+        log.error(msg)
+        return None
+    bucket.downloadFileObj(key, obj)
+    obj.seek(0)
+    return obj
 
 @app.route('/ping/', strict_slashes=False)
 def ping():

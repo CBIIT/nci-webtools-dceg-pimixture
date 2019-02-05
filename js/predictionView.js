@@ -34,11 +34,11 @@ appMixture.PredictionView = Backbone.View.extend({
     },
     checkRemoteRFile: function() {
         $that = this;
-        var remoteRFileName = this.model.get('remoteRFile');
+        var remoteRFile = this.model.get('remoteRFile');
         var fileName = this.model.get('fileName');
-        if (remoteRFileName) {
+        if (remoteRFile) {
             var formData = new FormData();
-            formData.append('s3file', remoteRFileName);
+            formData.append('s3file', JSON.stringify(remoteRFile));
             formData.append('id', this.model.get('id'));
             formData.append('jobName', this.model.get('jobName'));
             this.uploadModelFile(formData);

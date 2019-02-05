@@ -15,6 +15,9 @@ class S3Bucket:
     def downloadFile(self, key, filename):
         return self.bucket.download_file(key, filename)
 
+    def downloadFileObj(self, key, obj):
+        self.bucket.download_fileobj(key, obj)
+
     def deleteFile(self, key):
         response = self.bucket.delete_objects(
             Delete={
@@ -31,11 +34,11 @@ class S3Bucket:
         else:
             return True
 
-    def uploadFile(self, key, fileName, downloadFileName):
+    def uploadFile(self, key, fileName):
         with open(fileName, 'rb') as data:
             object = self.uploadFileObj(key, data)
             if object:
-                return  self.generateUrl(object, downloadFileName)
+                return {'bucket': self.bucket.name, 'key': key}
             else:
                 message = "Upload file {} to S3 failed!".format(fileName)
                 self.log.error(message)
