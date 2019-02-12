@@ -1,10 +1,10 @@
 appMixture.PredictionView = Backbone.View.extend({
     el: '#prediction-tool',
     events: {
-        'input #rdsFile': 'selectModelFile',
-        'input #testDataFile': 'selectTestDataFile',
-        'input [type="number"]': 'updateModel',
-        'input [type="text"]': 'updateModel',
+        'change #rdsFile': 'selectModelFile',
+        'change #testDataFile': 'selectTestDataFile',
+        'change input[type="number"]': 'updateModel',
+        'change input[type="text"]': 'updateModel',
         'click #reset': 'resetForm',
         'submit #predictionForm':'onSubmitPredict',
         'click #timePointRange': 'changeTimePointType',
