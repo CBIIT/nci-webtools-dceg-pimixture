@@ -1,0 +1,30 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "PIMixture testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:env; npm run test:smoke; npm run test:happy",
+    "test:env": "mocha end-to-end/scripts/environment-test.js",
+    "test:smoke": "mocha end-to-end/scripts/smoke-test.js",
+    "test:happy": "mocha end-to-end/scripts/happy-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CBIIT/nci-webtools-dceg-pimixture.git"
+  },
+  "keywords": [
+    "PIMixture"
+  ],
+  "author": "Ming Ying",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CBIIT/nci-webtools-dceg-pimixture/issues"
+  },
+  "homepage": "https://github.com/CBIIT/nci-webtools-dceg-pimixture#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "selenium-webdriver": "^3.6.0"
+  }
+}

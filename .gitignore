@@ -7,3 +7,4 @@ common/
 .idea/
 *.pyc
 config.ini
+node_modules/
