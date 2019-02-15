@@ -47,6 +47,7 @@ describe('PIMixture Happy case test - fitting', function() {
         for (const option of options) {
             if (await option.getText() === 'Cohort (Unweighted)') {
                 await option.click();
+                break;
             }
         }
         //Select Regression Model to be Weakly-parametric
@@ -56,6 +57,7 @@ describe('PIMixture Happy case test - fitting', function() {
         for (const option of options) {
             if (await option.getText() === 'Weakly-parametric') {
                 await option.click();
+                break;
             }
         }
 
@@ -66,6 +68,7 @@ describe('PIMixture Happy case test - fitting', function() {
         for (const option of options) {
             if (await option.getText() === 'C_CIN3PLUS') {
                 await option.click();
+                break;
             }
         }
 
@@ -76,6 +79,7 @@ describe('PIMixture Happy case test - fitting', function() {
         for (const option of options) {
             if (await option.getText() === 'L_CIN3PLUS') {
                 await option.click();
+                break;
             }
         }
 
@@ -86,6 +90,7 @@ describe('PIMixture Happy case test - fitting', function() {
         for (const option of options) {
             if (await option.getText() === 'R_CIN3PLUS') {
                 await option.click();
+                break;
             }
         }
     });
@@ -99,6 +104,7 @@ describe('PIMixture Happy case test - fitting', function() {
         for (const option of options) {
             if (await option.getText() === 'RES_HPV16') {
                 option.click();
+                break;
             }
         }
         //Set covariate configurations
@@ -114,6 +120,7 @@ describe('PIMixture Happy case test - fitting', function() {
                 for (const option of options) {
                     if (await option.getText() === 'Continuous') {
                         await option.click();
+                        break;
                     }
                 }
             } catch (e) {
