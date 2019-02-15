@@ -1,7 +1,6 @@
-const should = require('chai').should();
 const { expect } = require('chai');
 const {Builder, By, Key, until} = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome');
+const firefox = require('selenium-webdriver/firefox');
 
 describe('PIMixture Smoke test - home page', function() {
     this.timeout(0);
@@ -11,8 +10,8 @@ describe('PIMixture Smoke test - home page', function() {
         const url = process.env.TEST_WEBSITE;
         if ( url ) {
             driver = await new Builder()
-                .forBrowser('chrome')
-                .setChromeOptions(new chrome.Options().headless())
+                .forBrowser('firefox')
+                .setChromeOptions(new firefox.Options().headless())
                 .build();
             website = url;
             await driver.get(website);
@@ -57,8 +56,8 @@ describe('PIMixture Smoke test - fitting page', function() {
         const url = process.env.TEST_WEBSITE;
         if (url) {
             driver = await new Builder()
-                .forBrowser('chrome')
-                .setChromeOptions(new chrome.Options().headless())
+                .forBrowser('firefox')
+                .setChromeOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#fitting';
             await driver.get(website);
@@ -87,8 +86,8 @@ describe('PIMixture Smoke test - prediction page', function() {
         const url = process.env.TEST_WEBSITE;
         if (url) {
             driver = await new Builder()
-                .forBrowser('chrome')
-                .setChromeOptions(new chrome.Options().headless())
+                .forBrowser('firefox')
+                .setChromeOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#prediction';
             await driver.get(website);
@@ -118,8 +117,8 @@ describe('PIMixture Smoke test - help page', function() {
         const url = process.env.TEST_WEBSITE;
         if (url) {
             driver = await new Builder()
-                .forBrowser('chrome')
-                .setChromeOptions(new chrome.Options().headless())
+                .forBrowser('firefox')
+                .setChromeOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#help';
             await driver.get(website);
