@@ -61,7 +61,7 @@ describe('PIMixture Smoke test - fitting page', function() {
                 .build();
             website = url.replace('\/$', '') + '/#fitting';
             await driver.get(website);
-            await driver.wait(until.elementLocated(By.id('navigation-bar')), 20000);
+            await driver.wait(until.elementLocated(By.id('calculationForm')), 20000);
         } else {
             console.log("No TEST_WEBSITE set");
             this.skip();
@@ -91,7 +91,7 @@ describe('PIMixture Smoke test - prediction page', function() {
                 .build();
             website = url.replace('\/$', '') + '/#prediction';
             await driver.get(website);
-            await driver.wait(until.elementLocated(By.id('navigation-bar')), 20000);
+            await driver.wait(until.elementLocated(By.id('predictionForm')), 20000);
         } else {
             console.log("No TEST_WEBSITE set");
             this.skip();
