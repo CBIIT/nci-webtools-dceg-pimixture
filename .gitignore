@@ -8,3 +8,4 @@ common/
 *.pyc
 config.ini
 node_modules/
+tests/*.xml
