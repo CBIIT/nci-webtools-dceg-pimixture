@@ -11,7 +11,7 @@ describe('PIMixture Smoke test - home page', function() {
         if ( url ) {
             driver = await new Builder()
                 .forBrowser('firefox')
-                .setChromeOptions(new firefox.Options().headless())
+                .setFirefoxOptions(new firefox.Options().headless())
                 .build();
             website = url;
             await driver.get(website);
@@ -57,7 +57,7 @@ describe('PIMixture Smoke test - fitting page', function() {
         if (url) {
             driver = await new Builder()
                 .forBrowser('firefox')
-                .setChromeOptions(new firefox.Options().headless())
+                .setFirefoxOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#fitting';
             await driver.get(website);
@@ -87,7 +87,7 @@ describe('PIMixture Smoke test - prediction page', function() {
         if (url) {
             driver = await new Builder()
                 .forBrowser('firefox')
-                .setChromeOptions(new firefox.Options().headless())
+                .setFirefoxOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#prediction';
             await driver.get(website);
@@ -118,7 +118,7 @@ describe('PIMixture Smoke test - help page', function() {
         if (url) {
             driver = await new Builder()
                 .forBrowser('firefox')
-                .setChromeOptions(new firefox.Options().headless())
+                .setFirefoxOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#help';
             await driver.get(website);
