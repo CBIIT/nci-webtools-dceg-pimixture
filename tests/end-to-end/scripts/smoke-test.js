@@ -15,7 +15,7 @@ describe('PIMixture Smoke test - home page', function() {
                 .build();
             website = url;
             await driver.get(website);
-            await driver.wait(until.elementLocated(By.id('navigation-bar')), 20000);
+            await driver.wait(until.elementLocated(By.linkText('Help page')), 20000);
         } else {
             console.log("No TEST_WEBSITE set");
             this.skip();
@@ -24,10 +24,6 @@ describe('PIMixture Smoke test - home page', function() {
 
     after( async function(){
         driver.close();
-    });
-
-    it('Website should be set', function(){
-        expect(website).to.be.a('string');
     });
 
     it('Should have title "Prevalence-Incidence Mixture Risk Models"', async function() {
@@ -122,7 +118,7 @@ describe('PIMixture Smoke test - help page', function() {
                 .build();
             website = url.replace('\/$', '') + '/#help';
             await driver.get(website);
-            await driver.wait(until.elementLocated(By.id('navigation-bar')), 20000);
+            await driver.wait(until.elementLocated(By.linkText('Download Help in PDF.')), 20000);
         } else {
             console.log("No TEST_WEBSITE set");
             this.skip();
