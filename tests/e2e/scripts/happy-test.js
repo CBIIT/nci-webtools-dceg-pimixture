@@ -8,6 +8,18 @@ describe('PIMixture Happy case test - fitting', function() {
     let driver,
         website,
         pwd = process.env.PWD;
+
+    let clickOption = async function (selector, optionText, optionSelector=By.css('option')) {
+        const selectInput = await driver.findElement(selector);
+        const options = await selectInput.findElements(optionSelector);
+        for (const option of options) {
+            if (await option.getText() === optionText) {
+                await option.click();
+                break;
+            }
+        }
+    };
+
     before(async function () {
         const url = process.env.TEST_WEBSITE;
         if (url) {
@@ -41,72 +53,27 @@ describe('PIMixture Happy case test - fitting', function() {
 
     it('Should be able to select parameters', async function() {
         //Select Sample Desing to be unweighted
-        var selectInput = await driver.findElement(By.id('design'));
-        var options = await selectInput.findElements(By.css('option'));
-        expect(options.length).to.equal(3);
-        for (const option of options) {
-            if (await option.getText() === 'Cohort (Unweighted)') {
-                await option.click();
-                break;
-            }
-        }
+        clickOption(By.id('design'), 'Cohort (Unweighted)');
+
         //Select Regression Model to be Weakly-parametric
-        selectInput = await driver.findElement(By.id('model'));
-        options = await selectInput.findElements(By.css('option'));
-        expect(options.length).to.equal(4);
-        for (const option of options) {
-            if (await option.getText() === 'Weakly-parametric') {
-                await option.click();
-                break;
-            }
-        }
+        await clickOption(By.id('model'), 'Weakly-parametric');
 
         //Select C to be 'C_CIN3PLUS
-        selectInput = await driver.findElement(By.id('outcomeC-input'));
-        options = await selectInput.findElements(By.css('option'));
-        expect(options.length).to.equal(5);
-        for (const option of options) {
-            if (await option.getText() === 'C_CIN3PLUS') {
-                await option.click();
-                break;
-            }
-        }
+        await clickOption(By.id('outcomeC-input'), 'C_CIN3PLUS');
 
         //Select L to be 'L_CIN3PLUS
-        selectInput = await driver.findElement(By.id('outcomeL-input'));
-        options = await selectInput.findElements(By.css('option'));
-        expect(options.length).to.equal(5);
-        for (const option of options) {
-            if (await option.getText() === 'L_CIN3PLUS') {
-                await option.click();
-                break;
-            }
-        }
+        await clickOption(By.id('outcomeL-input'), 'L_CIN3PLUS');
 
         //Select R to be 'R_CIN3PLUS
-        selectInput = await driver.findElement(By.id('outcomeR-input'));
-        options = await selectInput.findElements(By.css('option'));
-        expect(options.length).to.equal(5);
-        for (const option of options) {
-            if (await option.getText() === 'R_CIN3PLUS') {
-                await option.click();
-                break;
-            }
-        }
+        await clickOption(By.id('outcomeR-input'), 'R_CIN3PLUS');
     });
 
     it('Should be able to config covariates', async function() {
         //Select covariates to be RES_HPV16
         const covInput = await driver.findElement(By.id('covariate-selectized'));
         await covInput.click();
-        const dropDown = await driver.findElement(By.className('selectize-dropdown-content'));
-        options = await dropDown.findElements(By.className('option'));
-        for (const option of options) {
-            if (await option.getText() === 'RES_HPV16') {
-                option.click();
-                break;
-            }
-        }
+        await clickOption(By.className('selectize-dropdown-content'), 'RES_HPV16', By.className('option'));
+
         //Set covariate configurations
         const covBtn = await driver.findElement(By.id('referencesButton'));
         await covBtn.click();
