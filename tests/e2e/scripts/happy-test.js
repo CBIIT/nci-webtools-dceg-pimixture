@@ -34,7 +34,7 @@ describe('PIMixture Happy case test - fitting', function() {
         jobNameInput.sendKeys('smoke-test');
         // Enter input data file path
         const fileInput = await driver.findElement(By.id('csvFile'));
-        await fileInput.sendKeys(pwd + '/end-to-end/data/bd.mock.data.csv');
+        await fileInput.sendKeys(pwd + '/e2e/data/bd.mock.data.csv');
         const designInput = await driver.findElement(By.id('design'));
         await driver.wait(until.elementIsEnabled(designInput), 5000);
     });
@@ -173,14 +173,14 @@ describe('PIMixture Happy case test - prediction', function() {
 
     it('Should be able to select model file', async function() {
         const fileInput = await driver.findElement(By.id('rdsFile'));
-        await fileInput.sendKeys(pwd + '/end-to-end/data/smoke-test_fitting.rds');
+        await fileInput.sendKeys(pwd + '/e2e/data/smoke-test_fitting.rds');
         const fileLabel = await driver.findElement(By.id('modelFileName'));
         await driver.wait(until.elementTextContains(fileLabel, 'smoke-test_fitting'), 5000);
     });
 
     it('Should be able to select test data file', async function() {
         const fileInput = await driver.findElement(By.id('testDataFile'));
-        await fileInput.sendKeys(pwd + '/end-to-end/data/bd.mock.TestData.csv');
+        await fileInput.sendKeys(pwd + '/e2e/data/bd.mock.TestData.csv');
         const fileLabel = await driver.findElement(By.id('testDataFileName'));
         const submitBtn = await driver.findElement(By.id('runPredict'));
         await driver.wait(until.elementIsEnabled(submitBtn), 2000);
