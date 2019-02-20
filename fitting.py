@@ -196,22 +196,15 @@ def writeToXLSXFile(filename, parameters, results):
     for key, val in results['data.summary'].items():
         ws2.append([key, val])
 
-    fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'exp(Coef.)': 'OR', 'exp(coef)': 'OR', 'exp(-coef/scale)': 'HR'}
+    fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'OR': 'OR', 'HR': 'HR'}
     ws3 = wb.create_sheet(title='Regression coefficients')
     writeResults(ws3, None, results['regression.coefficient'], ['Model', 'Label', 'Coef.'], fieldNamesMapping)
 
     ws4 = wb.create_sheet(title='Prevalence Odds Ratio (OR)')
-    if parameters['model'] == 'logistic-Weibull':
-        writeResults(ws4, None, results['odds.ratio'], ['Model', 'Label', 'exp(coef)'], fieldNamesMapping)
-    else:
-        writeResults(ws4, None, results['odds.ratio'], ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+    writeResults(ws4, None, results['odds.ratio'], ['Model', 'Label', 'OR'], fieldNamesMapping)
 
     ws5 = wb.create_sheet(title='Incidence Hazard Ration (HR)')
-    if parameters['model'] == 'logistic-Weibull':
-        writeResults(ws5, None, results['hazard.ratio'], ['Model', 'Label', 'exp(-coef/scale)'], fieldNamesMapping)
-    else:
-        fieldNamesMapping['exp(Coef.)'] = 'HR'
-        writeResults(ws5, None, results['hazard.ratio'], ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
+    writeResults(ws5, None, results['hazard.ratio'], ['Model', 'Label', 'HR'], fieldNamesMapping)
 
     wb.save(filename)
 

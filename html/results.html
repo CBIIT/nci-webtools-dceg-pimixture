@@ -89,7 +89,7 @@
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td class="covariates"><%= entry.Label %></td>
-                                    <td><%= entry["exp(Coef.)"] %></td>
+                                    <td><%= entry["OR"] %></td>
                                     <% if (data.model !== 'semi-parametric') { %>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
@@ -124,7 +124,7 @@
                                 <tr>
                                     <td><%= entry.Model %></td>
                                     <td class="covariates"><%= entry.Label %></td>
-                                    <td><%= entry["exp(Coef.)"] %></td>
+                                    <td><%= entry["HR"] %></td>
                                     <% if (data.model !== 'semi-parametric') { %>
                                     <td><%= entry["SE"] || '' %></td>
                                     <td><%= entry["95%LL"] || '' %></td>
