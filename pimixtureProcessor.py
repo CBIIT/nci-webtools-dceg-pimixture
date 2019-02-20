@@ -26,7 +26,7 @@ def sendResults(jobName, parameters, results):
     hostURL = parameters['hostURL']
     subject = 'PIMixture Fitting Results - Job: {}'.format(jobName)
     content = '<p>Dear User,</p>'
-    content += '<p>We have processed your data using PIMixture R Package version 0.3.0.</p>'
+    content += '<p>We have processed your data using PIMixture R Package version {}.</p>'.format(PIMIXTURE_VERSION)
 
     content += '<h4 style="margin-top:20px;">Job Information</h4>'
     content += '<p>Job Name: {}</p>'.format(jobName)

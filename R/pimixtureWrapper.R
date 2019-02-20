@@ -109,3 +109,8 @@ readFromRDS <- function(jsonData) {
     results <- list(jobName = model$jobName, maxTimePoint = max(model$cum.hazard$time))
     return (toJSON(results))
 }
+
+getPIMixtureVersion <- function() {
+    ver <- paste(packageVersion('PIMixture'), collapse='')
+    return (ver)
+}

@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 from ConfigParser import SafeConfigParser
 import logging
 from logging.handlers import TimedRotatingFileHandler
+import pyper as pr
 
 config = SafeConfigParser()
 config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
@@ -68,6 +69,15 @@ extensionMap = {
     CSV_FORMAT: '.csv',
     EXCEL_FORMAT: '.xlsx'
 }
+
+def getPIMixtureVersion():
+    r = pr.R()
+    r(IMPORT_R_WRAPPER)
+    r('version <- getPIMixtureVersion()')
+    return r.get('version')
+
+PIMIXTURE_VERSION = getPIMixtureVersion()
+
 
 # Following parameters will be load to fitting page when run prediction from email except those in emailExcludedFields
 # These parameters will also be saved to output CSV/EXCEL files, except those in ssExcludedFields
