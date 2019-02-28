@@ -72,6 +72,15 @@ def sendErrors(jobName, email, errors):
     content += '<p>PIMixture Web Tool</p>'
     return send_mail(SENDER, email, subject, content, log)
 
+def sendCanceled(jobName, email, messages):
+    subject = 'PIMixture Fitting CANCELED - Job: {}'.format(jobName)
+    content = '<p>Dear User,</p>'
+    content += '<p>We are sorry to inform you, your PIMixture Fitting job "{}" has be CANCELED!</p>'.format(jobName)
+    content += '<p>Here is the reason:</p>'
+    content += '<blockquote>{}</blockquote>'.format(messages)
+    content += '<br><p>Respectfully,</p>'
+    content += '<p>PIMixture Web Tool</p>'
+    return send_mail(SENDER, email, subject, content, log)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -142,9 +151,14 @@ if __name__ == '__main__':
                                 log.error("An error happened when trying to send result email")
                                 continue
                         else:
-                            if not sendErrors(jobName, parameters['email'], fittingResult['message']):
-                                log.error("An error happened when trying to send error email")
-                                continue
+                            if 'canceled' in fittingResult:
+                                if not sendCanceled(jobName, parameters['email'], fittingResult['message']):
+                                    log.error("An error happened when trying to send error email")
+                                    continue
+                            else:
+                                if not sendErrors(jobName, parameters['email'], fittingResult['message']):
+                                    log.error("An error happened when trying to send error email")
+                                    continue
 
                         msg.delete()
 

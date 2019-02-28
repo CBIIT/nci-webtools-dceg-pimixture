@@ -31,7 +31,8 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
         rOutput = r('returnFile = runCalculation(parameters)')
         if not r.prog:
             del(r)
-            return {'status': False, 'message': '{} timeout reached, R program has been terminated!'.format(formatTime(timeout))}
+            return {'status': False, 'canceled': True,
+                    'message': '{} timeout reached, calculation has been canceled!'.format(formatTime(timeout))}
         elif timer:
             log.info('Canceling the timer')
             timer.cancel()
