@@ -75,7 +75,7 @@ def sendErrors(jobName, email, errors):
 def sendCanceled(jobName, email, messages):
     subject = 'PIMixture Fitting CANCELED - Job: {}'.format(jobName)
     content = '<p>Dear User,</p>'
-    content += '<p>We are sorry to inform you, your PIMixture Fitting job "{}" has be CANCELED!</p>'.format(jobName)
+    content += '<p>We are sorry to inform you, your PIMixture Fitting job "{}" has been CANCELED!</p>'.format(jobName)
     content += '<p>Here is the reason:</p>'
     content += '<blockquote>{}</blockquote>'.format(messages)
     content += '<br><p>Respectfully,</p>'
