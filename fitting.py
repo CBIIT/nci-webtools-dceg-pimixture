@@ -19,15 +19,15 @@ def killR(r, log):
 
 def fitting(parameters, outputSSFileName, fileType, log, timeout):
     try:
-        startTime = time.time()
         rOutput = None
         r = pr.R()
-        r(IMPORT_R_WRAPPER)
-        r.assign('parameters',json.dumps(parameters))
         timer = None
         if timeout:
             timer = Timer(timeout, killR, [r, log])
             timer.start()
+        startTime = time.time()
+        r(IMPORT_R_WRAPPER)
+        r.assign('parameters',json.dumps(parameters))
         rOutput = r('returnFile = runCalculation(parameters)')
         if not r.prog:
             del(r)
