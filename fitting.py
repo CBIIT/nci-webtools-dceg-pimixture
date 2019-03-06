@@ -7,6 +7,8 @@ import sys
 from util import *
 from threading import Timer
 
+from SSWriter import *
+
 if SS_FILE_TYPE == EXCEL_FORMAT:
     from openpyxl import Workbook
 
@@ -57,12 +59,7 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
         if 'jobName' in parameters:
             results['jobName'] = parameters['jobName']
 
-        if fileType == EXCEL_FORMAT:
-            writeToXLSXFile(outputSSFileName, parameters, results)
-        elif fileType == CSV_FORMAT:
-            writeToCSVFile(outputSSFileName, parameters, results)
-        else:
-            log.error('Unknow output filetype: {}'.format(fileType))
+        writeToSSFile(fileType, outputSSFileName, parameters, results, log)
 
         return {'status': True, 'results': results}
     except Exception as e:
@@ -84,67 +81,8 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
 covariateTypeMap = { 'nominal': 'Categorical',
                      'continuous': 'Continuous'}
 
-def writeToCSVFile(filename, parameters, results):
-    with open(filename, 'w') as outputCSVFile:
-        writer = csv.writer(outputCSVFile, dialect='excel')
-        writer.writerow(['Job Parameters'])
-        writer.writerow(['Name', 'Value'])
-
-        for param in savedParameters:
-            key = param['field']
-            name = param['name']
-            if key in parameters:
-                val = parameters[key]
-                if hasattr(val, 'filename'):
-                    writer.writerow([name, val.filename])
-                elif key == 'covariatesArr':
-                    writer.writerow(['Covariate Configuaration'])
-                    for cov in val:
-                        writer.writerow(['', '{}: {} = {}'.format(cov['text'], covariateTypeMap[cov['type']], cov['category'])])
-                elif key == 'covariatesSelection':
-                    writer.writerow([name, ' + '.join(val)])
-                elif key == 'design':
-                    val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
-                    writer.writerow([name, val])
-                elif key == 'model':
-                    val = 'Parametric' if val == 'logistic-Weibull' else val
-                    writer.writerow([name, val])
-                elif val:
-                    writer.writerow([name, val])
-
-        writer.writerow([])
-        writer.writerow(['Data Summary'])
-        writer.writerow(['Label', 'Number of the cases'])
-        for key, val in results['data.summary'].items():
-            writer.writerow([key, val])
-
-        writer.writerow([])
-        fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'exp(Coef.)': 'OR'}
-        writeResults(writer, 'Regression coefficient estimates', results['regression.coefficient'],
-                     ['Model', 'Label', 'Coef.'], fieldNamesMapping)
-
-        writer.writerow([])
-        if parameters['model'] == 'logistic-Weibull':
-            writer.writerow(['Prevalence Odds Ratio (OR)'])
-            writer.writerow(['Model', 'Label', 'OR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
-            for val in results['odds.ratio']:
-                writer.writerow(['', ''] + val)
-        else:
-            writeResults(writer, 'Prevalence Odds Ratio (OR)', results['odds.ratio'],
-                         ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
-
-        writer.writerow([])
-        if parameters['model'] == 'logistic-Weibull':
-            writer.writerow(['Incidence Hazard Ration (HR)'])
-            writer.writerow(['Model', 'Label', 'HR', 'Standard Error', 'Lower Confidence Limit (95%)', 'Upper Confidence Limit (95%)'])
-            for val in results['hazard.ratio']:
-                writer.writerow(['', ''] + val)
-        else:
-            fieldNamesMapping['exp(Coef.)'] = 'HR'
-            writeResults(writer, 'Incidence Hazard Ration (HR)', results['hazard.ratio'],
-                         ['Model', 'Label', 'exp(Coef.)'], fieldNamesMapping)
-
-def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
+def getResultData(results, fieldNames, fieldNamesMapping):
+    data = []
     if len(results) > 0:
         if 'SE' in results[0]:
             fieldNames.append('SE')
@@ -153,20 +91,17 @@ def writeResults(writer, subtitle, results, fieldNames, fieldNamesMapping):
         if '95%UL' in results[0]:
             fieldNames.append('95%UL')
 
-    writeRow = getattr(writer, 'writerow', None)
-    if not callable(writeRow):
-        writeRow = getattr(writer, 'append')
-    if subtitle:
-        writeRow([subtitle])
-    writeRow([fieldNamesMapping[field] for field in fieldNames])
+    data.append([fieldNamesMapping[field] for field in fieldNames])
     for val in results:
-        writeRow([val[field] for field in fieldNames])
+        data.append([val[field] for field in fieldNames])
 
-def writeToXLSXFile(filename, parameters, results):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = 'Model Parameters'
-    ws.append(['Name', 'Value'])
+    return data
+
+def writeToSSFile(type, filename, parameters, results, log):
+    writer = SSWriter(filename, type, log)
+    writer.setTitle('Model Parameters')
+    data = []
+    data.append(['Name', 'Value'])
 
     for param in savedParameters:
         key = param['field']
@@ -176,36 +111,43 @@ def writeToXLSXFile(filename, parameters, results):
             if key in ssExcludedFields:
                 continue
             elif hasattr(val, 'filename'):
-                ws.append([name, val.filename])
+                data.append([name, val.filename])
             elif key == 'covariatesArr':
-                ws.append(['Covariate Configuaration'])
+                data.append(['Covariate Configuaration'])
                 for cov in val:
-                    ws.append(['', '{}: {} = {}'.format(cov['text'], covariateTypeMap[cov['type']], cov['category'])])
+                    data.append(['', '{}: {} = {}'.format(cov['text'], covariateTypeMap[cov['type']], cov['category'])])
             elif key == 'covariatesSelection':
-                ws.append([name, ' + '.join(val)])
+                data.append([name, ' + '.join(val)])
             elif key == 'design':
                 val =  'Cohort (Weighted)' if val == 1 else 'Cohort (Unweighted)'
-                ws.append([name, val])
+                data.append([name, val])
             elif key == 'model':
                 val = 'Parametric' if val == 'logistic-Weibull' else val
-                ws.append([name, val])
+                data.append([name, val])
             elif val:
-                ws.append([name, val])
+                data.append([name, val])
 
-    ws2 = wb.create_sheet(title='Data Summary')
-    ws2.append(['Label', 'Number of the cases'])
+    writer.writeData(data)
+
+    writer.newSheet('Data Summary')
+    data = []
+    data.append(['Label', 'Number of the cases'])
     for key, val in results['data.summary'].items():
-        ws2.append([key, val])
+        data.append([key, val])
+    writer.writeData(data)
 
+    writer.newSheet('Regression coefficients')
     fieldNamesMapping = {'Model': 'Model', 'Label': 'Label', 'SE': 'Standard Error', '95%LL': 'Lower Confidence Limit (95%)', '95%UL': 'Upper Confidence Limit (95%)', 'Coef.': 'Coefficient', 'OR': 'OR', 'HR': 'HR'}
-    ws3 = wb.create_sheet(title='Regression coefficients')
-    writeResults(ws3, None, results['regression.coefficient'], ['Model', 'Label', 'Coef.'], fieldNamesMapping)
+    data = getResultData(results['regression.coefficient'], ['Model', 'Label', 'Coef.'], fieldNamesMapping)
+    writer.writeData(data)
 
-    ws4 = wb.create_sheet(title='Prevalence Odds Ratio (OR)')
-    writeResults(ws4, None, results['odds.ratio'], ['Model', 'Label', 'OR'], fieldNamesMapping)
 
-    ws5 = wb.create_sheet(title='Incidence Hazard Ration (HR)')
-    writeResults(ws5, None, results['hazard.ratio'], ['Model', 'Label', 'HR'], fieldNamesMapping)
+    writer.newSheet('Prevalence Odds Ratio (OR)')
+    data = getResultData(results['odds.ratio'], ['Model', 'Label', 'OR'], fieldNamesMapping)
+    writer.writeData(data)
 
-    wb.save(filename)
+    writer.newSheet('Incidence Hazard Ration (HR)')
+    data = getResultData(results['hazard.ratio'], ['Model', 'Label', 'HR'], fieldNamesMapping)
+    writer.writeData(data)
 
+    writer.save()
