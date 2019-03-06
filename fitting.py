@@ -97,9 +97,7 @@ def getResultData(results, fieldNames, fieldNamesMapping):
 
     return data
 
-def writeToSSFile(type, filename, parameters, results, log):
-    writer = SSWriter(filename, type, log)
-    writer.setTitle('Model Parameters')
+def getParameterData(parameters):
     data = []
     data.append(['Name', 'Value'])
 
@@ -127,6 +125,13 @@ def writeToSSFile(type, filename, parameters, results, log):
             elif val:
                 data.append([name, val])
 
+    return data
+
+def writeToSSFile(type, filename, parameters, results, log):
+    writer = SSWriter(filename, type, log)
+
+    writer.setTitle('Model Parameters')
+    data = getParameterData(parameters)
     writer.writeData(data)
 
     writer.newSheet('Data Summary')
