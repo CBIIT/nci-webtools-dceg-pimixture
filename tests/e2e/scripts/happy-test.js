@@ -1,3 +1,8 @@
+/**
+ * You can specify test data by setting following environment variables
+ *  - TEST_EMAIL
+ */
+
 const should = require('chai').should();
 const { expect } = require('chai');
 const {Builder, By, Key, until} = require('selenium-webdriver');
@@ -8,6 +13,7 @@ describe('PIMixture Happy case test - fitting', function() {
     let driver,
         website,
         pwd = process.env.PWD;
+    const EMAIL = process.env['TEST_EMAIL'] || 'ming.ying@nih.gov';
 
     let clickOption = async function (selector, optionText, optionSelector=By.css('option')) {
         const selectInput = await driver.findElement(selector);
@@ -43,7 +49,7 @@ describe('PIMixture Happy case test - fitting', function() {
     it('Should be able to enter job name and select input file', async function() {
         // Enter job name
         const jobNameInput = await driver.findElement(By.id('jobName'));
-        jobNameInput.sendKeys('smoke-test');
+        jobNameInput.sendKeys('happy-test');
         // Enter input data file path
         const fileInput = await driver.findElement(By.id('csvFile'));
         await fileInput.sendKeys(pwd + '/e2e/data/bd.mock.data.csv');
@@ -94,21 +100,39 @@ describe('PIMixture Happy case test - fitting', function() {
                 tries++;
             }
         }
-
-    });
-
-    it('Should be able to run fitting', async function(){
         const saveBtn = await driver.findElement(By.id('saveCovariatesBtn'));
         await saveBtn.click();
+    });
 
+    it('Should be able to send fitting job to queue', async function(){
+        await driver.sleep(500);
+        const sendToQueue = await driver.findElement((By.name('sendToQueue')));
+        await driver.wait(until.elementIsVisible(sendToQueue), 10000);
+        await sendToQueue.click();
+        const emailInput = await driver.findElement(By.id('email'));
+        await driver.wait(until.elementIsEnabled(emailInput));
+        emailInput.sendKeys(EMAIL);
+        queueMessage = await driver.findElement(By.id('queueMessage'));
+        await queueMessage.click();
         //Submit form
         const form = await driver.findElement(By.id('calculationForm'));
         await form.submit();
+        await driver.wait(until.elementLocated(By.id('enqueuedMessage')), 5000);
+        const result = await driver.findElement(By.id('enqueuedMessage'));
+        expect(await result.getText()).to.include('successfully');
+    });
+
+    it('Should be able to run fitting', async function(){
+        const sendToQueue = await driver.findElement((By.name('sendToQueue')));
+        await sendToQueue.click();
         const submitBtn = await driver.findElement(By.id('run'));
+        await driver.wait(until.elementIsVisible(submitBtn));
+        //Submit form
+        const form = await driver.findElement(By.id('calculationForm'));
+        await form.submit();
         await driver.wait(until.elementLocated(By.id('runPredictionBtn')), 10000);
         const result = await driver.findElement(By.id('runPredictionBtn'));
         expect(result).to.exist;
-        await driver.sleep(5000);
     });
 
 });
@@ -163,7 +187,6 @@ describe('PIMixture Happy case test - prediction', function() {
         const submitBtn = await driver.findElement(By.id('runPredict'));
         await submitBtn.submit();
         await driver.wait(until.elementsLocated(By.linkText('Download result (.csv) file')), 5000);
-        await driver.sleep(5000);
     });
 
 });
