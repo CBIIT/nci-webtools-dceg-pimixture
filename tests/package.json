@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:env; npm run test:smoke; npm run test:happy",
-    "test:env": "mocha -R xunit -O output=env-test.xml e2e/scripts/environment-test.js",
-    "test:smoke": "mocha -R xunit -O output=smoke-test.xml e2e/scripts/smoke-test.js",
-    "test:happy": "mocha -R xunit -O output=happy-test.xml e2e/scripts/happy-test.js"
+    "test:env": "mocha e2e/scripts/environment-test.js",
+    "test:smoke": "mocha e2e/scripts/smoke-test.js",
+    "test:happy": "mocha e2e/scripts/happy-test.js",
+    "test:headless": "npm run test:env2; npm run test:smoke2; npm run test:happy2",
+    "test:env2": "mocha -R xunit -O output=env-test.xml e2e/scripts/environment-test.js",
+    "test:smoke2": "mocha -R xunit -O output=smoke-test.xml e2e/scripts/smoke-test.js",
+    "test:happy2": "mocha -R xunit -O output=happy-test.xml e2e/scripts/happy-test.js"
   },
   "repository": {
     "type": "git",
