@@ -10,6 +10,25 @@
 
         gtag('config', 'UA-62346354-20');
     </script>
+    <!--[if IE ]>
+        <script>
+            window.isIE = true;
+        </script>
+    <![endif]-->
+    <script>
+        if(navigator.userAgent.indexOf('MSIE')!==-1
+            || navigator.appVersion.indexOf('Trident/') > -1
+            || window.isIE){
+            message = 'Sorry, you are using a browser that\'s not supported by the PIMixture web tool.\n' +
+                '\n' +
+                'We recommend using latest version of following browsers for your best experience:\n' +
+                '- Chrome\n' +
+                '- Microsoft Edge\n' +
+                '- Firefox\n' +
+                '- Safari\n';
+            window.alert(message);
+        }
+    </script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
