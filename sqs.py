@@ -40,12 +40,15 @@ class VisibilityExtender:
         self.start()
 
     def _run(self):
-        if self._msg:
-            self.is_running = False
-            self.start()
-            self._currentTimeOut += self._interval
-            self.log.info('Processing job name: "{}", id: {} ...'.format(self.jobName, self.jobId))
-            self._msg.change_visibility(VisibilityTimeout = self._currentTimeOut)
+        try:
+            if self._msg:
+                self.is_running = False
+                self.start()
+                self._currentTimeOut += self._interval
+                self.log.info('Processing job name: "{}", id: {} ...'.format(self.jobName, self.jobId))
+                self._msg.change_visibility(VisibilityTimeout = self._currentTimeOut)
+        except Exception as e:
+            self.log.exception(e)
 
 
     def start(self):
