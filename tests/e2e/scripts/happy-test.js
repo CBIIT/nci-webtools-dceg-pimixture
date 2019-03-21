@@ -6,7 +6,7 @@
 const should = require('chai').should();
 const { expect } = require('chai');
 const {Builder, By, Key, until} = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome');
+const firefox = require('selenium-webdriver/firefox');
 
 describe('PIMixture Happy case test - fitting', function() {
     this.timeout(0);
@@ -30,8 +30,8 @@ describe('PIMixture Happy case test - fitting', function() {
         const url = process.env.TEST_WEBSITE;
         if (url) {
             driver = await new Builder()
-                .forBrowser('chrome')
-                .setChromeOptions(new chrome.Options().headless())
+                .forBrowser('firefox')
+                .setFirefoxOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#fitting';
             await driver.get(website);
@@ -115,8 +115,8 @@ describe('PIMixture Happy case test - fitting', function() {
         queueMessage = await driver.findElement(By.id('queueMessage'));
         await queueMessage.click();
         //Submit form
-        const form = await driver.findElement(By.id('calculationForm'));
-        await form.submit();
+        const runBtn = await driver.findElement(By.id('run'));
+        await runBtn.click();
         await driver.wait(until.elementLocated(By.id('enqueuedMessage')), 5000);
         const result = await driver.findElement(By.id('enqueuedMessage'));
         expect(await result.getText()).to.include('successfully');
@@ -128,8 +128,8 @@ describe('PIMixture Happy case test - fitting', function() {
         const submitBtn = await driver.findElement(By.id('run'));
         await driver.wait(until.elementIsVisible(submitBtn));
         //Submit form
-        const form = await driver.findElement(By.id('calculationForm'));
-        await form.submit();
+        const runBtn = await driver.findElement(By.id('run'));
+        await runBtn.click();
         await driver.wait(until.elementLocated(By.id('runPredictionBtn')), 10000);
         const result = await driver.findElement(By.id('runPredictionBtn'));
         expect(result).to.exist;
@@ -146,8 +146,8 @@ describe('PIMixture Happy case test - prediction', function() {
         const url = process.env.TEST_WEBSITE;
         if (url) {
             driver = await new Builder()
-                .forBrowser('chrome')
-                .setChromeOptions(new chrome.Options().headless())
+                .forBrowser('firefox')
+                .setFirefoxOptions(new firefox.Options().headless())
                 .build();
             website = url.replace('\/$', '') + '/#prediction';
             await driver.get(website);
@@ -185,7 +185,7 @@ describe('PIMixture Happy case test - prediction', function() {
         endInput.sendKeys('20');
         stepSizeInput.sendKeys('1');
         const submitBtn = await driver.findElement(By.id('runPredict'));
-        await submitBtn.submit();
+        await submitBtn.click();
         await driver.wait(until.elementsLocated(By.linkText('Download result (.csv) file')), 5000);
     });
 
