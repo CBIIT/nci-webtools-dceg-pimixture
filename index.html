@@ -16,18 +16,22 @@
         </script>
     <![endif]-->
     <script>
-        if(navigator.userAgent.indexOf('MSIE')!==-1
-            || navigator.appVersion.indexOf('Trident/') > -1
-            || window.isIE){
-            message = 'Sorry, you are using a browser that\'s not supported by the PIMixture web tool.\n' +
-                '\n' +
-                'We recommend using latest version of following browsers for your best experience:\n' +
-                '- Chrome\n' +
-                '- Microsoft Edge\n' +
-                '- Firefox\n' +
-                '- Safari\n';
-            window.alert(message);
-        }
+        window.onload =  function() {
+            if(navigator.userAgent.indexOf('MSIE')!==-1
+                || navigator.appVersion.indexOf('Trident/') > -1
+                || window.isIE){
+                message = 'Sorry, you are using a browser that\'s not supported by the PIMixture web tool.\n' +
+                    '\n' +
+                    'We recommend using latest version of following browsers for your best experience:\n' +
+                    '- Chrome\n' +
+                    '- Microsoft Edge\n' +
+                    '- Firefox\n' +
+                    '- Safari\n';
+                setTimeout(function() {
+                    window.alert(message);
+                }, 1000);
+            }
+        };
     </script>
 
     <meta charset="utf-8">
