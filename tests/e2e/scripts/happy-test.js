@@ -35,7 +35,7 @@ describe('PIMixture Happy case test - fitting', function() {
                 .build();
             website = url.replace('\/$', '') + '/#fitting';
             await driver.get(website);
-            await driver.wait(until.elementLocated(By.id('navigation-bar')), 20000);
+            await driver.wait(until.elementLocated(By.id('run')), 20000);
         } else {
             console.log("No TEST_WEBSITE set");
             this.skip();
@@ -151,7 +151,7 @@ describe('PIMixture Happy case test - prediction', function() {
                 .build();
             website = url.replace('\/$', '') + '/#prediction';
             await driver.get(website);
-            await driver.wait(until.elementLocated(By.id('navigation-bar')), 20000);
+            await driver.wait(until.elementLocated(By.id('runPredict')), 20000);
         } else {
             console.log("No TEST_WEBSITE set");
             this.skip();
