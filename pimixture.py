@@ -8,7 +8,7 @@ import requests
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
-import StringIO
+from io import StringIO
 
 app = Flask(__name__)
 
