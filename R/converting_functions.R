@@ -3,8 +3,25 @@ data.conversion<-function(data.type=NULL,DATA,wght.info=NULL){
   if(!is.null(data.type)){
     numeric.var<-data.type$text[data.type$type=="continuous"]
     factor.var<-data.type$text[data.type$type=="nominal"]
-    numeric.ind<-which(names(DATA) %in% numeric.var)
-    factor.ind<-which(names(DATA) %in% factor.var)
+    if(length(numeric.var)>1){
+      numeric.ind<-rep(NA,length(numeric.var))
+      for(i in 1:length(numeric.var)){
+        numeric.ind[i]<-which(names(DATA)==numeric.var[i])
+      }
+    }else {
+      numeric.ind<-which(names(DATA) %in% numeric.var)
+    }
+
+    if(length(factor.var)>1){
+      factor.ind<-rep(NA,length(factor.var))
+      for(i in 1:length(factor.var)){
+        factor.ind[i]<-which(names(DATA)==factor.var[i])
+      }
+    }else {
+      factor.ind<-which(names(DATA) %in% factor.var)
+    }
+
+
     numeric.cat<-data.type$category[data.type$type=="continuous"]
     factor.cat<-data.type$category[data.type$type=="nominal"]
 
@@ -49,5 +66,6 @@ data.conversion<-function(data.type=NULL,DATA,wght.info=NULL){
     strata.ind<-which(names(DATA) %in% wght.info$strata)
     names(DATA)[strata.ind]<-"strata"
   }
- return(DATA)
+  return(DATA)
 }
+
