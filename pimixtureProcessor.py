@@ -2,7 +2,7 @@
 from __future__ import division
 from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
-from urllib import urlencode
+from urllib.parse import urlencode
 import argparse
 import os, sys
 
