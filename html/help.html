@@ -495,6 +495,10 @@ represent known diseased status). EHR=electronic health records.</span></p>
 
             <li >When models include too many predictors, it can cause convergence
                 issue because the number of events in a subgroup may be too small.</li>
+
+            <li>When models include interaction effects, it can cause convergence issue, particularly more often in parametric models.</li>
+
+            <li>When you name categorical variables as covariate, please be cautious not to use any values of other categorical variables. This caution avoids generating weird labels for regression coefficients, odds ratio (OR) and hazards ratio (HR). For example, when a categorical variable name is "hpv_16" , and a categorical variable "hpv_type" has three levels, ("hpv_16", "hpv_18", "hpv_45"), then this makes weird labels.</li>
         </ul>
     </div>
 
