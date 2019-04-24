@@ -3,7 +3,7 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from configparser import SafeConfigParser
+from ConfigParser import SafeConfigParser
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import pyper as pr
