@@ -8,7 +8,7 @@ import requests
 from sqs import Queue
 from s3 import S3Bucket
 from fitting import *
-from io import BytesIO
+from io import StringIO
 
 app = Flask(__name__)
 
@@ -395,7 +395,7 @@ def getS3Object():
             log.error(msg)
             return buildFailure(msg)
         filename = request.args.get('filename', os.path.basename(key))
-        s3File = BytesIO()
+        s3File = StringIO.StringIO()
         obj = downloadS3Object(bucket_name, key, s3File)
         return send_file(obj, attachment_filename=filename, as_attachment=True)
     except Exception as e:
@@ -407,7 +407,7 @@ def getS3Object():
 # Parameters:
 #   - bucket: name of S3 bucket
 #   - key: key (s3 filename) to download
-#   - obj: file like object(File or BytesIO) to download into
+#   - obj: file like object(File or StringIO) to download into
 # Return value:
 #   - obj: if succeeded
 #   - None: if failed
