@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SQS Monitor | NCI CBIIT</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mb-5 mt-5">
+            <H1 class="text-center">SQS status</H1>
+        </div>
+        <form>
+            <!-- Queue selector -->
+            <div class="form-group row">
+                <label class="col-form-label col-md-4" for="product">Select Tool:</label>
+                <div class="col-md-8">
+                    <select class="form-control" id="product">
+                        <option value="pimixture">PIMixture</option>
+                        <option value="microarray">MicroArray</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Refresh button -->
+            <div class="form-group-row row justify-content-end mb-3">
+                <div class="col-md-3 text-right">
+                    <button id="refresh" class="btn btn-primary">Refresh</button>
+                </div>
+            </div>
+        </form>
+        <div class="row"></div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tier</th>
+                    <th>Queue name</th>
+                    <th>Enqueued messages</th>
+                    <th>Inflight messages</th>
+                    <th>Last message inflight time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="dev-row">
+                    <td>DEV</td>
+                    <td class="queue-name">queue name</td>
+                    <td class="enqueued-messages">enqueued messages</td>
+                    <td class="inflight-messages">inflight messages</td>
+                    <td class="inflight-time">inflight time</td>
+                </tr>
+                <tr id="qa-row">
+                    <td>QA</td>
+                    <td class="queue-name">queue name</td>
+                    <td class="enqueued-messages">enqueued messages</td>
+                    <td class="inflight-messages">inflight messages</td>
+                    <td class="inflight-time">inflight time</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="js/sqsMonitor.js"></script>
+</body>
+</html>
