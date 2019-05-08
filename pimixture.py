@@ -466,5 +466,5 @@ if __name__ == '__main__':
         app.run(host = '0.0.0.0', port = args.port, debug = False, use_evalex = False)
 
 else:
-    log.info('PIMixture Web service started!')
     log = getConsoleLogger(miniFormatter)
+    log.info('PIMixture Web service started!')
