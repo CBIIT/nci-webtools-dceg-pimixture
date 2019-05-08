@@ -92,6 +92,7 @@ if __name__ == '__main__':
         log = getFileLogger(processorLogFileName)
     try:
         sqs = Queue(log)
+        log.info('PIMixture Processor service started!')
         while True:
             log.info("Receiving more messages...")
             for msg in sqs.receiveMsgs(VISIBILITY_TIMEOUT):

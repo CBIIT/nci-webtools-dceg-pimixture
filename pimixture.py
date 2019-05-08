@@ -459,9 +459,12 @@ if __name__ == '__main__':
         def rootPath():
             return send_from_directory(os.getcwd(), 'index.html')
 
+        log.info('PIMixture Web service started!')
         app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
     else:
+        log.info('PIMixture Web service started!')
         app.run(host = '0.0.0.0', port = args.port, debug = False, use_evalex = False)
 
 else:
+    log.info('PIMixture Web service started!')
     log = getConsoleLogger(miniFormatter)
