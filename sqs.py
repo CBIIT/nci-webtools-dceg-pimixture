@@ -25,12 +25,12 @@ class Queue:
     def getApproximateNumberOfMessages(self):
         return self.queue.attributes.get('ApproximateNumberOfMessages', -1)
 
-# Automatically extend visibility timeout every timeOutValue/2 seconds
+# Automatically extend visibility timeout every timeOutValue // 2 seconds
 class VisibilityExtender:
     def __init__(self, msg, jobName, jobId, timeOutValue, log):
         self._timeOutValue = timeOutValue if timeOutValue > 2 else 2
         self._currentTimeOut = self._timeOutValue
-        self._interval = timeOutValue / 2 if timeOutValue > 2 else 1
+        self._interval = int(timeOutValue // 2) if timeOutValue > 2 else 1
         self._msg = msg
         self.jobName = jobName
         self.jobId = jobId
