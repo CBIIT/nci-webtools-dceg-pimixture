@@ -33,6 +33,13 @@ def templates():
             templateSet[fileName[:-5]] = file.read()
     return jsonify(templateSet)
 
+def mapCategoricalCovariates(arr):
+    map = {}
+    for cov in arr:
+        map[cov['text']] = 'as.factor({})'.format(cov['text']) if cov['type'] == 'nominal' else cov['text']
+        # map[cov['text']] = cov['text']
+    return map
+
 @app.route('/run', methods=["POST"])
 def runModel():
     log.info('POST /run')
@@ -90,14 +97,16 @@ def runModel():
             parameters['weightInfo'] = [{'samp.weight': parameters['weight'],
                                         'strata': parameters['strata']}]
         if parameters['covariatesSelection']:
+            covariateNameMap = mapCategoricalCovariates(parameters['covariatesArr'])
             columns += parameters['covariatesSelection']
-            covariates = ' + '.join(parameters['covariatesSelection'])
+            covariates = ' + '.join([covariateNameMap[x] for x in parameters['covariatesSelection']])
 
             if 'effects' in parameters:
-                effects = [x[0] + ' * ' + x[1] for x in parameters['effects']]
+                effects = [covariateNameMap[x[0]] + ' * ' + covariateNameMap[x[1]] for x in parameters['effects']]
+                effectsPlain = [x[0] + ' * ' + x[1] for x in parameters['effects']]
                 if effects:
                     covariates += ' + ' + ' + '.join(effects)
-                    parameters['effectsString'] = ' + '.join(effects)
+                    parameters['effectsString'] = ' + '.join(effectsPlain)
             parameters['covariates'] = covariates
         parameters['columns'] = columns
 
