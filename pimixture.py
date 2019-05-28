@@ -296,11 +296,13 @@ def readModelFile(modelFileName, jobName):
         if results:
             model = json.loads(results)
             maxTimePoint = model['maxTimePoint'][0]
+            covariates = model['covariates']
             if (len(model['jobName'])):
                 jobName = model['jobName'][0]
             return {
                 'jobName': jobName,
-                'maxTimePoint': maxTimePoint
+                'maxTimePoint': maxTimePoint,
+                'interceptOnly': True if len(covariates) == 0 else False
                 }
         else:
             message = "Couldn't read Time Points from RDS file!"

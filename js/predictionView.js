@@ -67,6 +67,7 @@ appMixture.PredictionView = Backbone.View.extend({
                 if ($that.model.get('serverFile')) {
                     $that.render();
                 }
+                $that.tryEnableInputs();
             },
             error: function(model, res, options) {
                 console.log(res.responseText);
@@ -161,10 +162,15 @@ appMixture.PredictionView = Backbone.View.extend({
         if (modelFileSelected || testDataFileSelected) {
             this.$('#reset').prop('disabled', false);
         }
-        if (modelFileSelected && testDataFileSelected) {
+        var interceptOnly = this.model.get('interceptOnly');
+        if (interceptOnly) {
+            this.$('#testDataFileBtn').prop('disabled', true);
+        }
+        if (modelFileSelected && (testDataFileSelected || interceptOnly)) {
             this.$('#timePointsWell').prop('disabled', false);
             this.$('#runPredict').prop('disabled', false);
         }
+
     },
     resetForm: function(e) {
         appMixture.models.predictionResultModel.clear({silent: true}).set(appMixture.models.predictionResultModel.defaults, {silent: true});
@@ -202,7 +208,7 @@ appMixture.PredictionView = Backbone.View.extend({
 
         if (this.model.get('testDataFile')) {
             formData.append('testDataFile', this.model.get('testDataFile'));
-        } else {
+        } else if (!this.model.get('interceptOnly')) {
             appMixture.models.predictionResultModel.set('errors', 'Please choose a valid test data file!');
             return;
         }

@@ -11,6 +11,9 @@ appMixture.ResultsView = Backbone.View.extend({
         appMixture.models.prediction.set('serverFile', this.model.get('Rfile'));
         appMixture.models.prediction.set('jobName', this.model.get('jobName'));
         appMixture.models.prediction.set('maxTimePoint', this.model.get('maxTimePoint'));
+        var covariatesSelection = appMixture.models.form.get('covariatesSelection');
+        appMixture.models.prediction.set('interceptOnly', covariatesSelection === "");
+
         if (appMixture.models.predictionResultModel) {
             appMixture.models.predictionResultModel.clear().set(appMixture.models.predictionResultModel.defaults);
         }

@@ -32,8 +32,8 @@
         </div>
             <div class="form-group">
                 <div class="col-lg-3">
-                    <input id="testDataFile" name="testDataFile" type="file" accept=".csv" style="display: none;">
-                    <button id="testDataFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('testDataFile').click();" <%= data.testDataFile.name ? 'disabled' : '' %>>Choose File</button>
+                    <input id="testDataFile" name="testDataFile" type="file" accept=".csv" style="display: none;" >
+                    <button id="testDataFileBtn" type="button" class="btn btn-default btn-sm" onclick="document.getElementById('testDataFile').click();" <%= data.testDataFile.name || data.interceptOnly ? 'disabled' : '' %>>Choose File</button>
                 </div>
                 <div class="col-lg-9">
                     <div id="testDataFileName"><%= data.testDataFile.name || 'No file is chosen' %></div>

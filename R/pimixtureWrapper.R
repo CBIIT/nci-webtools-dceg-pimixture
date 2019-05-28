@@ -62,10 +62,14 @@ runPredict <- function(jsonData) {
     data.type <- model$covariatesArr
 
     # read test.data from input
-    test.data0 <- read.csv(input$testDataFile)
-    test.data <- testdata.check(model, test.data0, data.type)
-    if (is.null(test.data)) {
-        return ("Test Data is not compatible with model!")
+    if (is.null(input$testDataFile)) {
+        test.data <- data.frame(1)
+    } else {
+        test.data0 <- read.csv(input$testDataFile)
+        test.data <- testdata.check(model, test.data0, data.type)
+        if (is.null(test.data)) {
+            return ("Test Data is not compatible with model!")
+        }
     }
 
     # read time.points from input
@@ -106,7 +110,8 @@ readFromRDS <- function(jsonData) {
     input = fromJSON(jsonData)
     filename <- input$rdsFile
     model <- readRDS(filename)
-    results <- list(jobName = model$jobName, maxTimePoint = max(model$cum.hazard$time))
+    results <- list(jobName = model$jobName, maxTimePoint = max(model$cum.hazard$time), covariates = model$covariatesSelection)
+
     return (toJSON(results))
 }
 
