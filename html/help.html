@@ -443,11 +443,71 @@ represent known diseased status). EHR=electronic health records.</span></p>
             </tbody>
         </table>
 
-        <p  style='margin-left:.75in'><span
-                >&nbsp;</span></p>
+        <p >There are two ways in including a categorical variable in a risk model: (1) directly generating dummy variables
+            for a categorical variable in the input data (refer to the example below), (2) setting the variable to be
+            categorical in the option of "Configure Covariates" on Fitting tab. Users should specify a reference level
+            for categorical predictors when using "Configure Covariates" on Fitting" tab.</p>
+        <table class="table table-bordered" style="border-bottom: none; border-top: none; width: 50%">
+            <thead>
+            <tr>
+                <th>C</th>
+                <th>L</th>
+                <th>R</th>
+                <th >BMI_low</th>
+                <th style="width: 15%">BMI_overweight</th>
+                <th >BMI_obese</th>
+            </tr>
+            </thead>
+            <tr>
+                <td>1</td>
+                <td>-999</td>
+                <td>-999</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>180</td>
+                <td>365</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1825</td>
+                <td>Inf</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>730</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>-999</td>
+                <td>0</td>
+                <td>Inf</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+            <tbody>
 
-        <p >Users should specify a reference level for categorical
-            predictors. For example, when we set a reference level for BMI to be 2 (or
+            </tbody>
+        </table>
+        <p style="margin-top: -15px;">*The reference level for BMI is "normal" in this dataset.</p>
+        <p>These two methods for including categorical variables yield the same result in the fitted model. However,
+            when users use the option (2) and predicting risk based on the fitted model, users should be careful in
+            generating test data for prediction. The guideline on generating a test data will be presented in Section 5.
+        </p>
+        <p>Categorical variables are modeled as following. For example, when we set a reference level for BMI to be 2 (or
             "normal'), the logistic and proportional hazards models are</p>
 
         <p ><span><img src="images/image028.png" alt="equation 10"></span>, <span><img src="images/image029.png" alt="equation 11"></span></p>
@@ -457,6 +517,11 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <p >Please note that the number of parameters for continuous and
             categorical variables are 1 and the total levels-1 in logistic and proportional
             hazards models.</p>
+        <p>We recommend users to set binary variable numerically coded, for example, 0 and 1, to be continuous in
+            "Configure Covariates". If users focus on fitting models rather than prediction, then option (2) for
+            categorical variable with more than 2 levels would be easier because dummy variables in the input data are
+            not necessary. However, if users have interest on both fitting models and risk prediction based on the
+            fitted model, option (2) require awareness of the rule of generating a test dataset. </p>
 
     </div>
 
@@ -481,7 +546,26 @@ represent known diseased status). EHR=electronic health records.</span></p>
             probabilities mean the prevalences of subgroups characterized by specific
             predictors; when time point=t&gt;0, predicted cumulative risk up to time t
             includes prevalence too. Test data should include the same variables used for
-            fitting the model.</p>
+            fitting the model. When an intercept-only model (with no covariates) is fitted,
+            only time points need be specified to obtain the predicted risk.</p>
+        <p>When you predict risk based on a fitted model including categorical variables and use option (2) described
+            in Section 4.2.2. by setting the variable to be categorical in "Configure Covariates" rather than directly
+            including the corresponding dummy variables in the input data, the test data should include all possible
+            levels of the categorical variable regardless of interest. Let us consider the same example of Section 4.2.2,
+            the fitted model includes BMI as a categorical variable. Then even if we want to predict risk of only the
+            sub-group with obesity, then the test data should be as following because the algorithm match the number of
+            parameters between the fitted model and test dataset. </p>
+        <table class="table table-bordered" style="border-bottom: none; border-top: none; width: 12%">
+            <thead>
+                <tr><th>BMI</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>low</td></tr>
+                <tr><td>normal</td></tr>
+                <tr><td>overweight</td></tr>
+                <tr><td>obese</td></tr>
+            </tbody>
+        </table>
 
     </div>
 
