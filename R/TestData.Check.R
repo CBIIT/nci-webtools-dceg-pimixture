@@ -15,7 +15,7 @@ testdata.check<-function(fit,test.data,data.type){
         for(i in factor.ind){
           test.data[,i]<-as.factor(test.data[,i])
           ref.ind<-which(data.type$text==names(test.data)[i])
-          test.data[,i]<-relevel(test.data[,i],ref=data.type$cat[ref.ind])
+          test.data[,i]<-relevel(test.data[,i],ref=as.character(data.type$category[ref.ind]) )
         }
       }
             return(test.data)
