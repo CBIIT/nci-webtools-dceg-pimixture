@@ -48,7 +48,7 @@
 "Arial",sans-serif'>Figure 1: Screening data (obtained from electronic health
 records) for 9 subjects. Subjects become susceptible to disease (start of
 dashed lines) at some point before enrollment (vertical dotted line), may
-acquire clinically-detectable disease (denoted with x) and then may be
+acquire clinically detectable disease (denoted with x) and then may be
 subsequently diagnosed (solid circles). Disease status is known only at specific
 times (unfilled circles represent known disease-free status; solid circles
 represent known diseased status). EHR=electronic health records.</span></p>
@@ -505,12 +505,13 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <p style="margin-top: -15px;">*The reference level for BMI is "normal" in this dataset.</p>
         <p>These two methods for including categorical variables yield the same result in the fitted model. However,
             when users use the option (2) and predicting risk based on the fitted model, users should be careful in
-            generating test data for prediction. The guideline on generating a test data will be presented in Section 5.
+            generating test data for prediction. The guideline on generating a test data will be presented in "Prediction".
         </p>
         <p>Categorical variables are modeled as following. For example, when we set a reference level for BMI to be 2 (or
             "normal'), the logistic and proportional hazards models are</p>
 
-        <p ><span><img src="images/image028.png" alt="equation 10"></span>, <span><img src="images/image029.png" alt="equation 11"></span></p>
+        <p><img src="images/image028.png" alt="equation 10"></p>
+        <p><img src="images/image029.png" alt="equation 11"></p>
 
         <p >where I(BMI=a)=1 if BMI=a; 0 otherwise. </p>
 
@@ -528,8 +529,8 @@ represent known diseased status). EHR=electronic health records.</span></p>
     <div>
         <h4>Interaction Effects</h4>
         <p>Let us consider two factors, sex (binary) and BMI (categorical) and interaction effects between two factors. Then the logistic and proportional hazards models are as following:
-            <span><img src="images/image030.png" alt="equation 12"></span>
-            <span><img src="images/image031.png" alt="equation 13"></span>
+            <p><img src="images/image030.png" alt="equation 12"></p>
+            <p><img src="images/image031.png" alt="equation 13"></p>
         </p>
 
 
@@ -549,11 +550,11 @@ represent known diseased status). EHR=electronic health records.</span></p>
             fitting the model. When an intercept-only model (with no covariates) is fitted,
             only time points need be specified to obtain the predicted risk.</p>
         <p>When you predict risk based on a fitted model including categorical variables and use option (2) described
-            in Section 4.2.2. by setting the variable to be categorical in "Configure Covariates" rather than directly
+            in "Categorical Predictor" above. by setting the variable to be categorical in "Configure Covariates" rather than directly
             including the corresponding dummy variables in the input data, the test data should include all possible
-            levels of the categorical variable regardless of interest. Let us consider the same example of Section 4.2.2,
+            levels of the categorical variable regardless of interest. Let us consider the same example of "Categorical Predictor",
             the fitted model includes BMI as a categorical variable. Then even if we want to predict risk of only the
-            sub-group with obesity, then the test data should be as following because the algorithm match the number of
+            sub-group with obesity, then the test data should be as following because the algorithm matches the number of
             parameters between the fitted model and test dataset. </p>
         <table class="table table-bordered" style="border-bottom: none; border-top: none; width: 12%">
             <thead>
@@ -573,7 +574,7 @@ represent known diseased status). EHR=electronic health records.</span></p>
         <h2><span >Tips for handling errors</span></h2>
 
         <ul>
-            <li >The general coding rules described in Section 4.1 are one of
+            <li >The general coding rules described in "Outcome" are one of
                 primary screening filters. For checking if coding for the outcome variables is
                 correct, users can try a simple model with no predictor. </li>
 
