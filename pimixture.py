@@ -451,7 +451,6 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
 
-    # Default port is 9200
     parser.add_argument('-p', '--port', type = int, dest = 'port', default = 80, help = 'Sets the Port')
     parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
     args = parser.parse_args()
