@@ -6,6 +6,15 @@ header {
     margin-top: 0;
 }
 
+footer {
+    margin-top: 15px;
+    padding: 15px;
+}
+
+.bg-primary li a {
+    color: white !important;
+}
+
 .skip a,
 .skip a:hover,
 .skip a:visited {
