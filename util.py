@@ -3,12 +3,12 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import pyper as pr
 
-config = SafeConfigParser()
+config = ConfigParser()
 config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
 config.read(config_file)
 
