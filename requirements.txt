@@ -2,3 +2,5 @@ boto3
 openpyxl
 pyper
 requests
+Flask
+mod_wsgi

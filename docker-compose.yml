@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  pimixture:
+    build:
+      context: .
+      dockerfile: docker/backend.docker
+    ports:
+      - "80:80"
+    volumes:
+      - ./tmp:/app/tmp
+      - ./config.ini:/app/config.ini
+    environment:
+      - PIMIXTURE_CONFIG_FILE=/app/config.ini
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+    restart: unless-stopped
