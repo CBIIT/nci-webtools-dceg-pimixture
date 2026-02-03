@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: docker/backend.docker
     ports:
-      - "80:80"
+      - "8220:80"
     volumes:
       - ./tmp:/app/tmp
       - ./config.ini:/app/config.ini
