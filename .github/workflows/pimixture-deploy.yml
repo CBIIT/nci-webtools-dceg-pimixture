@@ -29,9 +29,7 @@ jobs:
       WEB_CONTAINER_PORT: 8220
       WORKER_CONTAINER_PORT: 8221
       TIER: ${{ inputs.tier }}
-      IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}
-      ECS_CPU_UNITS: "1 vCPU"
-      ECS_MEMORY_UNITS: "2 GB"
+      IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}      
       CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-cicd
 
     steps:
@@ -67,6 +65,8 @@ jobs:
             ["ecs_worker_task"]="ECS_WORKER_TASK"
             ["ecs_worker_service"]="ECS_WORKER_SERVICE"
             ["role_arn"]="ROLE_ARN"
+            ["ecs_cpu_units"]="ECS_CPU_UNITS"
+            ["ecs_memory_units"]="ECS_MEMORY_UNITS"
           )
           
           for ssm_name in "${!PARAMS[@]}"; do
