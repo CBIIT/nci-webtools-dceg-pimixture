@@ -21,6 +21,9 @@ containerDefinitions:
 
   - name: worker
     image: "${WORKER_IMAGE_LATEST}"
+    command:
+      - "python3"
+      - "/app/pimixtureProcessor.py"
     portMappings:
       - protocol: tcp
         containerPort: ${WORKER_CONTAINER_PORT}
