@@ -27,7 +27,6 @@ jobs:
       AWS_REGION: us-east-1
       TASK_DEFINITION_TEMPLATE_PATH: .github/aws
       WEB_CONTAINER_PORT: 8220
-      WORKER_CONTAINER_PORT: 8221
       TIER: ${{ inputs.tier }}
       IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}      
       CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-cicd
@@ -49,7 +48,6 @@ jobs:
           echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
           echo "WEB_IMAGE=$REPO:$IMAGE_TIER-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
           echo "WEB_IMAGE_LATEST=$REPO:$IMAGE_TIER-latest" >> $GITHUB_ENV
-          echo "WORKER_IMAGE_LATEST=$REPO:$IMAGE_TIER-latest" >> $GITHUB_ENV
           echo "PARAMETER_PATH=/analysistools/${TIER}/${APP}" >> $GITHUB_ENV
           echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
 
@@ -63,7 +61,6 @@ jobs:
             ["ecs_web_task"]="ECS_WEB_TASK"
             ["ecs_web_service"]="ECS_WEB_SERVICE"
             ["ecs_worker_task"]="ECS_WORKER_TASK"
-            ["ecs_worker_service"]="ECS_WORKER_SERVICE"
             ["role_arn"]="ROLE_ARN"
             ["ecs_cpu_units"]="ECS_CPU_UNITS"
             ["ecs_memory_units"]="ECS_MEMORY_UNITS"
@@ -112,33 +109,25 @@ jobs:
           echo "=== Worker Task Definition ==="
           cat worker.yml
 
-      - name: Register and deploy services
+      - name: Register task definitions
         run: |
-          # Register task definitions
           aws ecs register-task-definition --cli-input-yaml file://web.yml
           aws ecs register-task-definition --cli-input-yaml file://worker.yml
-          
-          # Update services
+
+      - name: Update web service
+        run: |
           aws ecs update-service \
             --cluster ${{ env.ECS_CLUSTER }} \
             --service ${{ env.ECS_WEB_SERVICE }} \
             --task-definition ${{ env.ECS_WEB_TASK }} \
             --desired-count 1 \
             --force-new-deployment
-          
-          aws ecs update-service \
-            --cluster ${{ env.ECS_CLUSTER }} \
-            --service ${{ env.ECS_WORKER_SERVICE }} \
-            --task-definition ${{ env.ECS_WORKER_TASK }} \
-            --desired-count 1 \
-            --force-new-deployment
 
-      - name: Deployment summary
+      - name: Remove old task definitions
         run: |
-          echo "### Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: ${{ env.TIER }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Image**: \`${{ env.WEB_IMAGE }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **ECS Cluster**: ${{ env.ECS_CLUSTER }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Web Service**: ${{ env.ECS_WEB_SERVICE }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Worker Service**: ${{ env.ECS_WORKER_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+          for family in "$ECS_WEB_TASK" "$ECS_WORKER_TASK"; do
+              echo "Pruning old revisions for family: $family"
+              aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
+                  | xargs -n1 -r aws ecs deregister-task-definition --task-definition
+          done
 

@@ -20,7 +20,7 @@ containerDefinitions:
         awslogs-stream-prefix: logs
 
   - name: worker
-    image: "${WORKER_IMAGE_LATEST}"
+    image: "${WEB_IMAGE_LATEST}"
     command:
       - "python3"
       - "/app/pimixtureProcessor.py"
