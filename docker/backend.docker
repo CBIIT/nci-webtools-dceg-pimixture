@@ -24,6 +24,7 @@ RUN dnf -y update \
     bzip2-devel \
     zlib-devel \
     libicu-devel \
+    cmake \
  && dnf clean all
 
 # Install R packages
