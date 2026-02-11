@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import division
-from sqs import Queue, VisibilityExtender
 from s3 import S3Bucket
 from urllib.parse import urlencode
 import argparse
@@ -84,96 +83,98 @@ def sendCanceled(jobName, email, messages):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
+    parser.add_argument('-d', '--debug', action='store_true', help='Enables debugging')
+    parser.add_argument('id', nargs='?', help='Job ID')
     args = parser.parse_args()
-    if (args.debug):
+    
+    if args.debug:
         log = getConsoleLogger(stdFormatter)
     else:
         log = getFileLogger(processorLogFileName)
+    
     try:
-        sqs = Queue(log)
-        log.info('PIMixture Processor service started!')
-        while True:
-            log.info("Receiving more messages...")
-            for msg in sqs.receiveMsgs(VISIBILITY_TIMEOUT):
-                extender = None
-                try:
-                    data = json.loads(msg.body)
-                    if data and 'jobType' in data and data['jobType'] == 'fitting':
-                        parameters = data['parameters']
-                        jobName = parameters.get('jobName', 'PIMixture')
-                        id = data['jobId']
-                        extender = VisibilityExtender(msg, jobName, id, VISIBILITY_TIMEOUT, log)
-                        log.info('Start processing job name: "{}", id: {} ...'.format(jobName, id))
+        # Get job ID from command-line argument
+        id = args.id
+        
+        if not id:
+            log.error('No job ID provided!')
+            sys.exit(1)
+        
+        log.info(f'PIMixture Processor started for job ID: {id}')
+        
+        # Download params.json from S3
+        params_key = S3_INPUT_FOLDER + id + '/params.json'
+        inputBucket = S3Bucket(INPUT_BUCKET, log)
+        params_file = getInputFilePath(id, '.json')
+        inputBucket.downloadFile(params_key, params_file)
+        
+        with open(params_file, 'r') as f:
+            data = json.load(f)
+        
+        os.remove(params_file)  # Clean up params file
+        
+        if data and 'jobType' in data and data['jobType'] == 'fitting':
+            parameters = data['parameters']
+            jobName = parameters.get('jobName', 'PIMixture')
+            log.info('Start processing job name: "{}", id: {} ...'.format(jobName, id))
 
-                        ext = data['extension']
-                        inputBucket = parameters['inputCSVFile']['bucket_name']
-                        inputFileName = parameters['inputCSVFile']['key']
+            ext = data['extension']
+            inputFileName = parameters['inputCSVFile']['key']
 
-                        downloadFileName = getInputFilePath(id, ext)
-                        inputBucket = S3Bucket(inputBucket, log)
-                        inputBucket.downloadFile(inputFileName, downloadFileName)
-                        parameters['remoteInputCSVFile'] = inputBucket.generateUrl(parameters['inputCSVFile'])
-                        parameters['filename'] = downloadFileName
-                        parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
+            downloadFileName = getInputFilePath(id, ext)
+            inputBucket.downloadFile(inputFileName, downloadFileName)
+            parameters['remoteInputCSVFile'] = inputBucket.generateUrl(parameters['inputCSVFile'])
+            parameters['filename'] = downloadFileName
+            parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
 
-                        outputRdsFileName = getOutputFilePath(id, '.rds')
-                        outputSSFileName = getOutputFilePath(id, extensionMap[SS_FILE_TYPE])
-                        outputFileName = getOutputFilePath(id, '.out')
-                        parameters['outputRdsFilename'] = outputRdsFileName
-                        parameters['outputFilename'] = outputFileName
+            outputRdsFileName = getOutputFilePath(id, '.rds')
+            outputSSFileName = getOutputFilePath(id, extensionMap[SS_FILE_TYPE])
+            outputFileName = getOutputFilePath(id, '.out')
+            parameters['outputRdsFilename'] = outputRdsFileName
+            parameters['outputFilename'] = outputFileName
 
-                        extender.start()
-                        fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
-                        if fittingResult['status']:
-                            fittingResult['results']['id'] = id
-                            outputBucket = S3Bucket(OUTPUT_BUCKET, log)
-                            outputRdsFileKey = getOutputFileKey(id, '.rds')
-                            object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName)
-                            if object:
-                                object['filename'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
-                                fittingResult['results']['Rfile'] = object
-                                os.remove(outputRdsFileName)
-                            else:
-                                sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
-                                continue
+            fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
+            if fittingResult['status']:
+                fittingResult['results']['id'] = id
+                outputBucket = S3Bucket(OUTPUT_BUCKET, log)
+                outputRdsFileKey = getOutputFileKey(id, '.rds')
+                object = outputBucket.uploadFile(outputRdsFileKey, outputRdsFileName)
+                if object:
+                    object['filename'] = '{}{}.rds'.format(jobName, FITTING_R_SUFFIX)
+                    fittingResult['results']['Rfile'] = object
+                    os.remove(outputRdsFileName)
+                else:
+                    sendErrors(jobName, parameters['email'], 'Upload result RDS file failed!')
+                    sys.exit(1)
 
-                            object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName)
-                            if object:
-                                object['filename'] = '{}{}{}'.format(jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE])
-                                fittingResult['results']['ssFile'] = object
-                                os.remove(outputSSFileName)
-                            else:
-                                sendErrors(jobName, parameters['email'], 'Upload result {} file failed!'.format(SS_FILE_TYPE))
-                                outputBucket.deleteFile(outputRdsFileKey)
-                                continue
+                object = outputBucket.uploadFile(getOutputFileKey(id, extensionMap[SS_FILE_TYPE]), outputSSFileName)
+                if object:
+                    object['filename'] = '{}{}{}'.format(jobName, FITTING_SS_SUFFIX, extensionMap[SS_FILE_TYPE])
+                    fittingResult['results']['ssFile'] = object
+                    os.remove(outputSSFileName)
+                else:
+                    sendErrors(jobName, parameters['email'], 'Upload result {} file failed!'.format(SS_FILE_TYPE))
+                    outputBucket.deleteFile(outputRdsFileKey)
+                    sys.exit(1)
 
-                            if not sendResults(jobName, parameters, fittingResult['results']):
-                                log.error("An error happened when trying to send result email")
-                                continue
-                        else:
-                            if 'canceled' in fittingResult:
-                                if not sendCanceled(jobName, parameters['email'], fittingResult['message']):
-                                    log.error("An error happened when trying to send error email")
-                                    continue
-                            else:
-                                if not sendErrors(jobName, parameters['email'], fittingResult['message']):
-                                    log.error("An error happened when trying to send error email")
-                                    continue
+                if not sendResults(jobName, parameters, fittingResult['results']):
+                    log.error("An error happened when trying to send result email")
+                    sys.exit(1)
+            else:
+                if 'canceled' in fittingResult:
+                    if not sendCanceled(jobName, parameters['email'], fittingResult['message']):
+                        log.error("An error happened when trying to send error email")
+                        sys.exit(1)
+                else:
+                    if not sendErrors(jobName, parameters['email'], fittingResult['message']):
+                        log.error("An error happened when trying to send error email")
+                        sys.exit(1)
 
-                        msg.delete()
-
-                        log.info('Finish processing job name: "{}", id: {} !'.format(jobName, id))
-                    else:
-                        log.debug(data)
-                        log.error('Unknown message type!')
-                        msg.delete()
-                except Exception as e:
-                    log.exception(e)
-
-                finally:
-                    if extender:
-                        extender.stop()
-    except KeyboardInterrupt:
-        log.info("\nBye!")
-        sys.exit()
+            log.info('Finish processing job name: "{}", id: {} !'.format(jobName, id))
+        else:
+            log.error('Unknown message type!')
+            sys.exit(1)
+            
+    except Exception as e:
+        log.exception(e)
+        sys.exit(1)

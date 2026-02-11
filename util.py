@@ -48,11 +48,6 @@ URL_EXPIRE_TIME = int(config.get('s3', 'url_expire_time'))
 S3_INPUT_FOLDER = config.get('s3', 'input_folder')
 S3_OUTPUT_FOLDER = config.get('s3', 'output_folder')
 
-# SQS settings
-QUEUE_NAME = config.get('sqs', 'queue_name')
-VISIBILITY_TIMEOUT = int(config.get('sqs', 'visibility_timeout'))
-QUEUE_LONG_PULL_TIME = int(config.get('sqs', 'queue_long_pull_time'))
-
 # Output settings
 SS_FILE_TYPE = config.get('output', 'file_type')
 

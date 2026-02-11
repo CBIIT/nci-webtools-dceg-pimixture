@@ -5,7 +5,7 @@ import uuid
 import os, sys
 import pyper as pr
 import requests
-from sqs import Queue
+import boto3
 from s3 import S3Bucket
 from fitting import *
 from io import BytesIO
@@ -111,19 +111,57 @@ def runModel():
         parameters['columns'] = columns
 
         if sendToQueue:
-            # Send parameters to queue
-            sqs = Queue(log)
-            sqs.sendMsgToQueue({
-                'parameters': parameters,
-                'jobId': id,
-                'extension': ext,
-                'jobType': 'fitting'
-            }, id)
-            return buildSuccess( {
-                'enqueued': True,
-                'jobId': id,
-                'message': 'Job "{}" has been added to queue successfully!'.format(parameters.get('jobName', 'PIMixture'))
-            })
+            # Upload parameters to S3
+            try:
+                bucket = S3Bucket(INPUT_BUCKET, log)
+                params_data = {
+                    'parameters': parameters,
+                    'jobId': id,
+                    'extension': ext,
+                    'jobType': 'fitting'
+                }
+                
+                # Upload params.json to S3
+                params_key = S3_INPUT_FOLDER + id + '/params.json'
+                params_json = json.dumps(params_data)
+                bucket.uploadFileObj(params_key, params_json)
+                
+                # Invoke ECS worker task
+                ecs_client = boto3.client('ecs', region_name=os.environ.get('AWS_REGION', 'us-east-1'))
+                
+                response = ecs_client.run_task(
+                    cluster=os.environ.get('ECS_CLUSTER'),
+                    taskDefinition=os.environ.get('ECS_WORKER_TASK'),
+                    launchType='FARGATE',
+                    networkConfiguration={
+                        'awsvpcConfiguration': {
+                            'subnets': os.environ.get('ECS_SUBNETS', '').split(','),
+                            'securityGroups': os.environ.get('ECS_SECURITY_GROUPS', '').split(','),
+                            'assignPublicIp': 'ENABLED'
+                        }
+                    },
+                    overrides={
+                        'containerOverrides': [{
+                            'name': 'worker',
+                            'command': ['python3', '/app/pimixtureProcessor.py', id]
+                        }]
+                    }
+                )
+                
+                if response['tasks']:
+                    log.info(f"Started ECS task for job {id}")
+                    return buildSuccess({
+                        'enqueued': True,
+                        'jobId': id,
+                        'message': 'Job "{}" has been submitted successfully!'.format(parameters.get('jobName', 'PIMixture'))
+                    })
+                else:
+                    message = 'Failed to start worker task'
+                    log.error(message)
+                    return buildFailure(message, 500)
+            except Exception as e:
+                log.exception(e)
+                return buildFailure(str(e), 500)
         else:
             fittingResult = fitting(parameters, outputSSFileName, SS_FILE_TYPE, log, timeout=FITTING_TIMEOUT)
             if fittingResult['status']:
