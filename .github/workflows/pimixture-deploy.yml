@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   deploy-pimixture:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     environment: ${{ inputs.tier }}
     env:
