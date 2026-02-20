@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 import boto3
+import os
 from util import *
 
 class S3Bucket:
     def __init__(self, bucket, log):
-        self.client = boto3.client('s3')
-        self.s3 = boto3.resource('s3')
+        endpoint_url = os.environ.get('AWS_ENDPOINT_URL')
+        if endpoint_url:
+            self.client = boto3.client('s3', endpoint_url=endpoint_url)
+            self.s3 = boto3.resource('s3', endpoint_url=endpoint_url)
+        else:
+            self.client = boto3.client('s3')
+            self.s3 = boto3.resource('s3')
         self.bucket = self.s3.Bucket(bucket)
         self.log = log
 

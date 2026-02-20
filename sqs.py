@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import boto3
 import json
+import os
 from pprint import pprint
 from threading import Timer
 
@@ -9,7 +10,11 @@ from util import *
 class Queue:
     def __init__(self, log, queName=QUEUE_NAME):
         self.log = log
-        self.sqs = boto3.resource('sqs')
+        endpoint_url = os.environ.get('AWS_ENDPOINT_URL')
+        if endpoint_url:
+            self.sqs = boto3.resource('sqs', endpoint_url=endpoint_url)
+        else:
+            self.sqs = boto3.resource('sqs')
         self.queue = self.sqs.get_queue_by_name(QueueName=queName)
     def sendMsgToQueue(self, msg, id):
         response = self.queue.send_message(MessageBody=json.dumps(msg),

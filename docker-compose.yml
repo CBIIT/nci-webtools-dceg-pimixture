@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs,s3
+      - AWS_DEFAULT_REGION=us-east-1
+      - EDGE_PORT=4566
+      - DEBUG=1
+    volumes:
+      - ./localstack-data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
   pimixture:
     build:
       context: .
@@ -13,6 +26,27 @@ services:
     environment:
       - PIMIXTURE_CONFIG_FILE=/app/config.ini
       - AWS_DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ENDPOINT_URL=http://localstack:4566
+    depends_on:
+      - localstack
+    restart: unless-stopped
+
+  processor:
+    build:
+      context: .
+      dockerfile: docker/backend.docker
+    command: python3 pimixtureProcessor.py
+    volumes:
+      - ./tmp:/app/tmp
+      - ./config.ini:/app/config.ini
+    environment:
+      - PIMIXTURE_CONFIG_FILE=/app/config.ini
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ENDPOINT_URL=http://localstack:4566
+    depends_on:
+      - localstack
     restart: unless-stopped
