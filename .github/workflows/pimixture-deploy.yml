@@ -61,7 +61,6 @@ jobs:
             ["ecs_cluster"]="ECS_CLUSTER"
             ["ecs_web_task"]="ECS_WEB_TASK"
             ["ecs_web_service"]="ECS_WEB_SERVICE"
-            ["ecs_worker_task"]="ECS_WORKER_TASK"
             ["role_arn"]="ROLE_ARN"
             ["ecs_cpu_units"]="ECS_CPU_UNITS"
             ["ecs_memory_units"]="ECS_MEMORY_UNITS"
@@ -103,17 +102,13 @@ jobs:
       - name: Render task definitions
         run: |
           envsubst < $TASK_DEFINITION_TEMPLATE_PATH/web.yml > web.yml
-          envsubst < $TASK_DEFINITION_TEMPLATE_PATH/worker.yml > worker.yml
           
           echo "=== Web Task Definition ==="
           cat web.yml
-          echo "=== Worker Task Definition ==="
-          cat worker.yml
 
       - name: Register task definitions
         run: |
           aws ecs register-task-definition --cli-input-yaml file://web.yml
-          aws ecs register-task-definition --cli-input-yaml file://worker.yml
 
       - name: Update web service
         run: |
@@ -126,7 +121,7 @@ jobs:
 
       - name: Remove old task definitions
         run: |
-          for family in "$ECS_WEB_TASK" "$ECS_WORKER_TASK"; do
+          for family in "$ECS_WEB_TASK"; do
               echo "Pruning old revisions for family: $family"
               aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
                   | xargs -n1 -r aws ecs deregister-task-definition --task-definition
