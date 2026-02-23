@@ -97,7 +97,7 @@ jobs:
             ${{ env.WEB_IMAGE }}
             ${{ env.WEB_IMAGE_LATEST }}
           cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:cache
-          cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:cache,mode=max
+          cache-to: type=inline
 
       - name: Render task definitions
         run: |
