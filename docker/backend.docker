@@ -41,17 +41,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
 
 # Copy application files
-COPY *.py /app/
-COPY *.wsgi /app/
-COPY *.ini /app/
-COPY index.html /app/
-COPY css/ /app/css/
-COPY html/ /app/html/
-COPY js/ /app/js/
-COPY lib/ /app/lib/
-COPY images/ /app/images/
-COPY R/ /app/R/
-COPY files/ /app/files/
+COPY . /app/
 
 # Create tmp directories for input/output files
 RUN mkdir -p /app/tmp/input_data /app/tmp/output_data
