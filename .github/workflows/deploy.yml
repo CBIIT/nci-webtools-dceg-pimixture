@@ -1,0 +1,214 @@
+# =============================================================================
+# PIMixture — ECS Fargate Deployment
+# =============================================================================
+#
+# Deploys a single backend image to two ECS Fargate services:
+#   - web:    Flask/mod_wsgi server (RUN_MODE=web, 2 vCPU / 4 GB)
+#   - worker: SQS queue processor  (RUN_MODE=worker, 2 vCPU / 8 GB)
+#
+# PREREQUISITES:
+#   - AWS IAM role: power-user-github-actions-cicd
+#   - GitHub Environment variable: AWS_ACCOUNT_ID
+#   - ECR repository: pimixture
+#   - ECS cluster, services, and task definitions configured via Terraform
+#   - SSM parameters stored at: /analysistools/{tier}/pimixture/*
+#
+# =============================================================================
+
+name: Deploy
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Deploy environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+jobs:
+  deploy-pimixture:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.tier }}
+    env:
+      APP: pimixture
+      TZ: America/New_York
+      AWS_REGION: us-east-1
+      TASK_DEFINITION_TEMPLATE_PATH: task-definition
+      TIER: ${{ inputs.tier }}
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+
+    steps:
+      - uses: "actions/checkout@v6"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.CICD_ROLE_ARN }}
+          role-session-name: ${{ env.TIER }}-${{ env.APP }}-deploy-${{ github.ref_name }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set dynamic environment variables
+        run: |
+          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+          REPO=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP
+          # Sanitize branch name: replace '/' with '-' for valid Docker tag
+          SAFE_BRANCH=$(echo "${{ github.ref_name }}" | tr '/' '-')
+
+          echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE=$REPO:$SAFE_BRANCH-$TIMESTAMP" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE_LATEST=$REPO:$SAFE_BRANCH-latest" >> $GITHUB_ENV
+          echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
+
+          if [[ "$TIER" == "dev" ]]; then
+            echo "LOG_LEVEL=debug" >> $GITHUB_ENV
+          else
+            echo "LOG_LEVEL=info" >> $GITHUB_ENV
+          fi
+
+      - name: Retrieve SSM parameters
+        run: |
+          PARAMETER_PATH="/analysistools/${TIER}/${APP}"
+
+          declare -A PARAMS=(
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_web_task"]="ECS_WEB_TASK"
+            ["ecs_web_service"]="ECS_WEB_SERVICE"
+            ["ecs_worker_task"]="ECS_WORKER_TASK"
+            ["ecs_worker_service"]="ECS_WORKER_SERVICE"
+            ["ecs_cpu_units"]="ECS_CPU_UNITS"
+            ["ecs_memory_units"]="ECS_MEMORY_UNITS"
+            ["ecs_worker_cpu_units"]="ECS_WORKER_CPU_UNITS"
+            ["ecs_worker_memory_units"]="ECS_WORKER_MEMORY_UNITS"
+            ["execution_role_arn"]="EXECUTION_ROLE_ARN"
+            ["task_role_arn"]="TASK_ROLE_ARN"
+          )
+
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text)
+            echo "${env_var}=${value}" >> $GITHUB_ENV
+            echo "Retrieved ${ssm_name} -> ${env_var}"
+          done
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create and use a new builder instance
+        run: docker buildx create --name mybuilder --use
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/backend.dockerfile
+          pull: true
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}
+            ${{ env.BACKEND_IMAGE_LATEST }}
+          cache-from: type=registry,ref=${{ env.BACKEND_IMAGE_LATEST }}
+          cache-to: type=inline
+
+      - name: Render web task definition
+        run: |
+          echo "Rendering web task definition..."
+          envsubst < $TASK_DEFINITION_TEMPLATE_PATH/web.yml > web.yml
+
+      - name: Render worker task definition
+        run: |
+          echo "Rendering worker task definition..."
+          envsubst < $TASK_DEFINITION_TEMPLATE_PATH/worker.yml > worker.yml
+
+      - name: Register task definitions and capture ARNs
+        run: |
+          WEB_TASK_ARN=$(aws ecs register-task-definition \
+            --cli-input-yaml file://web.yml \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "WEB_TASK_ARN=$WEB_TASK_ARN" >> $GITHUB_ENV
+          echo "Registered web task: $WEB_TASK_ARN"
+
+          WORKER_TASK_ARN=$(aws ecs register-task-definition \
+            --cli-input-yaml file://worker.yml \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "WORKER_TASK_ARN=$WORKER_TASK_ARN" >> $GITHUB_ENV
+          echo "Registered worker task: $WORKER_TASK_ARN"
+
+      - name: Update web service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_WEB_SERVICE }} \
+            --task-definition ${{ env.WEB_TASK_ARN }} \
+            --desired-count 1 \
+            --propagate-tags TASK_DEFINITION \
+            --force-new-deployment
+
+      - name: Update worker service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_WORKER_SERVICE }} \
+            --task-definition ${{ env.WORKER_TASK_ARN }} \
+            --desired-count 1 \
+            --propagate-tags TASK_DEFINITION \
+            --force-new-deployment
+
+      - name: Wait for services to stabilize
+        run: |
+          echo "Waiting for web service to stabilize..."
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_WEB_SERVICE }}
+
+          echo "Waiting for worker service to stabilize..."
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_WORKER_SERVICE }}
+
+      - name: Remove old task definitions
+        run: |
+          for family in "$ECS_WEB_TASK" "$ECS_WORKER_TASK"; do
+            echo "Pruning old revisions for: $family"
+            aws ecs list-task-definitions \
+              --family-prefix "$family" \
+              --sort DESC \
+              --query 'taskDefinitionArns[3:]' \
+              --output text \
+              | xargs -n1 -r aws ecs deregister-task-definition --task-definition
+          done
+
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **App:** ${{ env.APP }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tier:** ${{ env.TIER }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image:** ${{ env.BACKEND_IMAGE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web task:** ${{ env.WEB_TASK_ARN }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Worker task:** ${{ env.WORKER_TASK_ARN }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web service:** ${{ env.ECS_WEB_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Worker service:** ${{ env.ECS_WORKER_SERVICE }}" >> $GITHUB_STEP_SUMMARY

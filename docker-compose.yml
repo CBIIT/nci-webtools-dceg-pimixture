@@ -1,10 +1,16 @@
 version: '3.8'
 
+# Local development only.
+# Requires a populated config.ini (copy from config.sample.ini).
+# AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY are dummy values for local runs
+# that do not hit real S3/SQS. Replace with real credentials when testing
+# AWS integration locally.
+
 services:
   pimixture:
     build:
       context: .
-      dockerfile: docker/backend.docker
+      dockerfile: docker/backend.dockerfile
     ports:
       - "8220:80"
     volumes:
@@ -12,6 +18,8 @@ services:
       - ./config.ini:/app/config.ini
     environment:
       - PIMIXTURE_CONFIG_FILE=/app/config.ini
+      - SKIP_CONFIG_GEN=true
+      - RUN_MODE=web
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=dummy
       - AWS_SECRET_ACCESS_KEY=dummy
