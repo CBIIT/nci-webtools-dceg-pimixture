@@ -21,6 +21,7 @@ containerDefinitions:
 
   - name: web
     image: "${WEB_IMAGE_LATEST}"
+    entryPoint: ["python", "pimixtureProcessor.py"]
     portMappings:
       - protocol: tcp
         containerPort: ${WEB_CONTAINER_PORT}
@@ -44,7 +45,25 @@ containerDefinitions:
           valueFrom: /analysistools/${TIER}/datadog/log_endpoint_host
         - name: apikey
           valueFrom: /analysistools/${TIER}/datadog/api_key
-    memoryReservation: 1024
+
+  - name: queue
+    image: "${WEB_IMAGE_LATEST}"
+    environment:
+    logConfiguration:
+      logDriver: awsfirelens
+      options:
+        Name: datadog
+        tls: "on"
+        tls.verify: "off"
+        dd_service: "${TIER}-${APP}-queue"
+        dd_source: "python"
+        dd_tags: "project:${APP} tier:${TIER}"
+        provider: ecs
+      secretOptions:
+        - name: Host
+          valueFrom: /analysistools/${TIER}/datadog/log_endpoint_host
+        - name: apikey
+          valueFrom: /analysistools/${TIER}/datadog/api_key
 
 tags:
   - key: Project
