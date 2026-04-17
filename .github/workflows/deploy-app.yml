@@ -1,4 +1,4 @@
-name: Deploy PImiXture
+name: Deploy PIMixture
 on:
   workflow_dispatch:
     inputs:
