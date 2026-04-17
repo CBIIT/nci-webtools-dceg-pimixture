@@ -37,11 +37,11 @@ RUN R -e "remotes::install_github('CBIIT/R-PIMixture')"
 RUN mkdir -p /app
 
 # Copy and install Python dependencies
-COPY requirements.txt /app/requirements.txt
+COPY app/requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
 
 # Copy application files
-COPY . /app/
+COPY app/ /app/
 
 # Create tmp directories for input/output files
 RUN mkdir -p /app/tmp/input_data /app/tmp/output_data

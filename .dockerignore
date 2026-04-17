@@ -37,3 +37,6 @@ tmp/
 .Rhistory
 .RData
 .Rproj.user
+
+infrastructure/
+tests/

@@ -4,12 +4,12 @@ services:
   pimixture:
     build:
       context: .
-      dockerfile: docker/backend.docker
+      dockerfile: docker/backend.dockerfile
     ports:
       - "8220:80"
     volumes:
       - ./tmp:/app/tmp
-      - ./config.ini:/app/config.ini
+      - ./app/config.ini:/app/config.ini
     environment:
       - PIMIXTURE_CONFIG_FILE=/app/config.ini
       - AWS_DEFAULT_REGION=us-east-1

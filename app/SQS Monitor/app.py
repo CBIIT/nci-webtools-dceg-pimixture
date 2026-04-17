@@ -14,7 +14,7 @@ def getQueueNames(product):
     queue_names = {
         'pimixture.dev': 'pimixture.fifo',
         'pimixture.qa': 'pimixture2.fifo',
-        'microarray.dev': 'microarray.fifo'
+        'pimixture.dev': 'pimixture.fifo'
     }
 
     names = []
