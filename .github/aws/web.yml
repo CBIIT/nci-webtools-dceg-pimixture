@@ -37,8 +37,6 @@ containerDefinitions:
         containerPath: /data
         readOnly: false
     environment:
-      - name: API_PORT
-        value: "${WEB_CONTAINER_PORT}"
       - name: FLASK_ENV
         value: "production"
     secrets:
