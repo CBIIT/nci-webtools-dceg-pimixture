@@ -27,7 +27,7 @@ containerDefinitions:
         awslogs-region: "${AWS_REGION}"
         awslogs-stream-prefix: logs
 
-  - name: web
+  - name: frontend
     image: "${WEB_IMAGE_LATEST}"
     portMappings:
       - protocol: tcp
@@ -80,7 +80,7 @@ containerDefinitions:
         Name: datadog
         tls: "on"
         tls.verify: "off"
-        dd_service: "${TIER}-${APP}-web"
+        dd_service: "${TIER}-${APP}-frontend"
         dd_source: "python"
         dd_tags: "project:${APP} tier:${TIER}"
         provider: ecs
