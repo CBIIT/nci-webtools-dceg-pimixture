@@ -14,7 +14,7 @@ services:
     ports:
       - "8220:80"
     volumes:
-      - ./tmp:/app/tmp
+      - ./data:/data
     environment:
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=dummy
@@ -25,8 +25,8 @@ services:
       - EMAIL_SENDER=
       - EMAIL_REPORT_URL=
       # Folder settings
-      - INPUT_DATA_PATH=tmp/input_data
-      - OUTPUT_DATA_PATH=tmp/output_data
+      - INPUT_DATA_PATH=/data/input
+      - OUTPUT_DATA_PATH=/data/output
       # S3 settings
       - S3_INPUT_BUCKET=pimixture2
       - S3_OUTPUT_BUCKET=pimixture2

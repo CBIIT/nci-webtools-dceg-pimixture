@@ -19,11 +19,11 @@ SENDER = os.environ.get('EMAIL_SENDER', '')
 REPORT_URL = os.environ.get('EMAIL_REPORT_URL', '')
 
 # Folder settings
-INPUT_DATA_PATH = os.environ.get('INPUT_DATA_PATH', 'tmp/input_data')
+INPUT_DATA_PATH = os.environ.get('INPUT_DATA_PATH', '/data/input')
 if not os.path.exists(INPUT_DATA_PATH):
     os.makedirs(INPUT_DATA_PATH)
 
-OUTPUT_DATA_PATH = os.environ.get('OUTPUT_DATA_PATH', 'tmp/output_data')
+OUTPUT_DATA_PATH = os.environ.get('OUTPUT_DATA_PATH', '/data/output')
 if not os.path.exists(OUTPUT_DATA_PATH):
     os.makedirs(OUTPUT_DATA_PATH)
 

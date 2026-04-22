@@ -43,8 +43,8 @@ RUN pip3 install -r /app/requirements.txt
 # Copy application files
 COPY app/ /app/
 
-# Create tmp directories for input/output files
-RUN mkdir -p /app/tmp/input_data /app/tmp/output_data
+# Create data directories (used as fallback; EFS /data mount used in production)
+RUN mkdir -p /data/input /data/output
 
 # Create logs directory
 RUN mkdir -p /logs
@@ -62,7 +62,6 @@ RUN chown -R apache:apache /app
 ENV FONTCONFIG_PATH=/etc/fonts
 ENV FONTCONFIG_FILE=/etc/fonts/fonts.conf
 ENV FC_CACHEDIR=/var/cache/fontconfig
-ENV PIMIXTURE_CONFIG_FILE=/app/config.ini
 
 CMD mod_wsgi-express start-server /app/pimixture.wsgi \
     --user apache \

@@ -64,6 +64,8 @@ jobs:
             ["role_arn"]="ROLE_ARN"
             ["ecs_web_task_cpu_units"]="ECS_CPU_UNITS"
             ["ecs_web_task_memory_units"]="ECS_MEMORY_UNITS"
+            ["efs_filesystem_id"]="EFS_FILESYSTEM_ID"
+            ["efs_access_point_id"]="EFS_ACCESS_POINT_ID"
           )
           
           for ssm_name in "${!PARAMS[@]}"; do

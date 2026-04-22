@@ -6,6 +6,14 @@ executionRoleArn: "${ROLE_ARN}"
 taskRoleArn: "${ROLE_ARN}"
 requiresCompatibilities:
   - FARGATE
+volumes:
+  - name: data
+    efsVolumeConfiguration:
+      fileSystemId: "${EFS_FILESYSTEM_ID}"
+      transitEncryption: ENABLED
+      authorizationConfig:
+        accessPointId: "${EFS_ACCESS_POINT_ID}"
+        iam: ENABLED
 containerDefinitions:
   - name: logs
     image: public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
@@ -24,6 +32,10 @@ containerDefinitions:
     portMappings:
       - protocol: tcp
         containerPort: ${WEB_CONTAINER_PORT}
+    mountPoints:
+      - sourceVolume: data
+        containerPath: /data
+        readOnly: false
     environment:
       - name: API_PORT
         value: "${WEB_CONTAINER_PORT}"
@@ -56,6 +68,10 @@ containerDefinitions:
         valueFrom: /analysistools/${TIER}/${APP}/sqs_queue_long_pull_time
       - name: R_FITTING_TIMEOUT
         valueFrom: /analysistools/${TIER}/${APP}/r_fitting_timeout
+      - name: INPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/input_data_path
+      - name: OUTPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/output_data_path
       - name: LOG_LEVEL
         valueFrom: /analysistools/${TIER}/${APP}/log_level
     logConfiguration:
@@ -77,6 +93,10 @@ containerDefinitions:
   - name: queue
     image: "${WEB_IMAGE_LATEST}"
     entryPoint: ["python", "pimixtureProcessor.py"]
+    mountPoints:
+      - sourceVolume: data
+        containerPath: /data
+        readOnly: false
     environment:
       - name: FLASK_ENV
         value: "production"
@@ -107,6 +127,10 @@ containerDefinitions:
         valueFrom: /analysistools/${TIER}/${APP}/sqs_queue_long_pull_time
       - name: R_FITTING_TIMEOUT
         valueFrom: /analysistools/${TIER}/${APP}/r_fitting_timeout
+      - name: INPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/input_data_path
+      - name: OUTPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/output_data_path
       - name: LOG_LEVEL
         valueFrom: /analysistools/${TIER}/${APP}/log_level
     logConfiguration:
