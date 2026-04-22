@@ -1,0 +1,80 @@
+name: Deploy Infrastructure
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Deploy environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+jobs:
+  deploy-pimixture-infra:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.tier }}
+    env:
+      AWS_REGION: us-east-1
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      TIER: ${{ inputs.tier }}
+      CDK_DIR: infrastructure
+      APP_ENV_FILE: infrastructure/app.env
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: ${{ env.CICD_ROLE_ARN }}
+          role-session-name: ${{ env.TIER }}-pimixture-infra-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download env files from S3
+        run: |
+          aws s3 cp \
+            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/pimixture/dev-cdk.env" \
+            "${{ env.CDK_DIR }}/cdk.env"
+          aws s3 cp \
+            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/pimixture/dev-app.env" \
+            "${{ env.CDK_DIR }}/app.env"
+
+      - name: Load CDK environment variables
+        working-directory: ${{ env.CDK_DIR }}
+        run: |
+          set -a
+          source cdk.env
+          set +a
+          env | grep -v '^_' >> "$GITHUB_ENV"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        working-directory: ${{ env.CDK_DIR }}
+        run: npm ci
+
+      - name: CDK diff (preview changes)
+        working-directory: ${{ env.CDK_DIR }}
+        run: npx cdk diff --app "npx ts-node bin/app.ts" || true
+
+      - name: CDK deploy
+        working-directory: ${{ env.CDK_DIR }}
+        run: npx cdk deploy --app "npx ts-node bin/app.ts" --require-approval never
+
+      - name: Clean up env files
+        if: always()
+        working-directory: ${{ env.CDK_DIR }}
+        run: rm -f cdk.env app.env

@@ -37,11 +37,11 @@ RUN R -e "remotes::install_github('CBIIT/R-PIMixture')"
 RUN mkdir -p /app
 
 # Copy and install Python dependencies
-COPY requirements.txt /app/requirements.txt
+COPY app/requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
 
 # Copy application files
-COPY . /app/
+COPY app/ /app/
 
 # Create tmp directories for input/output files
 RUN mkdir -p /app/tmp/input_data /app/tmp/output_data
@@ -56,8 +56,7 @@ WORKDIR /app
 RUN mkdir -p /var/cache/fontconfig && chmod 777 /var/cache/fontconfig
 
 # Set proper permissions
-RUN chmod +x /app/docker/entrypoint.sh \
- && chown -R apache:apache /app
+RUN chown -R apache:apache /app
 
 # Set fontconfig cache directory
 ENV FONTCONFIG_PATH=/etc/fonts
@@ -65,8 +64,23 @@ ENV FONTCONFIG_FILE=/etc/fonts/fonts.conf
 ENV FC_CACHEDIR=/var/cache/fontconfig
 ENV PIMIXTURE_CONFIG_FILE=/app/config.ini
 
-# RUN_MODE=web (default) starts the Flask/mod_wsgi server
-# RUN_MODE=worker starts the SQS queue processor
-ENV RUN_MODE=web
-
-ENTRYPOINT ["/app/docker/entrypoint.sh"]
+CMD mod_wsgi-express start-server /app/pimixture.wsgi \
+    --user apache \
+    --group apache \
+    --port 80 \
+    --processes 4 \
+    --threads 1 \
+    --max-clients 3000 \
+    --socket-timeout 900 \
+    --queue-timeout 900 \
+    --shutdown-timeout 900 \
+    --graceful-timeout 900 \
+    --connect-timeout 900 \
+    --request-timeout 900 \
+    --keep-alive-timeout 60 \
+    --compress-responses \
+    --log-to-terminal \
+    --access-log \
+    --access-log-format "%h %{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined \
+    --document-root /app \
+    --working-directory /app

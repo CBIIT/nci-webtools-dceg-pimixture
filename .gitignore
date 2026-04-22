@@ -8,5 +8,6 @@ __pycache__/
 *.pyc
 .Rhistory
 localserver.py
-config.ini
+**/config.ini
 tests/*.xml
+.DS_Store

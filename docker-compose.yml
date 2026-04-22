@@ -15,7 +15,7 @@ services:
       - "8220:80"
     volumes:
       - ./tmp:/app/tmp
-      - ./config.ini:/app/config.ini
+      - ./app/config.ini:/app/config.ini
     environment:
       - PIMIXTURE_CONFIG_FILE=/app/config.ini
       - SKIP_CONFIG_GEN=true

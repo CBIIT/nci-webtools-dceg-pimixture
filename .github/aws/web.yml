@@ -1,0 +1,78 @@
+family: "${ECS_WEB_TASK}"
+networkMode: awsvpc
+cpu: "${ECS_CPU_UNITS}"
+memory: "${ECS_MEMORY_UNITS}"
+executionRoleArn: "${ROLE_ARN}"
+taskRoleArn: "${ROLE_ARN}"
+requiresCompatibilities:
+  - FARGATE
+containerDefinitions:
+  - name: logs
+    image: public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
+    firelensConfiguration:
+      type: fluentbit
+    memoryReservation: 50
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: "/analysistools/${TIER}/${APP}/web"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: logs
+
+  - name: web
+    image: "${WEB_IMAGE_LATEST}"
+    entryPoint: ["python", "pimixtureProcessor.py"]
+    portMappings:
+      - protocol: tcp
+        containerPort: ${WEB_CONTAINER_PORT}
+    environment:
+      - name: API_PORT
+        value: "${WEB_CONTAINER_PORT}"
+      - name: FLASK_ENV
+        value: "production"
+    logConfiguration:
+      logDriver: awsfirelens
+      options:
+        Name: datadog
+        tls: "on"
+        tls.verify: "off"
+        dd_service: "${TIER}-${APP}-web"
+        dd_source: "python"
+        dd_tags: "project:${APP} tier:${TIER}"
+        provider: ecs
+      secretOptions:
+        - name: Host
+          valueFrom: /analysistools/${TIER}/datadog/log_endpoint_host
+        - name: apikey
+          valueFrom: /analysistools/${TIER}/datadog/api_key
+
+  - name: queue
+    image: "${WEB_IMAGE_LATEST}"
+    environment:
+    logConfiguration:
+      logDriver: awsfirelens
+      options:
+        Name: datadog
+        tls: "on"
+        tls.verify: "off"
+        dd_service: "${TIER}-${APP}-queue"
+        dd_source: "python"
+        dd_tags: "project:${APP} tier:${TIER}"
+        provider: ecs
+      secretOptions:
+        - name: Host
+          valueFrom: /analysistools/${TIER}/datadog/log_endpoint_host
+        - name: apikey
+          valueFrom: /analysistools/${TIER}/datadog/api_key
+
+tags:
+  - key: Project
+    value: "${APP}"
+  - key: ApplicationName
+    value: "${APP}"
+  - key: ResourceName
+    value: "${TIER}-${APP}-web-ecs-task"
+  - key: ResourceFunction
+    value: Compute
+  - key: EnvironmentTier
+    value: "${ENVIRONMENT_TIER}"

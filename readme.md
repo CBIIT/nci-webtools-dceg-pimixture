@@ -11,17 +11,18 @@ remotes::install_github('CBIIT/R-PIMixture')
 
 #### Install Python 3.6 dependencies
 ```bash
-pip install -r requirements.txt
+pip install -r app/requirements.txt
 ```
 
 #### Configure Application
 ```bash
 # update config.ini with actual configuration
-cp config.sample.ini config.ini
+cp app/config.sample.ini app/config.ini
 ```
 
 #### Start Application
 ```bash
-# for local development (http://localhost)
+# for local development (http://localhost); cwd must be app/ for static files and templates
+cd app
 python pimixture.py --debug
 ```
