@@ -30,7 +30,7 @@ jobs:
       WEB_CONTAINER_PORT: 8220
       TIER: ${{ inputs.tier }}
       IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}      
-      CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
 
     steps:
       - uses: "actions/checkout@v6.0.1"
@@ -45,7 +45,7 @@ jobs:
       - name: Set dynamic environment variables
         run: |
           TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          REPO=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP
+          REPO=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP
           echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
           echo "WEB_IMAGE=$REPO:$IMAGE_TIER-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
           echo "WEB_IMAGE_LATEST=$REPO:$IMAGE_TIER-latest" >> $GITHUB_ENV
