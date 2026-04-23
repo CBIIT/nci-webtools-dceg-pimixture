@@ -88,7 +88,7 @@ containerDefinitions:
 
   - name: queue
     image: "${WEB_IMAGE_LATEST}"
-    entryPoint: ["python", "pimixtureProcessor.py"]
+    entryPoint: ["python3", "pimixtureProcessor.py"]
     mountPoints:
       - sourceVolume: data
         containerPath: /data
