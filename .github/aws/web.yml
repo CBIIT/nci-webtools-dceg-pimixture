@@ -40,32 +40,30 @@ containerDefinitions:
       - name: FLASK_ENV
         value: "production"
     secrets:
-      - name: EMAIL_SMTP_HOST
-        valueFrom: /analysistools/${TIER}/${APP}/email_smtp_host
       - name: EMAIL_ADMIN
         valueFrom: /analysistools/${TIER}/${APP}/email_admin
       - name: EMAIL_SENDER
         valueFrom: /analysistools/${TIER}/${APP}/email_sender
       - name: EMAIL_REPORT_URL
-        valueFrom: /analysistools/${TIER}/${APP}/email_report_url
+        valueFrom: /analysistools/${TIER}/${APP}/report_url
       - name: S3_INPUT_BUCKET
-        valueFrom: /analysistools/${TIER}/${APP}/s3_input_bucket
+        valueFrom: /analysistools/${TIER}/${APP}/input_bucket
       - name: S3_OUTPUT_BUCKET
-        valueFrom: /analysistools/${TIER}/${APP}/s3_output_bucket
+        valueFrom: /analysistools/${TIER}/${APP}/output_bucket
       - name: S3_INPUT_FOLDER
         valueFrom: /analysistools/${TIER}/${APP}/s3_input_folder
       - name: S3_OUTPUT_FOLDER
         valueFrom: /analysistools/${TIER}/${APP}/s3_output_folder
       - name: S3_URL_EXPIRE_TIME
-        valueFrom: /analysistools/${TIER}/${APP}/s3_url_expire_time
+        valueFrom: /analysistools/${TIER}/${APP}/url_expire_time
       - name: SQS_QUEUE_NAME
-        valueFrom: /analysistools/${TIER}/${APP}/sqs_queue_name
+        valueFrom: /analysistools/${TIER}/${APP}/queue_name
       - name: SQS_VISIBILITY_TIMEOUT
-        valueFrom: /analysistools/${TIER}/${APP}/sqs_visibility_timeout
+        valueFrom: /analysistools/${TIER}/${APP}/visibility_timeout
       - name: SQS_QUEUE_LONG_PULL_TIME
-        valueFrom: /analysistools/${TIER}/${APP}/sqs_queue_long_pull_time
+        valueFrom: /analysistools/${TIER}/${APP}/queue_long_pull_time
       - name: R_FITTING_TIMEOUT
-        valueFrom: /analysistools/${TIER}/${APP}/r_fitting_timeout
+        valueFrom: /analysistools/${TIER}/${APP}/fitting_timeout
       - name: INPUT_DATA_PATH
         valueFrom: /analysistools/${TIER}/${APP}/input_data_path
       - name: OUTPUT_DATA_PATH
@@ -99,32 +97,30 @@ containerDefinitions:
       - name: FLASK_ENV
         value: "production"
     secrets:
-      - name: EMAIL_SMTP_HOST
-        valueFrom: /analysistools/${TIER}/${APP}/email_smtp_host
       - name: EMAIL_ADMIN
         valueFrom: /analysistools/${TIER}/${APP}/email_admin
       - name: EMAIL_SENDER
         valueFrom: /analysistools/${TIER}/${APP}/email_sender
       - name: EMAIL_REPORT_URL
-        valueFrom: /analysistools/${TIER}/${APP}/email_report_url
+        valueFrom: /analysistools/${TIER}/${APP}/report_url
       - name: S3_INPUT_BUCKET
-        valueFrom: /analysistools/${TIER}/${APP}/s3_input_bucket
+        valueFrom: /analysistools/${TIER}/${APP}/input_bucket
       - name: S3_OUTPUT_BUCKET
-        valueFrom: /analysistools/${TIER}/${APP}/s3_output_bucket
+        valueFrom: /analysistools/${TIER}/${APP}/output_bucket
       - name: S3_INPUT_FOLDER
         valueFrom: /analysistools/${TIER}/${APP}/s3_input_folder
       - name: S3_OUTPUT_FOLDER
         valueFrom: /analysistools/${TIER}/${APP}/s3_output_folder
       - name: S3_URL_EXPIRE_TIME
-        valueFrom: /analysistools/${TIER}/${APP}/s3_url_expire_time
+        valueFrom: /analysistools/${TIER}/${APP}/url_expire_time
       - name: SQS_QUEUE_NAME
-        valueFrom: /analysistools/${TIER}/${APP}/sqs_queue_name
+        valueFrom: /analysistools/${TIER}/${APP}/queue_name
       - name: SQS_VISIBILITY_TIMEOUT
-        valueFrom: /analysistools/${TIER}/${APP}/sqs_visibility_timeout
+        valueFrom: /analysistools/${TIER}/${APP}/visibility_timeout
       - name: SQS_QUEUE_LONG_PULL_TIME
-        valueFrom: /analysistools/${TIER}/${APP}/sqs_queue_long_pull_time
+        valueFrom: /analysistools/${TIER}/${APP}/queue_long_pull_time
       - name: R_FITTING_TIMEOUT
-        valueFrom: /analysistools/${TIER}/${APP}/r_fitting_timeout
+        valueFrom: /analysistools/${TIER}/${APP}/fitting_timeout
       - name: INPUT_DATA_PATH
         valueFrom: /analysistools/${TIER}/${APP}/input_data_path
       - name: OUTPUT_DATA_PATH
