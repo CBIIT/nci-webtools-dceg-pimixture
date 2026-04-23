@@ -439,12 +439,7 @@ def downloadS3Object(bucket_name, key, obj):
 
 @app.route('/ping/', strict_slashes=False)
 def ping():
-    try:
-        r = pr.R()
-        return r['"true"']
-    except Exception as e:
-        log.exception("Exception occurred")
-        return buildFailure({"status": False, "statusMessage": "Call R failed!"})
+    return jsonify({"status": True})
 
 if __name__ == '__main__':
     log = getConsoleLogger(stdFormatter)

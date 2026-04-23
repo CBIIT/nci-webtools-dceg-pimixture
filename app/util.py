@@ -64,13 +64,19 @@ extensionMap = {
     EXCEL_FORMAT: '.xlsx'
 }
 
-def getPIMixtureVersion():
-    r = pr.R()
-    r(IMPORT_R_WRAPPER)
-    r('version <- getPIMixtureVersion()')
-    return r.get('version')
+_pimixture_version = None
 
-PIMIXTURE_VERSION = getPIMixtureVersion()
+def getPIMixtureVersion():
+    global _pimixture_version
+    if _pimixture_version is None:
+        try:
+            r = pr.R()
+            r(IMPORT_R_WRAPPER)
+            r('version <- getPIMixtureVersion()')
+            _pimixture_version = r.get('version') or 'unknown'
+        except Exception:
+            _pimixture_version = 'unknown'
+    return _pimixture_version
 
 
 # Following parameters will be load to fitting page when run prediction from email except those in emailExcludedFields
