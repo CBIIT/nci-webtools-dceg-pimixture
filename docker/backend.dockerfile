@@ -83,5 +83,5 @@ CMD mod_wsgi-express start-server /app/pimixture.wsgi \
     --log-to-terminal \
     --access-log \
     --access-log-format "%h %{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined \
-    --url-alias ${APP_PREFIX:-/} /app \
+    --document-root /app \
     --working-directory /app
