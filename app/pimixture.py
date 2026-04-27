@@ -441,6 +441,16 @@ def downloadS3Object(bucket_name, key, obj):
 def ping():
     return jsonify({"status": True})
 
+@app.route('/<path:path>')
+def static_files(path):
+    if path.endswith('/'):
+        path += 'index.html'
+    return send_from_directory(os.getcwd(), path)
+
+@app.route('/')
+def rootPath():
+    return send_from_directory(os.getcwd(), 'index.html')
+
 if __name__ == '__main__':
     log = getConsoleLogger(stdFormatter)
     import argparse
