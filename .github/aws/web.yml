@@ -39,6 +39,8 @@ containerDefinitions:
     environment:
       - name: FLASK_ENV
         value: "production"
+      - name: APP_PREFIX
+        value: "/${APP}"
     secrets:
       - name: EMAIL_ADMIN
         valueFrom: /analysistools/${TIER}/${APP}/email_admin

@@ -62,11 +62,13 @@ RUN chown -R apache:apache /app
 ENV FONTCONFIG_PATH=/etc/fonts
 ENV FONTCONFIG_FILE=/etc/fonts/fonts.conf
 ENV FC_CACHEDIR=/var/cache/fontconfig
+ENV APP_PREFIX=""
 
 CMD mod_wsgi-express start-server /app/pimixture.wsgi \
     --user apache \
     --group apache \
     --port 80 \
+    --mount-point $APP_PREFIX \
     --processes 4 \
     --threads 1 \
     --max-clients 3000 \
