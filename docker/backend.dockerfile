@@ -25,6 +25,10 @@ RUN dnf -y update \
     cmake \
  && dnf clean all
 
+# Remove Java (pulled in by R-java, not needed by this app) remove java related vulnerabilities and reduce image size
+RUN dnf -y remove R-java R-java-devel java-*-amazon-corretto* || true \
+ && dnf clean all
+
 # Restrict Python 3.9 to root only and symlink 3.13
 RUN chmod 700 /usr/bin/python3.9
 RUN ln -sf /usr/bin/pip3.13 /usr/bin/pip3 \
