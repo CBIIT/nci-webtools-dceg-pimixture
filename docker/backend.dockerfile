@@ -11,11 +11,9 @@ RUN dnf -y update \
     libffi-devel \
     make \
     openssl-devel \
-    python3 \
-    python3-devel \
-    python3-pip \
-    python3-setuptools \
-    python3-wheel \
+    python3.13 \
+    python3.13-devel \
+    python3.13-pip \
     R \
     libcurl-devel \
     libxml2-devel \
@@ -26,6 +24,12 @@ RUN dnf -y update \
     libicu-devel \
     cmake \
  && dnf clean all
+
+# Restrict Python 3.9 to root only and symlink 3.13
+RUN chmod 700 /usr/bin/python3.9
+RUN ln -sf /usr/bin/pip3.13 /usr/bin/pip3 \
+ && ln -sf /usr/bin/python3.13 /usr/bin/python3 \
+ && pip3 install --upgrade pip setuptools wheel
 
 # Install R packages
 RUN R -e "install.packages('remotes', repos='https://cloud.r-project.org')"
