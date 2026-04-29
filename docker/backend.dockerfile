@@ -14,7 +14,8 @@ RUN dnf -y update \
     python3.13 \
     python3.13-devel \
     python3.13-pip \
-    R \
+    R-core \
+    R-core-devel \
     libcurl-devel \
     libxml2-devel \
     pcre2-devel \
@@ -23,11 +24,6 @@ RUN dnf -y update \
     zlib-devel \
     libicu-devel \
     cmake \
- && dnf clean all
-
-# Remove Java (pulled in by R-java, not needed by this app) to fix vulnerabilities and reduce image size
-# Use rpm --nodeps to avoid cascading removal of R itself
-RUN rpm -e --nodeps $(rpm -qa | grep -E 'java-.*-amazon-corretto|R-java') || true \
  && dnf clean all
 
 # Restrict Python 3.9 to root only and symlink 3.13
