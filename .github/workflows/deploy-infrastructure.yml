@@ -27,7 +27,6 @@ jobs:
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
       TIER: ${{ inputs.tier }}
       CDK_DIR: infrastructure
-      APP_ENV_FILE: infrastructure/app.env
       CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
 
     steps:
@@ -56,6 +55,10 @@ jobs:
           source cdk.env
           set +a
           env | grep -v '^_' >> "$GITHUB_ENV"
+
+      - name: Set APP_ENV_FILE
+        working-directory: ${{ env.CDK_DIR }}
+        run: echo "APP_ENV_FILE=$(pwd)/app.env" >> "$GITHUB_ENV"
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.3.0
