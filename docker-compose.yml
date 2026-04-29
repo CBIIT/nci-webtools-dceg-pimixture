@@ -15,32 +15,5 @@ services:
       - "8220:80"
     volumes:
       - ./data:/data
-    environment:
-      - AWS_DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
-      # Mail settings
-      - EMAIL_SMTP_HOST=mailfwd.nih.gov
-      - EMAIL_ADMIN=
-      - EMAIL_SENDER=
-      - EMAIL_REPORT_URL=
-      # Folder settings
-      - INPUT_DATA_PATH=/data/input
-      - OUTPUT_DATA_PATH=/data/output
-      # S3 settings
-      - S3_INPUT_BUCKET=pimixture2
-      - S3_OUTPUT_BUCKET=pimixture2
-      - S3_INPUT_FOLDER=pimixture/input/
-      - S3_OUTPUT_FOLDER=pimixture/output/
-      - S3_URL_EXPIRE_TIME=1209600
-      # SQS settings
-      - SQS_QUEUE_NAME=pimixture.fifo
-      - SQS_VISIBILITY_TIMEOUT=30
-      - SQS_QUEUE_LONG_PULL_TIME=20
-      # R settings
-      - R_FITTING_TIMEOUT=86400
-      # Output settings
-      - OUTPUT_FILE_TYPE=EXCEL
-      # Log settings
-      - LOG_LEVEL=INFO
+    env_file: app/.env
     restart: unless-stopped
