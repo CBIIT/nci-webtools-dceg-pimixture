@@ -3,61 +3,56 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from configparser import ConfigParser
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import pyper as pr
 
-config = ConfigParser()
-config_file = os.environ.get('PIMIXTURE_CONFIG_FILE', 'config.ini')
-config.read(config_file)
 
-
-logFileName = config.get('log', 'log_file_name')
-processorLogFileName = config.get('log', 'processor_log_file_name')
-
+# Log settings
+logFileName = os.environ.get('LOG_FILE_NAME', 'pimixture-app.log')
+processorLogFileName = os.environ.get('PROCESSOR_LOG_FILE_NAME', 'pimixture-processor.log')
 
 # Mail settings
-ADMIN = config.get('mail', 'admin')
-HOST = config.get('mail', 'host')
-SENDER = config.get('mail', 'sender')
-REPORT_URL = config.get('mail', 'report_url')
+ADMIN = os.environ.get('EMAIL_ADMIN', '')
+HOST = os.environ.get('EMAIL_SMTP_HOST', 'mailfwd.nih.gov')
+SENDER = os.environ.get('EMAIL_SENDER', '')
+REPORT_URL = os.environ.get('EMAIL_REPORT_URL', '')
 
 # Folder settings
-INPUT_DATA_PATH = config.get('folders', 'input_data_path')
+INPUT_DATA_PATH = os.environ.get('INPUT_DATA_PATH', '/data/input')
 if not os.path.exists(INPUT_DATA_PATH):
     os.makedirs(INPUT_DATA_PATH)
 
-OUTPUT_DATA_PATH = config.get('folders', 'output_data_path')
+OUTPUT_DATA_PATH = os.environ.get('OUTPUT_DATA_PATH', '/data/output')
 if not os.path.exists(OUTPUT_DATA_PATH):
     os.makedirs(OUTPUT_DATA_PATH)
 
 # Prefix settings
-INPUT_FILE_PREFIX = config.get('prefixes', 'input_file_prefix')
-OUTPUT_FILE_PREFIX = config.get('prefixes', 'output_file_prefix')
+INPUT_FILE_PREFIX = os.environ.get('INPUT_FILE_PREFIX', 'pimixtureInput_')
+OUTPUT_FILE_PREFIX = os.environ.get('OUTPUT_FILE_PREFIX', 'pimixtureOutput_')
 
 # Suffix settings
-FITTING_R_SUFFIX = config.get('suffixes', 'fitting_r_suffix')
-FITTING_SS_SUFFIX = config.get('suffixes', 'fitting_ss_suffix')
-PREDICTION_SUFFIX = config.get('suffixes', 'prediction_suffix')
+FITTING_R_SUFFIX = os.environ.get('FITTING_R_SUFFIX', '_fit')
+FITTING_SS_SUFFIX = os.environ.get('FITTING_SS_SUFFIX', '_fit_results')
+PREDICTION_SUFFIX = os.environ.get('PREDICTION_SUFFIX', '_prediction')
 
 # S3 settings
-INPUT_BUCKET = config.get('s3', 'input_bucket')
-OUTPUT_BUCKET = config.get('s3', 'output_bucket')
-URL_EXPIRE_TIME = int(config.get('s3', 'url_expire_time'))
-S3_INPUT_FOLDER = config.get('s3', 'input_folder')
-S3_OUTPUT_FOLDER = config.get('s3', 'output_folder')
+INPUT_BUCKET = os.environ.get('S3_INPUT_BUCKET', '')
+OUTPUT_BUCKET = os.environ.get('S3_OUTPUT_BUCKET', '')
+URL_EXPIRE_TIME = int(os.environ.get('S3_URL_EXPIRE_TIME', '1209600'))
+S3_INPUT_FOLDER = os.environ.get('S3_INPUT_FOLDER', 'pimixture/input/')
+S3_OUTPUT_FOLDER = os.environ.get('S3_OUTPUT_FOLDER', 'pimixture/output/')
 
 # SQS settings
-QUEUE_NAME = config.get('sqs', 'queue_name')
-VISIBILITY_TIMEOUT = int(config.get('sqs', 'visibility_timeout'))
-QUEUE_LONG_PULL_TIME = int(config.get('sqs', 'queue_long_pull_time'))
+QUEUE_NAME = os.environ.get('SQS_QUEUE_NAME', '')
+VISIBILITY_TIMEOUT = int(os.environ.get('SQS_VISIBILITY_TIMEOUT', '30'))
+QUEUE_LONG_PULL_TIME = int(os.environ.get('SQS_QUEUE_LONG_PULL_TIME', '20'))
 
 # Output settings
-SS_FILE_TYPE = config.get('output', 'file_type')
+SS_FILE_TYPE = os.environ.get('OUTPUT_FILE_TYPE', 'EXCEL')
 
 # R settings
-FITTING_TIMEOUT = int(config.get('R', 'fitting_timeout'))
+FITTING_TIMEOUT = int(os.environ.get('R_FITTING_TIMEOUT', '86400'))
 
 # Constants
 IMPORT_R_WRAPPER = 'source("R/pimixtureWrapper.R")'
@@ -69,13 +64,19 @@ extensionMap = {
     EXCEL_FORMAT: '.xlsx'
 }
 
-def getPIMixtureVersion():
-    r = pr.R()
-    r(IMPORT_R_WRAPPER)
-    r('version <- getPIMixtureVersion()')
-    return r.get('version')
+_pimixture_version = None
 
-PIMIXTURE_VERSION = getPIMixtureVersion()
+def getPIMixtureVersion():
+    global _pimixture_version
+    if _pimixture_version is None:
+        try:
+            r = pr.R()
+            r(IMPORT_R_WRAPPER)
+            r('version <- getPIMixtureVersion()')
+            _pimixture_version = r.get('version') or 'unknown'
+        except Exception:
+            _pimixture_version = 'unknown'
+    return _pimixture_version
 
 
 # Following parameters will be load to fitting page when run prediction from email except those in emailExcludedFields
@@ -105,7 +106,7 @@ stdFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(module)s - %(mes
 miniFormatter = logging.Formatter('[%(levelname)s] %(module)s - %(message)s')
 
 def getLogger():
-    logLevel = config.get('log', 'log_level')
+    logLevel = os.environ.get('LOG_LEVEL', 'INFO')
     numericLevel = getattr(logging, logLevel.upper(), None)
     if not isinstance(numericLevel, int):
         raise ValueError('Invalid log level: %s' % logLevel)
@@ -115,7 +116,7 @@ def getLogger():
 
 def getFileLogger(fileName):
     log = getLogger()
-    logFolder = config.get('log', 'log_folder')
+    logFolder = os.environ.get('LOG_FOLDER', '')
     if logFolder and not os.path.exists(logFolder):
         os.makedirs(logFolder)
     logFileName = os.path.join(logFolder, fileName)
@@ -182,9 +183,8 @@ def send_mail(sender, recipient, subject, contents, log, attachments=None):
                         _file.read(),
                         Name=os.path.basename(attachment)
                     ))
-        host = config.get('mail', 'host')
         # send email
-        server = smtplib.SMTP(host)
+        server = smtplib.SMTP(HOST)
         server.sendmail(sender, recipient.split(','), message.as_string())
         return True
     except Exception as e:
