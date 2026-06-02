@@ -33,10 +33,12 @@ RUN ln -sf /usr/bin/pip3.13 /usr/bin/pip3 \
  && pip3 install --upgrade pip setuptools wheel
 
 # Install R packages
+COPY app/lib/R/PIMixture_0.4.4.tar.gz /tmp/PIMixture_0.4.4.tar.gz
 RUN R -e "install.packages('remotes', repos='https://cloud.r-project.org')"
 RUN R -e "install.packages('jsonlite', repos='https://cloud.r-project.org')"
 RUN R -e "remotes::install_bioc('Icens')"
-RUN R -e "remotes::install_github('CBIIT/R-PIMixture')"
+RUN R -e "install.packages(c('optimx', 'fdrtool', 'interval', 'plyr', 'flexsurv'), repos='https://cloud.r-project.org')"
+RUN R -e "install.packages('/tmp/PIMixture_0.4.4.tar.gz', repos=NULL, type='source')"
 
 # Create application directory
 RUN mkdir -p /app
