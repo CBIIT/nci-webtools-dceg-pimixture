@@ -73,7 +73,7 @@ CMD mod_wsgi-express start-server /app/pimixture.wsgi \
     --user apache \
     --group apache \
     --port 80 \
-    --mount-point $APP_PREFIX \
+    ${APP_PREFIX:+--mount-point $APP_PREFIX} \
     --processes 4 \
     --threads 1 \
     --max-clients 3000 \
