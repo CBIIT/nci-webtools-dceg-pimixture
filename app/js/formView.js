@@ -160,6 +160,17 @@ appMixture.FormView = Backbone.View.extend({
         delete params.csvFile;
         params.hostURL = window.location.href.split('#')[0];
         formData.append('jsonData', JSON.stringify(params));
+        if (window.trackEvent) {
+            // Non-PII config only: model/design type, queue flag, and counts.
+            // Never send the uploaded data, file contents, headers, or email.
+            window.trackEvent('run_calculation', {
+                model_type: params.model || '',
+                design: params.design || '',
+                send_to_queue: !!params.sendToQueue,
+                covariates_count: (params.covariatesSelection || []).length,
+                effects_count: (params.effects || []).length
+            });
+        }
         this.startSpinner();
         appMixture.models.results.fetch({
             data: formData,
@@ -174,6 +185,9 @@ appMixture.FormView = Backbone.View.extend({
             error: function(model, res, options) {
                 $that.stopSpinner();
                 $that.getNumMessages();
+                if (window.trackEvent) {
+                    window.trackEvent('app_error', { location: 'pimixture' });
+                }
                 var result = res.responseJSON;
                 if (result) {
                     appMixture.models.results.set('errors', result.message);
@@ -279,6 +293,10 @@ appMixture.FormView = Backbone.View.extend({
             }
 
             if (file) {
+                if (window.trackEvent) {
+                    // No filename — it could be identifying.
+                    window.trackEvent('file_upload', {});
+                }
                 Papa.parse(file, {
                     complete: function(results) {
                         if (results.data && results.data.length > 0) {

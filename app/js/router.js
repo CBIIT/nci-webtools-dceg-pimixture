@@ -9,6 +9,18 @@ appMixture.Router = Backbone.Router.extend({
         'prediction': 'prediction'
     },
     menus: ['home', 'help', 'fitting', 'prediction'],
+    initialize: function() {
+        // Send a GA4 page_view on every route change (including the initial route).
+        // Strip any query string so PII-bearing params (e.g. #prediction?parameters=...)
+        // are never sent to analytics.
+        this.on('route', function() {
+            var hash = window.location.hash || '#home';
+            var path = '#' + hash.replace(/^#/, '').split('?')[0];
+            if (window.trackPageView) {
+                window.trackPageView(path);
+            }
+        });
+    },
     redirect_to_home: function() {
         this.navigate('home', true);
     },
