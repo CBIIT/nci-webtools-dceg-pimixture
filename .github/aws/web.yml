@@ -6,6 +6,14 @@ executionRoleArn: "${ROLE_ARN}"
 taskRoleArn: "${ROLE_ARN}"
 requiresCompatibilities:
   - FARGATE
+volumes:
+  - name: data
+    efsVolumeConfiguration:
+      fileSystemId: "${EFS_FILESYSTEM_ID}"
+      transitEncryption: ENABLED
+      authorizationConfig:
+        accessPointId: "${EFS_ACCESS_POINT_ID}"
+        iam: ENABLED
 containerDefinitions:
   - name: logs
     image: public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
@@ -19,24 +27,58 @@ containerDefinitions:
         awslogs-region: "${AWS_REGION}"
         awslogs-stream-prefix: logs
 
-  - name: web
+  - name: frontend
     image: "${WEB_IMAGE_LATEST}"
-    entryPoint: ["python", "pimixtureProcessor.py"]
     portMappings:
       - protocol: tcp
         containerPort: ${WEB_CONTAINER_PORT}
+    mountPoints:
+      - sourceVolume: data
+        containerPath: /data
+        readOnly: false
     environment:
-      - name: API_PORT
-        value: "${WEB_CONTAINER_PORT}"
       - name: FLASK_ENV
         value: "production"
+      - name: APP_PREFIX
+        value: "/${APP}"
+    secrets:
+      - name: EMAIL_ADMIN
+        valueFrom: /analysistools/${TIER}/${APP}/email_admin
+      - name: EMAIL_SENDER
+        valueFrom: /analysistools/${TIER}/${APP}/email_sender
+      - name: EMAIL_REPORT_URL
+        valueFrom: /analysistools/${TIER}/${APP}/report_url
+      - name: S3_INPUT_BUCKET
+        valueFrom: /analysistools/${TIER}/${APP}/input_bucket
+      - name: S3_OUTPUT_BUCKET
+        valueFrom: /analysistools/${TIER}/${APP}/output_bucket
+      - name: S3_INPUT_FOLDER
+        valueFrom: /analysistools/${TIER}/${APP}/s3_input_folder
+      - name: S3_OUTPUT_FOLDER
+        valueFrom: /analysistools/${TIER}/${APP}/s3_output_folder
+      - name: S3_URL_EXPIRE_TIME
+        valueFrom: /analysistools/${TIER}/${APP}/url_expire_time
+      - name: SQS_QUEUE_NAME
+        valueFrom: /analysistools/${TIER}/${APP}/queue_name
+      - name: SQS_VISIBILITY_TIMEOUT
+        valueFrom: /analysistools/${TIER}/${APP}/visibility_timeout
+      - name: SQS_QUEUE_LONG_PULL_TIME
+        valueFrom: /analysistools/${TIER}/${APP}/queue_long_pull_time
+      - name: R_FITTING_TIMEOUT
+        valueFrom: /analysistools/${TIER}/${APP}/fitting_timeout
+      - name: INPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/input_data_path
+      - name: OUTPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/output_data_path
+      - name: LOG_LEVEL
+        valueFrom: /analysistools/${TIER}/${APP}/log_level
     logConfiguration:
       logDriver: awsfirelens
       options:
         Name: datadog
         tls: "on"
         tls.verify: "off"
-        dd_service: "${TIER}-${APP}-web"
+        dd_service: "${TIER}-${APP}-frontend"
         dd_source: "python"
         dd_tags: "project:${APP} tier:${TIER}"
         provider: ecs
@@ -48,7 +90,45 @@ containerDefinitions:
 
   - name: queue
     image: "${WEB_IMAGE_LATEST}"
+    entryPoint: ["python3", "pimixtureProcessor.py"]
+    mountPoints:
+      - sourceVolume: data
+        containerPath: /data
+        readOnly: false
     environment:
+      - name: FLASK_ENV
+        value: "production"
+    secrets:
+      - name: EMAIL_ADMIN
+        valueFrom: /analysistools/${TIER}/${APP}/email_admin
+      - name: EMAIL_SENDER
+        valueFrom: /analysistools/${TIER}/${APP}/email_sender
+      - name: EMAIL_REPORT_URL
+        valueFrom: /analysistools/${TIER}/${APP}/report_url
+      - name: S3_INPUT_BUCKET
+        valueFrom: /analysistools/${TIER}/${APP}/input_bucket
+      - name: S3_OUTPUT_BUCKET
+        valueFrom: /analysistools/${TIER}/${APP}/output_bucket
+      - name: S3_INPUT_FOLDER
+        valueFrom: /analysistools/${TIER}/${APP}/s3_input_folder
+      - name: S3_OUTPUT_FOLDER
+        valueFrom: /analysistools/${TIER}/${APP}/s3_output_folder
+      - name: S3_URL_EXPIRE_TIME
+        valueFrom: /analysistools/${TIER}/${APP}/url_expire_time
+      - name: SQS_QUEUE_NAME
+        valueFrom: /analysistools/${TIER}/${APP}/queue_name
+      - name: SQS_VISIBILITY_TIMEOUT
+        valueFrom: /analysistools/${TIER}/${APP}/visibility_timeout
+      - name: SQS_QUEUE_LONG_PULL_TIME
+        valueFrom: /analysistools/${TIER}/${APP}/queue_long_pull_time
+      - name: R_FITTING_TIMEOUT
+        valueFrom: /analysistools/${TIER}/${APP}/fitting_timeout
+      - name: INPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/input_data_path
+      - name: OUTPUT_DATA_PATH
+        valueFrom: /analysistools/${TIER}/${APP}/output_data_path
+      - name: LOG_LEVEL
+        valueFrom: /analysistools/${TIER}/${APP}/log_level
     logConfiguration:
       logDriver: awsfirelens
       options:
