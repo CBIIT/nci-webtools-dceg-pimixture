@@ -438,7 +438,9 @@ h2.stage-header {
 }
 
 #currentPageNum {
-    background-color: #218eb7;
+    /* 508 (WCAG 2 AA 1.4.3): darkened from #218eb7 (3.74:1 with white)
+       to #1c7a9e (4.85:1) to meet the 4.5:1 minimum contrast ratio */
+    background-color: #1c7a9e;
     color: white;
 }
 
