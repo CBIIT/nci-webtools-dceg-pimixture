@@ -399,7 +399,14 @@ h2.stage-header {
 }
 
 #covariates-selectize-label {
-    visibility: collapse;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
 .modal-header {
@@ -416,7 +423,7 @@ h2.stage-header {
 }
 
 #queueMessage {
-    color: darkgray;
+    color: #595959;
     font-style: italic;
     font-size: 0.8em;
 }
@@ -471,6 +478,8 @@ input[type=file] {
 
 .sampleDownload {
     font-size: 0.8em;
+    color: #1a5276;
+    text-decoration: underline;
 }
 
 #predictionForm label,
@@ -498,6 +507,10 @@ input[type=file] {
     min-height: 800px;
     padding-left: 10px;
     padding-right: 10px
+}
+
+#home-panel a {
+    text-decoration: underline;
 }
 
 #home-panel h2 {

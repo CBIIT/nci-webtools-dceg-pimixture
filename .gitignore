@@ -9,5 +9,6 @@ __pycache__/
 .Rhistory
 localserver.py
 **/config.ini
+app/.env
 tests/*.xml
 .DS_Store

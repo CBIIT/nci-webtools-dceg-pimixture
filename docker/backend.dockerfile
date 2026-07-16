@@ -11,12 +11,11 @@ RUN dnf -y update \
     libffi-devel \
     make \
     openssl-devel \
-    python3 \
-    python3-devel \
-    python3-pip \
-    python3-setuptools \
-    python3-wheel \
-    R \
+    python3.13 \
+    python3.13-devel \
+    python3.13-pip \
+    R-core \
+    R-core-devel \
     libcurl-devel \
     libxml2-devel \
     pcre2-devel \
@@ -27,11 +26,19 @@ RUN dnf -y update \
     cmake \
  && dnf clean all
 
+# Restrict Python 3.9 to root only and symlink 3.13
+RUN chmod 700 /usr/bin/python3.9
+RUN ln -sf /usr/bin/pip3.13 /usr/bin/pip3 \
+ && ln -sf /usr/bin/python3.13 /usr/bin/python3 \
+ && pip3 install --upgrade pip setuptools wheel
+
 # Install R packages
+COPY app/lib/R/PIMixture_0.4.4.tar.gz /tmp/PIMixture_0.4.4.tar.gz
 RUN R -e "install.packages('remotes', repos='https://cloud.r-project.org')"
 RUN R -e "install.packages('jsonlite', repos='https://cloud.r-project.org')"
 RUN R -e "remotes::install_bioc('Icens')"
-RUN R -e "remotes::install_github('CBIIT/R-PIMixture')"
+RUN R -e "install.packages(c('optimx', 'fdrtool', 'interval', 'plyr', 'flexsurv'), repos='https://cloud.r-project.org')"
+RUN R -e "install.packages('/tmp/PIMixture_0.4.4.tar.gz', repos=NULL, type='source')"
 
 # Create application directory
 RUN mkdir -p /app
@@ -43,8 +50,8 @@ RUN pip3 install -r /app/requirements.txt
 # Copy application files
 COPY app/ /app/
 
-# Create tmp directories for input/output files
-RUN mkdir -p /app/tmp/input_data /app/tmp/output_data
+# Create data directories (used as fallback; EFS /data mount used in production)
+RUN mkdir -p /data/input /data/output
 
 # Create logs directory
 RUN mkdir -p /logs
@@ -62,12 +69,13 @@ RUN chown -R apache:apache /app
 ENV FONTCONFIG_PATH=/etc/fonts
 ENV FONTCONFIG_FILE=/etc/fonts/fonts.conf
 ENV FC_CACHEDIR=/var/cache/fontconfig
-ENV PIMIXTURE_CONFIG_FILE=/app/config.ini
+ENV APP_PREFIX=""
 
 CMD mod_wsgi-express start-server /app/pimixture.wsgi \
     --user apache \
     --group apache \
     --port 80 \
+    ${APP_PREFIX:+--mount-point $APP_PREFIX} \
     --processes 4 \
     --threads 1 \
     --max-clients 3000 \
