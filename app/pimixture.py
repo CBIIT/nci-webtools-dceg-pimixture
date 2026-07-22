@@ -408,7 +408,7 @@ def getS3Object():
         filename = request.args.get('filename', os.path.basename(key))
         s3File = BytesIO()
         obj = downloadS3Object(bucket_name, key, s3File)
-        return send_file(obj, attachment_filename=filename, as_attachment=True)
+        return send_file(obj, download_name=filename, as_attachment=True)
     except Exception as e:
         log.exception('Exception occurred')
         log.error(e)
