@@ -1,4 +1,5 @@
 import os
+import sys
 import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -116,6 +117,10 @@ def getLogger():
 
 def getFileLogger(fileName):
     log = getLogger()
+    # Always emit to stdout so container log collectors (FireLens/Datadog) capture logs
+    stdHandler = logging.StreamHandler(sys.stdout)
+    stdHandler.setFormatter(stdFormatter)
+    log.addHandler(stdHandler)
     logFolder = os.environ.get('LOG_FOLDER', '')
     if logFolder and not os.path.exists(logFolder):
         os.makedirs(logFolder)
@@ -127,7 +132,7 @@ def getFileLogger(fileName):
 
 def getConsoleLogger(formatter):
     log = getLogger()
-    stdHandler = logging.StreamHandler()
+    stdHandler = logging.StreamHandler(sys.stdout)
     stdHandler.setFormatter(formatter)
     log.addHandler(stdHandler)
     return log
