@@ -252,7 +252,7 @@ def runPredict():
             'results': {
                 'prediction': results,
                 'model': model,
-                'csvFile': csvFileName,
+                'csvFile': '/getFile/' + os.path.basename(csvFileName),
                 'suffix': PREDICTION_SUFFIX
             }
         }
@@ -436,6 +436,19 @@ def downloadS3Object(bucket_name, key, obj):
     bucket.downloadFileObj(key, obj)
     obj.seek(0)
     return obj
+
+@app.route('/getFile/<filename>', methods=['GET'])
+def getFile(filename):
+    log.info('GET /getFile/{}'.format(filename))
+    try:
+        safe_name = os.path.basename(filename)
+        filepath = os.path.join(OUTPUT_DATA_PATH, safe_name)
+        if not os.path.isfile(filepath):
+            return buildFailure('File not found', 404)
+        return send_file(filepath, as_attachment=True)
+    except Exception as e:
+        log.exception('Exception occurred')
+        return buildFailure({"status": False, "statusMessage": str(e)})
 
 @app.route('/ping/', strict_slashes=False)
 def ping():
