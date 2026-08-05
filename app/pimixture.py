@@ -156,12 +156,18 @@ def runPredict():
         id = str(uuid.uuid4())
         filesToRemoveWhenDone = []
         if 'serverFile' in parameters:
-            rdsFile = parameters['serverFile']
+            safe_name = os.path.basename(parameters['serverFile'])
+            if not safe_name.startswith(OUTPUT_FILE_PREFIX) or not safe_name.endswith('.rds'):
+                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+            real_base = os.path.realpath(OUTPUT_DATA_PATH)
+            rdsFile = os.path.realpath(os.path.join(OUTPUT_DATA_PATH, safe_name))
+            if not rdsFile.startswith(real_base + os.sep):
+                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
             if os.path.isfile(rdsFile):
                 # Server file exists
                 parameters['rdsFile'] = rdsFile
             else:
-                message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
+                message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(safe_name)
                 log.error(message)
                 return buildFailure(message, 410)
         elif 'uploadedFile' in parameters:

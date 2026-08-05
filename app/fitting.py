@@ -49,7 +49,7 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
         os.remove(returnFile)
         os.remove(parameters['filename'])
         results['prediction.results'] = None
-        results['Rfile'] = parameters['outputRdsFilename']
+        results['Rfile'] = os.path.basename(parameters['outputRdsFilename'])
         results['rFileUrl'] = 'getFile/' + os.path.basename(parameters['outputRdsFilename'])
         results['ssFile'] = 'getFile/' + os.path.basename(outputSSFileName)
         results['extension'] = extensionMap[fileType]
