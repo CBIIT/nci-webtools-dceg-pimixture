@@ -444,7 +444,7 @@ def getFile(filename):
         safe_name = os.path.basename(filename)
         filepath = os.path.join(OUTPUT_DATA_PATH, safe_name)
         if not os.path.isfile(filepath):
-            return buildFailure('File not found', 404)
+            return buildFailure({"status": False, "statusMessage": "File not found"}, 404)
         return send_file(filepath, as_attachment=True)
     except Exception as e:
         log.exception('Exception occurred')
