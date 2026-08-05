@@ -32,9 +32,9 @@
     "selenium-webdriver": "^4.46.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": "^20.9.0"
   },
   "overrides": {
-    "serialize-javascript": "^7.0.7"
+    "serialize-javascript": "7.0.7"
   }
 }
