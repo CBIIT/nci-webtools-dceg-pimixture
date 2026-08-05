@@ -171,13 +171,19 @@ def runPredict():
                 log.error(message)
                 return buildFailure(message, 410)
         elif 'uploadedFile' in parameters:
-            rdsFile = parameters['uploadedFile']
+            safe_name = os.path.basename(parameters['uploadedFile'])
+            if not safe_name.startswith(INPUT_FILE_PREFIX) or not safe_name.endswith('.rds'):
+                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+            real_base = os.path.realpath(INPUT_DATA_PATH)
+            rdsFile = os.path.realpath(os.path.join(INPUT_DATA_PATH, safe_name))
+            if not rdsFile.startswith(real_base + os.sep):
+                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
             if os.path.isfile(rdsFile):
                 # uploaded file exists
                 parameters['rdsFile'] = rdsFile
                 filesToRemoveWhenDone.append(rdsFile)
             else:
-                message = "Uploaded file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(rdsFile)
+                message = "Uploaded file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(safe_name)
                 log.error(message)
                 return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
