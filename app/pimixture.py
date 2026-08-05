@@ -437,15 +437,28 @@ def downloadS3Object(bucket_name, key, obj):
     obj.seek(0)
     return obj
 
+ALLOWED_DOWNLOAD_EXTENSIONS = {'.rds', '.xlsx', '.csv'}
+
 @app.route('/getFile/<filename>', methods=['GET'])
 def getFile(filename):
     log.info('GET /getFile/{}'.format(filename))
     try:
         safe_name = os.path.basename(filename)
-        filepath = os.path.join(OUTPUT_DATA_PATH, safe_name)
-        if not os.path.isfile(filepath):
+        _, ext = os.path.splitext(safe_name)
+
+        if not safe_name.startswith(OUTPUT_FILE_PREFIX):
+            return buildFailure({"status": False, "statusMessage": "Invalid file"}, 400)
+        if ext.lower() not in ALLOWED_DOWNLOAD_EXTENSIONS:
+            return buildFailure({"status": False, "statusMessage": "Invalid file type"}, 400)
+
+        real_base = os.path.realpath(OUTPUT_DATA_PATH)
+        real_path = os.path.realpath(os.path.join(OUTPUT_DATA_PATH, safe_name))
+        if not real_path.startswith(real_base + os.sep):
+            return buildFailure({"status": False, "statusMessage": "Invalid file"}, 400)
+
+        if not os.path.isfile(real_path):
             return buildFailure({"status": False, "statusMessage": "File not found"}, 404)
-        return send_file(filepath, as_attachment=True)
+        return send_file(real_path, as_attachment=True)
     except Exception as e:
         log.exception('Exception occurred')
         return buildFailure({"status": False, "statusMessage": str(e)})
