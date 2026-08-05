@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/CBIIT/nci-webtools-dceg-pimixture#readme",
   "devDependencies": {
-    "chai": "^6.2.2",
+    "chai": "^4.5.0",
     "mocha": "^11.8.0",
     "selenium-webdriver": "^4.46.0"
   },
