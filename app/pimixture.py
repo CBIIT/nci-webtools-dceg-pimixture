@@ -167,7 +167,7 @@ def runPredict():
                 # Server file exists
                 parameters['rdsFile'] = rdsFile
             else:
-                message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(safe_name)
+                message = "Server file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(safe_name)
                 log.error(message)
                 return buildFailure(message, 410)
         elif 'uploadedFile' in parameters:
@@ -177,7 +177,7 @@ def runPredict():
                 parameters['rdsFile'] = rdsFile
                 filesToRemoveWhenDone.append(rdsFile)
             else:
-                message = "Uploaded file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
+                message = "Uploaded file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(rdsFile)
                 log.error(message)
                 return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
@@ -467,7 +467,7 @@ def getFile(filename):
         return send_file(real_path, as_attachment=True)
     except Exception as e:
         log.exception('Exception occurred')
-        return buildFailure({"status": False, "statusMessage": str(e)})
+        return buildFailure({"status": False, "statusMessage": "An unexpected error occurred"}, 500)
 
 @app.route('/ping/', strict_slashes=False)
 def ping():
