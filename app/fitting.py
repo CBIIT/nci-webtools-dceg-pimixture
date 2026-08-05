@@ -50,8 +50,8 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
         os.remove(parameters['filename'])
         results['prediction.results'] = None
         results['Rfile'] = parameters['outputRdsFilename']
-        results['rFileUrl'] = '/getFile/' + os.path.basename(parameters['outputRdsFilename'])
-        results['ssFile'] = '/getFile/' + os.path.basename(outputSSFileName)
+        results['rFileUrl'] = 'getFile/' + os.path.basename(parameters['outputRdsFilename'])
+        results['ssFile'] = 'getFile/' + os.path.basename(outputSSFileName)
         results['extension'] = extensionMap[fileType]
         results['fileType'] = fileType
         results['rSuffix'] = FITTING_R_SUFFIX

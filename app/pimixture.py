@@ -252,7 +252,7 @@ def runPredict():
             'results': {
                 'prediction': results,
                 'model': model,
-                'csvFile': '/getFile/' + os.path.basename(csvFileName),
+                'csvFile': 'getFile/' + os.path.basename(csvFileName),
                 'suffix': PREDICTION_SUFFIX
             }
         }
