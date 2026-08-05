@@ -157,15 +157,26 @@ def runPredict():
         filesToRemoveWhenDone = []
         if 'serverFile' in parameters:
             safe_name = os.path.basename(parameters['serverFile'])
-            if not safe_name.startswith(OUTPUT_FILE_PREFIX) or not safe_name.endswith('.rds'):
+            # serverFile may point at a previously-generated fitting output
+            # (OUTPUT_DATA_PATH/OUTPUT_FILE_PREFIX) or a model staged via the
+            # S3 upload flow (INPUT_DATA_PATH/INPUT_FILE_PREFIX) - allow both.
+            if safe_name.startswith(OUTPUT_FILE_PREFIX):
+                base_dir = OUTPUT_DATA_PATH
+            elif safe_name.startswith(INPUT_FILE_PREFIX):
+                base_dir = INPUT_DATA_PATH
+            else:
                 return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
-            real_base = os.path.realpath(OUTPUT_DATA_PATH)
-            rdsFile = os.path.realpath(os.path.join(OUTPUT_DATA_PATH, safe_name))
+            if not safe_name.endswith('.rds'):
+                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+            real_base = os.path.realpath(base_dir)
+            rdsFile = os.path.realpath(os.path.join(base_dir, safe_name))
             if not rdsFile.startswith(real_base + os.sep):
                 return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
             if os.path.isfile(rdsFile):
                 # Server file exists
                 parameters['rdsFile'] = rdsFile
+                if base_dir == INPUT_DATA_PATH:
+                    filesToRemoveWhenDone.append(rdsFile)
             else:
                 message = "Server file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(safe_name)
                 log.error(message)
@@ -339,7 +350,7 @@ def uploadModelFile():
             modelFile.save(inputModelFileName)
             rst = readModelFile(inputModelFileName, jobName)
             if 'jobName' in rst and 'maxTimePoint' in rst:
-                rst['uploadedFile'] = inputModelFileName
+                rst['uploadedFile'] = os.path.basename(inputModelFileName)
                 return buildSuccess(rst)
             else:
                 log.error(rst)
@@ -349,7 +360,7 @@ def uploadModelFile():
             id = request.form['id']
             jobName = request.form['jobName']
             if s3file:
-                serverFileName = getInputFilePath(id, 'rds')
+                serverFileName = getInputFilePath(id, '.rds')
                 with open(serverFileName, 'wb') as inFile:
                     inFile = downloadS3Object(s3file['bucket'], s3file['key'], inFile)
                     if not inFile:
@@ -358,7 +369,7 @@ def uploadModelFile():
                         return buildFailure(msg)
                 rst = readModelFile(serverFileName, jobName)
                 if 'jobName' in rst and 'maxTimePoint' in rst:
-                    rst['serverFile'] = serverFileName
+                    rst['serverFile'] = os.path.basename(serverFileName)
                     return buildSuccess(rst)
                 else:
                     log.error(rst)
