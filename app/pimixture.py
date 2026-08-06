@@ -165,13 +165,13 @@ def runPredict():
             elif safe_name.startswith(INPUT_FILE_PREFIX):
                 base_dir = INPUT_DATA_PATH
             else:
-                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
-            if not safe_name.endswith('.rds'):
-                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+                return buildFailure("Invalid model file", 400)
+            if not safe_name.lower().endswith('.rds'):
+                return buildFailure("Invalid model file", 400)
             real_base = os.path.realpath(base_dir)
             rdsFile = os.path.realpath(os.path.join(base_dir, safe_name))
             if not rdsFile.startswith(real_base + os.sep):
-                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+                return buildFailure("Invalid model file", 400)
             if os.path.isfile(rdsFile):
                 # Server file exists
                 parameters['rdsFile'] = rdsFile
@@ -183,12 +183,12 @@ def runPredict():
                 return buildFailure(message, 410)
         elif 'uploadedFile' in parameters:
             safe_name = os.path.basename(parameters['uploadedFile'])
-            if not safe_name.startswith(INPUT_FILE_PREFIX) or not safe_name.endswith('.rds'):
-                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+            if not safe_name.startswith(INPUT_FILE_PREFIX) or not safe_name.lower().endswith('.rds'):
+                return buildFailure("Invalid model file", 400)
             real_base = os.path.realpath(INPUT_DATA_PATH)
             rdsFile = os.path.realpath(os.path.join(INPUT_DATA_PATH, safe_name))
             if not rdsFile.startswith(real_base + os.sep):
-                return buildFailure({"status": False, "statusMessage": "Invalid model file"}, 400)
+                return buildFailure("Invalid model file", 400)
             if os.path.isfile(rdsFile):
                 # uploaded file exists
                 parameters['rdsFile'] = rdsFile
