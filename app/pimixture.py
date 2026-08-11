@@ -156,22 +156,45 @@ def runPredict():
         id = str(uuid.uuid4())
         filesToRemoveWhenDone = []
         if 'serverFile' in parameters:
-            rdsFile = parameters['serverFile']
+            safe_name = os.path.basename(parameters['serverFile'])
+            # serverFile may point at a previously-generated fitting output
+            # (OUTPUT_DATA_PATH/OUTPUT_FILE_PREFIX) or a model staged via the
+            # S3 upload flow (INPUT_DATA_PATH/INPUT_FILE_PREFIX) - allow both.
+            if safe_name.startswith(OUTPUT_FILE_PREFIX):
+                base_dir = OUTPUT_DATA_PATH
+            elif safe_name.startswith(INPUT_FILE_PREFIX):
+                base_dir = INPUT_DATA_PATH
+            else:
+                return buildFailure("Invalid model file", 400)
+            if not safe_name.lower().endswith('.rds'):
+                return buildFailure("Invalid model file", 400)
+            real_base = os.path.realpath(base_dir)
+            rdsFile = os.path.realpath(os.path.join(base_dir, safe_name))
+            if not rdsFile.startswith(real_base + os.sep):
+                return buildFailure("Invalid model file", 400)
             if os.path.isfile(rdsFile):
                 # Server file exists
                 parameters['rdsFile'] = rdsFile
+                if base_dir == INPUT_DATA_PATH:
+                    filesToRemoveWhenDone.append(rdsFile)
             else:
-                message = "Server file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
+                message = "Server file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(safe_name)
                 log.error(message)
                 return buildFailure(message, 410)
         elif 'uploadedFile' in parameters:
-            rdsFile = parameters['uploadedFile']
+            safe_name = os.path.basename(parameters['uploadedFile'])
+            if not safe_name.startswith(INPUT_FILE_PREFIX) or not safe_name.lower().endswith('.rds'):
+                return buildFailure("Invalid model file", 400)
+            real_base = os.path.realpath(INPUT_DATA_PATH)
+            rdsFile = os.path.realpath(os.path.join(INPUT_DATA_PATH, safe_name))
+            if not rdsFile.startswith(real_base + os.sep):
+                return buildFailure("Invalid model file", 400)
             if os.path.isfile(rdsFile):
                 # uploaded file exists
                 parameters['rdsFile'] = rdsFile
                 filesToRemoveWhenDone.append(rdsFile)
             else:
-                message = "Uploaded file '{}' doesn't exit on server anymore!<br>Please upload model file you downloaded previousely.".format(rdsFile)
+                message = "Uploaded file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(safe_name)
                 log.error(message)
                 return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
@@ -252,7 +275,7 @@ def runPredict():
             'results': {
                 'prediction': results,
                 'model': model,
-                'csvFile': csvFileName,
+                'csvFile': 'getFile/' + os.path.basename(csvFileName),
                 'suffix': PREDICTION_SUFFIX
             }
         }
@@ -327,7 +350,7 @@ def uploadModelFile():
             modelFile.save(inputModelFileName)
             rst = readModelFile(inputModelFileName, jobName)
             if 'jobName' in rst and 'maxTimePoint' in rst:
-                rst['uploadedFile'] = inputModelFileName
+                rst['uploadedFile'] = os.path.basename(inputModelFileName)
                 return buildSuccess(rst)
             else:
                 log.error(rst)
@@ -337,7 +360,7 @@ def uploadModelFile():
             id = request.form['id']
             jobName = request.form['jobName']
             if s3file:
-                serverFileName = getInputFilePath(id, 'rds')
+                serverFileName = getInputFilePath(id, '.rds')
                 with open(serverFileName, 'wb') as inFile:
                     inFile = downloadS3Object(s3file['bucket'], s3file['key'], inFile)
                     if not inFile:
@@ -346,7 +369,7 @@ def uploadModelFile():
                         return buildFailure(msg)
                 rst = readModelFile(serverFileName, jobName)
                 if 'jobName' in rst and 'maxTimePoint' in rst:
-                    rst['serverFile'] = serverFileName
+                    rst['serverFile'] = os.path.basename(serverFileName)
                     return buildSuccess(rst)
                 else:
                     log.error(rst)
@@ -408,7 +431,7 @@ def getS3Object():
         filename = request.args.get('filename', os.path.basename(key))
         s3File = BytesIO()
         obj = downloadS3Object(bucket_name, key, s3File)
-        return send_file(obj, attachment_filename=filename, as_attachment=True)
+        return send_file(obj, download_name=filename, as_attachment=True)
     except Exception as e:
         log.exception('Exception occurred')
         log.error(e)
@@ -436,6 +459,32 @@ def downloadS3Object(bucket_name, key, obj):
     bucket.downloadFileObj(key, obj)
     obj.seek(0)
     return obj
+
+ALLOWED_DOWNLOAD_EXTENSIONS = {'.rds', '.xlsx', '.csv'}
+
+@app.route('/getFile/<filename>', methods=['GET'])
+def getFile(filename):
+    log.info('GET /getFile/{}'.format(filename))
+    try:
+        safe_name = os.path.basename(filename)
+        _, ext = os.path.splitext(safe_name)
+
+        if not safe_name.startswith(OUTPUT_FILE_PREFIX):
+            return buildFailure({"status": False, "statusMessage": "Invalid file"}, 400)
+        if ext.lower() not in ALLOWED_DOWNLOAD_EXTENSIONS:
+            return buildFailure({"status": False, "statusMessage": "Invalid file type"}, 400)
+
+        real_base = os.path.realpath(OUTPUT_DATA_PATH)
+        real_path = os.path.realpath(os.path.join(OUTPUT_DATA_PATH, safe_name))
+        if not real_path.startswith(real_base + os.sep):
+            return buildFailure({"status": False, "statusMessage": "Invalid file"}, 400)
+
+        if not os.path.isfile(real_path):
+            return buildFailure({"status": False, "statusMessage": "File not found"}, 404)
+        return send_file(real_path, as_attachment=True)
+    except Exception as e:
+        log.exception('Exception occurred')
+        return buildFailure({"status": False, "statusMessage": "An unexpected error occurred"}, 500)
 
 @app.route('/ping/', strict_slashes=False)
 def ping():

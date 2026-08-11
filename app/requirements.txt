@@ -2,5 +2,5 @@ boto3
 openpyxl
 pyper
 requests
-Flask
+Flask==3.0.3
 mod_wsgi
