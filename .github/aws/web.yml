@@ -80,7 +80,7 @@ containerDefinitions:
         tls.verify: "off"
         dd_service: "${TIER}-${APP}-frontend"
         dd_source: "python"
-        dd_tags: "project:${APP} tier:${TIER}"
+        dd_tags: "project:${APP},tier:${TIER}"
         provider: ecs
       secretOptions:
         - name: Host
@@ -137,7 +137,7 @@ containerDefinitions:
         tls.verify: "off"
         dd_service: "${TIER}-${APP}-queue"
         dd_source: "python"
-        dd_tags: "project:${APP} tier:${TIER}"
+        dd_tags: "project:${APP},tier:${TIER}"
         provider: ecs
       secretOptions:
         - name: Host
