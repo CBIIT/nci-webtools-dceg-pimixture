@@ -57,7 +57,7 @@ def runModel():
         id = str(uuid.uuid4())
         if (len(request.files) > 0):
             inputCSVFile = request.files['csvFile']
-            ext = os.path.splitext(inputCSVFile.filename)[1]
+            ext = sanitizeExtension(os.path.splitext(inputCSVFile.filename)[1], '.csv')
             if sendToQueue:
                 bucket = S3Bucket(INPUT_BUCKET, log)
                 object = bucket.uploadFileObj(getInputFileKey(id, ext), inputCSVFile)
@@ -74,7 +74,7 @@ def runModel():
 
             else:
                 parameters['inputCSVFile'] = inputCSVFile.filename
-                inputFileName = getInputFilePath(id, ext)
+                inputFileName = getSecureInputFilePath(id, ext)
                 inputCSVFile.save(inputFileName)
                 if not os.path.isfile(inputFileName):
                     message = "Upload file failed!"
@@ -199,8 +199,8 @@ def runPredict():
                 return buildFailure(message, 410)
         elif len(request.files) > 0 and 'rdsFile' in request.files:
             rdsFile = request.files['rdsFile']
-            ext = os.path.splitext(rdsFile.filename)[1]
-            inputRdsFileName = getInputFilePath(id, ext)
+            ext = sanitizeExtension(os.path.splitext(rdsFile.filename)[1], '.rds')
+            inputRdsFileName = getSecureInputFilePath(id, ext)
             rdsFile.save(inputRdsFileName)
             if os.path.isfile(inputRdsFileName):
                 parameters['rdsFile'] = inputRdsFileName
@@ -216,8 +216,8 @@ def runPredict():
 
         if len(request.files) > 0 and 'testDataFile' in request.files:
             testDataFile = request.files['testDataFile']
-            ext = os.path.splitext(testDataFile.filename)[1]
-            inputTestDataFileName = getInputFilePath(id, ext)
+            ext = sanitizeExtension(os.path.splitext(testDataFile.filename)[1], '.csv')
+            inputTestDataFileName = getSecureInputFilePath(id, ext)
             # couldn't make testDataFile.stream to work with csv files with BOM character (from excel)
             # TODO: try to make testDataFile.stream work, so we don't have to save the file then open it again!
             testDataFile.save(inputTestDataFileName)
@@ -302,8 +302,15 @@ def runPredict():
     finally:
         if filesToRemoveWhenDone:
             for filename in filesToRemoveWhenDone:
-                if os.path.isfile(filename):
-                    os.remove(filename)
+                try:
+                    # All temporary files live in the input folder; re-resolve each
+                    # path against it so nothing outside that folder can be removed.
+                    safe_path = getSecurePath(INPUT_DATA_PATH, filename)
+                except ValueError:
+                    log.error("Skipping removal of invalid file path")
+                    continue
+                if os.path.isfile(safe_path):
+                    os.remove(safe_path)
 
 
 def readModelFile(modelFileName, jobName):
@@ -346,7 +353,8 @@ def uploadModelFile():
             id = str(uuid.uuid4())
             modelFile = request.files['rdsFile']
             jobName, ext = os.path.splitext(modelFile.filename)
-            inputModelFileName = getInputFilePath(id, ext)
+            ext = sanitizeExtension(ext, '.rds')
+            inputModelFileName = getSecureInputFilePath(id, ext)
             modelFile.save(inputModelFileName)
             rst = readModelFile(inputModelFileName, jobName)
             if 'jobName' in rst and 'maxTimePoint' in rst:
@@ -359,8 +367,12 @@ def uploadModelFile():
             s3file = json.loads(request.form['s3file'])
             id = request.form['id']
             jobName = request.form['jobName']
+            if not isSafeId(id):
+                message = "Invalid job id!"
+                log.error(message)
+                return buildFailure(message, 400)
             if s3file:
-                serverFileName = getInputFilePath(id, '.rds')
+                serverFileName = getSecureInputFilePath(id, '.rds')
                 with open(serverFileName, 'wb') as inFile:
                     inFile = downloadS3Object(s3file['bucket'], s3file['key'], inFile)
                     if not inFile:
