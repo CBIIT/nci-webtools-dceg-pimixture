@@ -47,7 +47,9 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
         with open(returnFile) as file:
             results = json.loads(file.read())
         os.remove(returnFile)
-        os.remove(parameters['filename'])
+        # Input files always live in the input folder; re-resolve the path
+        # against it so nothing outside that folder can be removed.
+        os.remove(getSecurePath(INPUT_DATA_PATH, parameters['filename']))
         results['prediction.results'] = None
         results['Rfile'] = os.path.basename(parameters['outputRdsFilename'])
         results['rFileUrl'] = 'getFile/' + os.path.basename(parameters['outputRdsFilename'])
