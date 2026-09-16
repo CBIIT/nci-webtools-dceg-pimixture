@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import smtplib
 from email.mime.application import MIMEApplication
@@ -143,6 +144,42 @@ def getInputFilePath(id, extention):
 
 def getOutputFilePath(id, extention):
     return getFilePath(OUTPUT_DATA_PATH, OUTPUT_FILE_PREFIX, id, extention)
+
+# Only allow simple file extensions such as '.csv', '.rds' or '.xlsx'
+EXTENSION_PATTERN = re.compile(r'^\.[A-Za-z0-9]{1,10}$')
+
+# Job ids are generated with uuid.uuid4(); only allow hex digits and dashes
+ID_PATTERN = re.compile(r'^[A-Za-z0-9-]{1,64}$')
+
+def sanitizeExtension(extension, default=''):
+    """Return the extension if it is a simple '.alnum' extension, otherwise the default."""
+    extension = str(extension or '')
+    if EXTENSION_PATTERN.match(extension):
+        return extension
+    return default
+
+def isSafeId(id):
+    """Validate that a job id looks like a generated uuid (hex digits and dashes only)."""
+    return bool(ID_PATTERN.match(str(id or '')))
+
+def getSecurePath(baseDir, fileName):
+    """Build a path from a fixed base directory and an untrusted file name.
+
+    The file name is reduced to its base name, joined to the base directory,
+    fully resolved, and verified to remain inside the base directory.
+    Raises ValueError when the resulting path escapes the base directory.
+    """
+    basePath = os.path.realpath(baseDir)
+    fullPath = os.path.realpath(os.path.join(basePath, os.path.basename(str(fileName))))
+    if not fullPath.startswith(basePath + os.sep):
+        raise ValueError('Invalid file name.')
+    return fullPath
+
+def getSecureInputFilePath(id, extension):
+    return getSecurePath(INPUT_DATA_PATH, getFileName(INPUT_FILE_PREFIX, str(id), str(extension)))
+
+def getSecureOutputFilePath(id, extension):
+    return getSecurePath(OUTPUT_DATA_PATH, getFileName(OUTPUT_FILE_PREFIX, str(id), str(extension)))
 
 def getInputFileKey(id, extension):
     return getFileName(S3_INPUT_FOLDER + OUTPUT_FILE_PREFIX, id, extension)
