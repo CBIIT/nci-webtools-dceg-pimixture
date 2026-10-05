@@ -77,7 +77,8 @@ def fitting(parameters, outputSSFileName, fileType, log, timeout):
             message = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(inputFileName, lineno, line.strip(), exc_obj)
             # print(message)
             log.exception('Exception happened!')
-            return {"status": False, "message": message}
+            log.error(message)
+            return {"status": False, "message": "An unknown error occurred"}
         else:
             log.error(rOutput)
             return {"status": False, "message": 'R output:<br>{}'.format(rOutput)}
