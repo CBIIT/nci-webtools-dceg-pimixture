@@ -447,7 +447,7 @@ def getS3Object():
     except Exception as e:
         log.exception('Exception occurred')
         log.error(e)
-        return buildFailure({"status": False, "statusMessage": str(e)})
+        return buildFailure({"status": False, "statusMessage": "An unexpected error occurred"})
 
 # Download object from S3
 # Parameters:
