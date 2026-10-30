@@ -189,4 +189,17 @@ describe('PIMixture Happy case test - prediction', function() {
         await driver.wait(until.elementsLocated(By.linkText('Download result (.csv) file')), 5000);
     });
 
+    it('Should be able to recalculate with a different step size', async function() {
+        // Regression guard: a second prediction against the same model must not
+        // fail with "Model file on server doesn't exist anymore" (HTTP 410).
+        const previousLink = await driver.findElement(By.linkText('Download result (.csv) file'));
+        const stepSizeInput = await driver.findElement(By.id('stepSize'));
+        await stepSizeInput.clear();
+        stepSizeInput.sendKeys('5');
+        const submitBtn = await driver.findElement(By.id('runPredict'));
+        await submitBtn.click();
+        await driver.wait(until.stalenessOf(previousLink), 5000);
+        await driver.wait(until.elementsLocated(By.linkText('Download result (.csv) file')), 5000);
+    });
+
 });

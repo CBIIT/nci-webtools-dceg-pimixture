@@ -173,10 +173,12 @@ def runPredict():
             if not rdsFile.startswith(real_base + os.sep):
                 return buildFailure("Invalid model file", 400)
             if os.path.isfile(rdsFile):
-                # Server file exists
+                # Server file exists. Do NOT schedule it for removal: the browser
+                # holds only this file name (not the file itself), so the user must
+                # be able to re-run the prediction with different time points
+                # against the same staged model. This applies to both fitting
+                # outputs (OUTPUT_DATA_PATH) and S3-staged models (INPUT_DATA_PATH).
                 parameters['rdsFile'] = rdsFile
-                if base_dir == INPUT_DATA_PATH:
-                    filesToRemoveWhenDone.append(rdsFile)
             else:
                 message = "Server file '{}' doesn't exist on server anymore!<br>Please upload model file you downloaded previously.".format(safe_name)
                 log.error(message)
