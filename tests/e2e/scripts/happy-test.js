@@ -31,7 +31,7 @@ describe('PIMixture Happy case test - fitting', function() {
         if (url) {
             driver = await new Builder()
                 .forBrowser('firefox')
-                .setFirefoxOptions(new firefox.Options().headless())
+                .setFirefoxOptions(new firefox.Options().addArguments('-headless'))
                 .build();
             website = url.replace('\/$', '') + '/#fitting';
             await driver.get(website);
@@ -147,7 +147,7 @@ describe('PIMixture Happy case test - prediction', function() {
         if (url) {
             driver = await new Builder()
                 .forBrowser('firefox')
-                .setFirefoxOptions(new firefox.Options().headless())
+                .setFirefoxOptions(new firefox.Options().addArguments('-headless'))
                 .build();
             website = url.replace('\/$', '') + '/#prediction';
             await driver.get(website);
