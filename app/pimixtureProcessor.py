@@ -106,20 +106,20 @@ if __name__ == '__main__':
                         extender = VisibilityExtender(msg, jobName, id, VISIBILITY_TIMEOUT, log)
                         log.info('Start processing job name: "{}", id: {} ...'.format(jobName, id))
 
-                        ext = data['extension']
+                        ext = sanitizeExtension(data['extension'], '.csv')
                         inputBucket = parameters['inputCSVFile']['bucket_name']
                         inputFileName = parameters['inputCSVFile']['key']
 
-                        downloadFileName = getInputFilePath(id, ext)
+                        downloadFileName = getSecureInputFilePath(id, ext)
                         inputBucket = S3Bucket(inputBucket, log)
                         inputBucket.downloadFile(inputFileName, downloadFileName)
                         parameters['remoteInputCSVFile'] = inputBucket.generateUrl(parameters['inputCSVFile'])
                         parameters['filename'] = downloadFileName
                         parameters['inputCSVFile'] = parameters['inputCSVFile']['originalName']
 
-                        outputRdsFileName = getOutputFilePath(id, '.rds')
-                        outputSSFileName = getOutputFilePath(id, extensionMap[SS_FILE_TYPE])
-                        outputFileName = getOutputFilePath(id, '.out')
+                        outputRdsFileName = getSecureOutputFilePath(id, '.rds')
+                        outputSSFileName = getSecureOutputFilePath(id, extensionMap[SS_FILE_TYPE])
+                        outputFileName = getSecureOutputFilePath(id, '.out')
                         parameters['outputRdsFilename'] = outputRdsFileName
                         parameters['outputFilename'] = outputFileName
 
